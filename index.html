@@ -199,6 +199,45 @@
       transform: scale(1.07);
       box-shadow: 0 6px 15px rgba(0,0,0,0.5);
     }
+
+    /* Apartado PRÓXIMAMENTE */
+    .coming-soon {
+      margin: 50px auto 30px;
+      padding: 25px;
+      max-width: 520px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 2px dashed #feca57;
+      border-radius: 15px;
+      text-align: center;
+      opacity: 0;
+      animation: fadeInSection 1.5s 0.8s forwards;
+    }
+    .coming-soon h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.2em;
+      color: #ff6b6b;
+      margin-bottom: 15px;
+      text-shadow: 0 0 10px rgba(255, 107, 107, 0.6);
+    }
+    .coming-soon p {
+      margin: 10px 0;
+      color: #4ecdc4;
+      font-size: 1.1em;
+    }
+    .coming-soon ul {
+      list-style: none;
+      padding: 0;
+      margin: 15px 0;
+    }
+    .coming-soon li {
+      padding: 6px 0;
+      color: #96ceb4;
+      font-size: 1em;
+    }
+    @keyframes fadeInSection {
+      to { opacity: 1; }
+    }
+
     @media (max-width: 500px) {
       h1 { font-size: 1.8em; }
       .voting-container { flex-direction: column; }
@@ -207,6 +246,13 @@
       .winner-img { width: 200px; }
       .skin-thumb { width: 55px; height: 55px; }
       .rank { font-size: 1.2em; }
+      .coming-soon {
+        margin: 40px 10px 20px;
+        padding: 20px 15px;
+      }
+      .coming-soon h2 {
+        font-size: 1.9em;
+      }
     }
   </style>
 </head>
@@ -242,6 +288,21 @@
   </div>
 
   <button class="restart-btn" onclick="restartTournament()">🔄 Reiniciar Torneo</button>
+
+  <!-- ✨ APARTADO PRÓXIMAMENTE ✨ -->
+  <div class="coming-soon" id="comingSoon">
+    <h2>🔜 PRÓXIMAMENTE 🔜</h2>
+    <p>¡Estamos trabajando en nuevas funciones para hacer este torneo aún más épico!</p>
+    <ul>
+      <li>🔥 Modo multijugador en tiempo real</li>
+      <li>🎮 Votación con skins personalizadas</li>
+      <li>🏆 Torneos semanales con recompensas</li>
+      <li>📱 App móvil exclusiva</li>
+    </ul>
+    <p style="margin-top: 15px; font-style: italic; color: #feca57;">
+      ¡Sigue nuestras redes para no perderte nada!
+    </p>
+  </div>
 
   <!-- Sonidos -->
   <audio id="winSound" src="https://github.com/pancitaibiza-blip/assets/raw/main/victory-royale.mp3" preload="auto"></audio>
