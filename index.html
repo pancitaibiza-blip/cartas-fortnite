@@ -51,6 +51,34 @@
       margin: 10px 0;
     }
 
+    /* Barra de copas y liga */
+    .trophy-bar {
+      background: rgba(10,10,26,0.7);
+      padding: 12px;
+      border-radius: 12px;
+      margin: 15px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1.2em;
+      border: 2px solid gold;
+    }
+    .trophy-icon {
+      font-size: 1.5em;
+      margin-right: 8px;
+    }
+    .league-badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 0.95em;
+    }
+    .league-bronze { background: linear-gradient(to right, #cd7f32, #b8860b); }
+    .league-silver { background: linear-gradient(to right, silver, #c0c0c0); color: #333; }
+    .league-gold { background: linear-gradient(to right, gold, #daa520); }
+    .league-elite { background: linear-gradient(to right, #4b0082, #8a2be2); }
+    .league-legend { background: linear-gradient(45deg, red, gold, blue); animation: rainbow 3s linear infinite; }
+
     .rarity-badge {
       position: absolute;
       top: 8px;
@@ -180,6 +208,7 @@
     @media (max-width: 500px) {
       .card { width: 120px; }
       h1 { font-size: 1.9em; }
+      .trophy-bar { flex-direction: column; gap: 8px; }
     }
   </style>
 </head>
@@ -188,10 +217,18 @@
   <div class="content">
     <h1>FORTNITE SKIN BATTLE: ¡DERROTA AL JEFÉ!</h1>
     
+    <!-- 🏆 BARRA DE COPAS Y LIGA -->
+    <div class="trophy-bar">
+      <div>
+        <span class="trophy-icon">🏆</span>
+        <span id="trophyCount">0</span> copas
+      </div>
+      <div class="league-badge" id="leagueBadge">Bronce</div>
+    </div>
+
     <div class="battle-area" id="battleArea">
     </div>
 
-    <!-- ✨ PRÓXIMA ACTUALIZACIÓN: MAÑANA A LAS 15:00 ✨ -->
     <div class="coming-soon">
       <h3>🔔 ¡PRÓXIMA ACTUALIZACIÓN! 🔔</h3>
       <p><strong>Mañana a las 15:00</strong></p>
@@ -204,6 +241,7 @@
   <audio id="hitSound" src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.mp3" preload="auto"></audio>
   <audio id="loseSound" src="https://assets.mixkit.co/sfx/preview/mixkit-retro-arcade-lose-2027.mp3" preload="auto"></audio>
   <audio id="winSound" src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3" preload="auto"></audio>
+  <audio id="levelUpSound" src="https://assets.mixkit.co/sfx/preview/mixkit-unlock-new-level-2195.mp3" preload="auto"></audio>
 
   <script>
     function createParticles() {
@@ -225,7 +263,16 @@
       }
     }
 
-    // 🃏 CARTAS CON VIDAS
+    // 🏆 Sistema de ligas
+    const LEAGUES = [
+      { name: "Bronce", min: 0, max: 199, badgeClass: "league-bronze" },
+      { name: "Plata", min: 200, max: 399, badgeClass: "league-silver" },
+      { name: "Oro", min: 400, max: 599, badgeClass: "league-gold" },
+      { name: "Élite", min: 600, max: 799, badgeClass: "league-elite" },
+      { name: "Leyenda", min: 800, max: Infinity, badgeClass: "league-legend" }
+    ];
+
+    // 🃏 Cartas
     const CARDS = [
       { id:0, name:"Ramírez", img:"https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", rarity:"common", atk:60, def:50, power:"Paso Firme", attackType:"wind" },
       { id:1, name:"Azulita", img:"https://s93.erome.com/5472/K3IRZbxx/0B8OzReu.jpeg?v=1764815871", rarity:"rare", atk:70, def:55, power:"Confeti Ácido", attackType:"fire" },
@@ -239,11 +286,48 @@
       { id:9, name:"JEFE FINAL", img:"https://s206.erome.com/4699/lpRzYjBO/gU2HfmRY.jpeg?v=1745795818", rarity:"legendary", atk:100, def:35, power:"Tirano", attackType:"arcane" }
     ];
 
+    // Estado del juego
     let playerCards = [];
     let enemyCard = null;
     let round = 1;
     let gameActive = true;
-    let playerTurn = true; // true = tu turno, false = IA
+    let playerTurn = true;
+    let trophies = parseInt(localStorage.getItem('trophies')) || 0;
+    let currentLeague = LEAGUES[0];
+
+    // Actualizar copas y liga
+    function updateTrophies() {
+      localStorage.setItem('trophies', trophies);
+      document.getElementById('trophyCount').innerText = trophies;
+      
+      // Determinar liga actual
+      const newLeague = LEAGUES.find(l => trophies >= l.min && trophies <= l.max) || LEAGUES[0];
+      if (newLeague.name !== currentLeague.name) {
+        currentLeague = newLeague;
+        document.getElementById('levelUpSound').play().catch(()=>{});
+        showNotification(`¡Ascendiste a ${newLeague.name}! 🎉`);
+      }
+      document.getElementById('leagueBadge').className = `league-badge ${newLeague.badgeClass}`;
+      document.getElementById('leagueBadge').innerText = newLeague.name;
+    }
+
+    function showNotification(msg) {
+      const notif = document.createElement('div');
+      notif.innerText = msg;
+      notif.style.position = 'fixed';
+      notif.style.top = '20%';
+      notif.style.left = '50%';
+      notif.style.transform = 'translateX(-50%)';
+      notif.style.background = 'gold';
+      notif.style.color = '#0a0a1a';
+      notif.style.padding = '10px 20px';
+      notif.style.borderRadius = '10px';
+      notif.style.fontWeight = 'bold';
+      notif.style.zIndex = '1000';
+      notif.style.fontSize = '1.2em';
+      document.body.appendChild(notif);
+      setTimeout(() => document.body.removeChild(notif), 3000);
+    }
 
     function renderCard(card, isEnemy = false, isFainted = false) {
       const rarityClass = `rarity-${card.rarity} ${isFainted ? 'fainted' : ''}`;
@@ -268,6 +352,16 @@
       }, 800);
     }
 
+    // ✅ Ajustar enemigos según liga
+    function getEnemyByLeague() {
+      const baseIndex = Math.min(round + 3, 9);
+      if (currentLeague.name === "Bronce") return CARDS[Math.min(baseIndex, 5)];
+      if (currentLeague.name === "Plata") return CARDS[Math.min(baseIndex + 1, 7)];
+      if (currentLeague.name === "Oro") return CARDS[Math.min(baseIndex + 2, 8)];
+      if (currentLeague.name === "Élite") return CARDS[8];
+      return CARDS[9]; // Leyenda
+    }
+
     function startBattle() {
       const nonBoss = CARDS.slice(0, -1);
       playerCards = [];
@@ -276,8 +370,7 @@
         const idx = Math.floor(Math.random() * pool.length);
         playerCards.push({...pool.splice(idx, 1)[0], alive: true});
       }
-      const enemyIndex = Math.min(round + 3, 9);
-      enemyCard = {...CARDS[enemyIndex], alive: true};
+      enemyCard = {...getEnemyByLeague(), alive: true};
       playerTurn = true;
       renderBattle();
     }
@@ -323,18 +416,18 @@
       }
 
       setTimeout(() => {
-        // Si derrotas al enemigo
-        if (damage >= enemyCard.def) {
+        if (damage >= enemyDef) {
           enemyCard.alive = false;
           log.innerHTML = `¡${playerCard.name} derrotó a ${enemyCard.name}!`;
           round++;
           if (round > 5) {
+            trophies += 50;
+            updateTrophies();
             endGame(true);
             return;
           }
           setTimeout(() => startBattle(), 1500);
         } else {
-          // La IA contraataca
           log.innerHTML += `<br>¡La IA contraataca!`;
           setTimeout(() => iaAttack(), 1000);
         }
@@ -345,7 +438,7 @@
     function iaAttack() {
       if (!gameActive || playerTurn) return;
       
-      const log = document.getElementById('battleLog');
+      const log = document.getElementById('battle-log');
       const aliveCards = playerCards.filter(c => c.alive);
       
       if (aliveCards.length === 0) {
@@ -353,7 +446,6 @@
         return;
       }
 
-      // Elegir carta al azar para atacar
       const targetIndex = Math.floor(Math.random() * aliveCards.length);
       const targetCard = aliveCards[targetIndex];
       const playerDef = targetCard.def;
@@ -373,8 +465,9 @@
           targetCard.alive = false;
           log.innerHTML = `¡${targetCard.name} fue eliminada!`;
           
-          // Verificar si el jugador perdió
           if (playerCards.filter(c => c.alive).length === 0) {
+            trophies = Math.max(0, trophies - 20);
+            updateTrophies();
             endGame(false);
             return;
           }
@@ -382,9 +475,10 @@
           log.innerHTML = `¡${targetCard.name} resistió el ataque!`;
         }
         
-        // Siguiente ronda
         round++;
         if (round > 5) {
+          trophies += 50;
+          updateTrophies();
           endGame(true);
         } else {
           setTimeout(() => startBattle(), 1500);
@@ -402,17 +496,17 @@
           <h2 style="color:${isWin ? 'gold' : '#ff6b6b'}; text-shadow:0 0 10px ${isWin ? 'gold' : 'red'};">
             ${isWin ? '🎉 ¡VICTORIA ROYALE!' : '💀 DERROTA'} 
           </h2>
-          <p style="font-size:1.2em;">${isWin ? '¡Derrotaste al Jefe Final!' : '¡Todas tus cartas fueron eliminadas!'}</p>
+          <p style="font-size:1.2em;">${isWin ? '¡Ganaste 50 copas!' : 'Perdiste 20 copas.'}</p>
           <button class="action-btn" onclick="location.reload()">🔄 Jugar de Nuevo</button>
         </div>
       `;
     }
 
-    // ✨ CONTADOR: MAÑANA A LAS 15:00
+    // ⏰ Contador: mañana a las 15:00
     function updateUpdateCountdown() {
       const now = new Date();
       const target = new Date(now);
-      target.setHours(15, 0, 0, 0); // 15:00 (3 PM)
+      target.setHours(15, 0, 0, 0);
       if (now >= target) {
         target.setDate(target.getDate() + 1);
       }
@@ -429,7 +523,9 @@
       }
     }
 
+    // Iniciar
     createParticles();
+    updateTrophies();
     updateUpdateCountdown();
     setInterval(updateUpdateCountdown, 1000);
     startBattle();
