@@ -7,35 +7,96 @@
   <!-- Fuente tipo Fortnite -->
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oxanium:wght@600&display=swap" rel="stylesheet">
   <style>
-    /* Transición de entrada */
+    /* FONDO FORTNITE CON EFECTOS */
     body {
       font-family: 'Oxanium', 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #0a0a1a, #1a1a2e);
       color: white;
       text-align: center;
       padding: 10px;
       margin: 0;
-      opacity: 0;
-      animation: fadeIn 1.2s forwards;
+      background: #0a0a1a;
+      position: relative;
+      overflow-x: hidden;
+      min-height: 100vh;
     }
 
-    @keyframes fadeIn {
+    /* Capa de fondo con gradiente espacial */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(ellipse at center, #1a1a2e 0%, #0a0a1a 70%);
+      z-index: -3;
+    }
+
+    /* Efecto de energía del Rift (brillos) */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 20%;
+      right: 10%;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(106, 27, 154, 0.3) 0%, transparent 70%);
+      border-radius: 50%;
+      filter: blur(30px);
+      animation: pulseGlow 8s infinite alternate;
+      z-index: -2;
+    }
+
+    @keyframes pulseGlow {
+      0% { opacity: 0.4; transform: scale(1); }
+      100% { opacity: 0.8; transform: scale(1.1); }
+    }
+
+    /* Partículas flotantes */
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      pointer-events: none;
+    }
+    .particle {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 50%;
+      animation: float 15s infinite linear;
+    }
+    @keyframes float {
+      to { transform: translate(var(--tx), var(--ty)) rotate(360deg); opacity: 0; }
+    }
+
+    /* Contenido principal */
+    .content {
+      position: relative;
+      z-index: 10;
+      opacity: 0;
+      animation: fadeInContent 1.5s forwards;
+    }
+    @keyframes fadeInContent {
       to { opacity: 1; }
     }
 
     h1 {
       font-family: 'Bebas Neue', sans-serif;
-      font-size: 2.2em;
+      font-size: 2.4em;
       color: #ff6b6b;
-      text-shadow: 0 0 10px rgba(255, 107, 107, 0.7);
+      text-shadow: 0 0 15px rgba(255, 107, 107, 0.8);
       margin: 10px 0;
+      letter-spacing: 2px;
     }
     .round-indicator {
-      font-size: 1.4em;
+      font-size: 1.5em;
       font-weight: bold;
       color: #4ecdc4;
       margin: 10px 0;
-      text-shadow: 0 0 8px rgba(78, 205, 196, 0.5);
+      text-shadow: 0 0 10px rgba(78, 205, 196, 0.6);
     }
     .voting-container {
       display: flex;
@@ -47,7 +108,7 @@
     }
     .option {
       cursor: pointer;
-      transition: transform 0.2s;
+      transition: transform 0.2s, box-shadow 0.3s;
       max-width: 160px;
       width: 100%;
     }
@@ -56,17 +117,18 @@
       border-radius: 12px;
       border: 3px solid #333;
       object-fit: cover;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.6);
     }
     .option:hover {
       transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(78, 205, 196, 0.7);
     }
     .vs {
-      font-size: 2em;
+      font-size: 2.2em;
       font-weight: bold;
       color: #feca57;
       margin: 0 10px;
-      text-shadow: 0 0 10px gold;
+      text-shadow: 0 0 12px gold;
     }
     .results {
       margin: 15px 0;
@@ -76,19 +138,20 @@
     .winner-section {
       display: none;
       padding: 25px;
-      background: radial-gradient(circle, rgba(78,115,223,0.2), transparent);
+      background: rgba(10, 10, 26, 0.6);
       border-radius: 20px;
       margin: 20px auto;
       max-width: 520px;
       border: 2px solid gold;
-      box-shadow: 0 0 25px rgba(255,215,0,0.6);
+      box-shadow: 0 0 30px rgba(255,215,0,0.8);
+      backdrop-filter: blur(5px);
     }
     .winner-img {
       width: 260px;
       max-width: 100%;
       border-radius: 15px;
       border: 5px solid gold;
-      box-shadow: 0 0 20px gold;
+      box-shadow: 0 0 25px gold;
       margin: 15px auto;
     }
     .confetti {
@@ -102,17 +165,19 @@
     }
     .leaderboard {
       margin: 30px auto;
-      background: rgba(0, 0, 0, 0.4);
+      background: rgba(10, 10, 26, 0.5);
       padding: 18px;
       border-radius: 15px;
       max-width: 520px;
       border: 1px solid #4ecdc4;
+      backdrop-filter: blur(3px);
     }
     .leaderboard h2 {
       color: #4caf50;
       margin: 10px 0;
       font-family: 'Bebas Neue', sans-serif;
       font-size: 1.8em;
+      text-shadow: 0 0 8px rgba(76, 175, 80, 0.5);
     }
     .leaderboard ul {
       list-style: none;
@@ -140,7 +205,7 @@
       min-width: 40px;
       font-size: 1.4em;
     }
-    .rank-1 { color: gold; text-shadow: 0 0 8px gold; }
+    .rank-1 { color: gold; text-shadow: 0 0 10px gold; }
     .rank-2 { color: silver; }
     .rank-3 { color: #cd7f32; }
     .votes {
@@ -150,7 +215,7 @@
     }
     .chart-container {
       margin: 20px auto;
-      background: rgba(0,0,0,0.3);
+      background: rgba(10,10,26,0.4);
       border-radius: 12px;
       padding: 12px;
       max-width: 520px;
@@ -159,6 +224,7 @@
       justify-content: flex-end;
       align-items: center;
       min-height: 180px;
+      backdrop-filter: blur(2px);
     }
     .bar {
       width: 32px;
@@ -188,7 +254,7 @@
       cursor: pointer;
       margin: 12px 5px;
       transition: all 0.3s;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
       font-family: 'Oxanium', sans-serif;
     }
     .share-btn {
@@ -197,7 +263,7 @@
     }
     .restart-btn:hover, .share-btn:hover, .buy-btn:hover {
       transform: scale(1.07);
-      box-shadow: 0 6px 15px rgba(0,0,0,0.5);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.6);
     }
 
     /* Estilo del contador épico */
@@ -205,19 +271,20 @@
       margin: 50px auto 30px;
       padding: 25px;
       max-width: 520px;
-      background: rgba(0, 0, 0, 0.4);
+      background: rgba(10, 10, 26, 0.5);
       border: 2px dashed gold;
       border-radius: 15px;
       text-align: center;
       opacity: 0;
       animation: fadeInSection 1.5s 0.8s forwards;
+      backdrop-filter: blur(3px);
     }
     .coming-soon h2 {
       font-family: 'Bebas Neue', sans-serif;
       font-size: 2.2em;
       color: #ff6b6b;
       margin-bottom: 12px;
-      text-shadow: 0 0 10px rgba(255, 107, 107, 0.6);
+      text-shadow: 0 0 12px rgba(255, 107, 107, 0.7);
     }
     .coming-soon p {
       margin: 8px 0;
@@ -230,7 +297,7 @@
       font-weight: bold;
       font-size: 1.3em;
       margin: 10px 0;
-      text-shadow: 0 0 8px rgba(255, 215, 0, 0.7);
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
     }
 
     /* Contador en tiempo real */
@@ -242,25 +309,25 @@
       font-family: 'Bebas Neue', sans-serif;
     }
     .cd-unit {
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(10, 10, 26, 0.6);
       border: 2px solid #4ecdc4;
       border-radius: 10px;
       padding: 8px;
       min-width: 60px;
       text-align: center;
-      box-shadow: 0 0 10px rgba(78, 205, 196, 0.4);
+      box-shadow: 0 0 12px rgba(78, 205, 196, 0.5);
       transition: all 0.3s;
     }
     .cd-unit.urgent {
       border-color: gold;
-      box-shadow: 0 0 15px gold;
+      box-shadow: 0 0 20px gold;
       animation: pulse 1.5s infinite;
     }
     .cd-value {
       font-size: 2.2em;
       color: white;
       font-weight: bold;
-      text-shadow: 0 0 8px #4ecdc4;
+      text-shadow: 0 0 10px #4ecdc4;
     }
     .cd-label {
       font-size: 0.8em;
@@ -279,10 +346,11 @@
     .store-section {
       margin: 40px auto;
       max-width: 520px;
-      background: rgba(0,0,0,0.4);
+      background: rgba(10,10,26,0.5);
       padding: 20px;
       border-radius: 15px;
       border: 1px solid #ff6b6b;
+      backdrop-filter: blur(3px);
     }
     .store-items {
       display: grid;
@@ -291,23 +359,24 @@
       margin-top: 20px;
     }
     .store-item {
-      background: rgba(30,30,50,0.7);
+      background: rgba(20,20,40,0.7);
       padding: 12px;
       border-radius: 10px;
     }
     .store-countdown {
       margin: 30px auto;
       max-width: 500px;
-      background: rgba(0,0,0,0.4);
+      background: rgba(10,10,26,0.5);
       padding: 20px;
       border-radius: 15px;
       text-align: center;
+      backdrop-filter: blur(2px);
     }
 
     @media (max-width: 500px) {
-      h1 { font-size: 1.8em; }
+      h1 { font-size: 1.9em; }
       .voting-container { flex-direction: column; }
-      .vs { font-size: 2.2em; margin: 12px 0; }
+      .vs { font-size: 2.3em; margin: 12px 0; }
       .option { max-width: 240px; }
       .winner-img { width: 200px; }
       .skin-thumb { width: 55px; height: 55px; }
@@ -322,113 +391,148 @@
   </style>
 </head>
 <body>
-  <h1>FORTNITE SKIN WARS: ¿QUIÉN TIENE LOS MEJORES PIES?</h1>
-  <div class="round-indicator" id="roundIndicator">Ronda 1</div>
+  <!-- Partículas de fondo -->
+  <div class="particles" id="particles"></div>
 
-  <div class="voting-container" id="votingContainer">
-    <div class="option" id="optionA" onclick="vote('A')">
-      <img id="imgA" src="" alt="Skin A">
-    </div>
-    <div class="vs">VS</div>
-    <div class="option" id="optionB" onclick="vote('B')">
-      <img id="imgB" src="" alt="Skin B">
-    </div>
-  </div>
+  <div class="content">
+    <h1>FORTNITE SKIN WARS: ¿QUIÉN TIENE LOS MEJORES PIES?</h1>
+    <div class="round-indicator" id="roundIndicator">Ronda 1</div>
 
-  <div class="results" id="results"></div>
-
-  <div class="winner-section" id="winnerSection">
-    <h2>🎉 ¡VICTORY ROYALE! 🎉</h2>
-    <img class="winner-img" id="winnerImg" src="" alt="Ganador">
-    <h3>👑 ¡NÚMERO 1 DEL TORNEO! 👑</h3>
-    <button class="share-btn" onclick="shareWinner()">📤 Compartir Ganador</button>
-    <button class="restart-btn" onclick="restartTournament()">🔄 Jugar de Nuevo</button>
-  </div>
-
-  <div class="chart-container" id="chartContainer"></div>
-
-  <div class="leaderboard" id="leaderboard">
-    <h2>📊 TABLA DE CLASIFICACIÓN FINAL</h2>
-    <ul id="leaderboardList"></ul>
-  </div>
-
-  <button class="restart-btn" onclick="restartTournament()">🔄 Reiniciar Torneo</button>
-
-  <!-- ✨ APARTADO PRÓXIMAMENTE CON CONTADOR EN TIEMPO REAL ✨ -->
-  <div class="coming-soon" id="comingSoon">
-    <h2>⏰ ¡PRÓXIMA ACTUALIZACIÓN! ⏰</h2>
-    <p><strong>Mañana a las 10:00 AM</strong></p>
-    <div id="highlight">✨ MODO ONLINE + ¡MÁS SKINS! ✨</div>
-    <p>¡Juega en tiempo real con tus amigas y vota por las mejores skins del momento!</p>
-
-    <div id="epic-countdown">
-      <div class="cd-unit">
-        <div class="cd-value" id="hours">--</div>
-        <div class="cd-label">HORAS</div>
+    <div class="voting-container" id="votingContainer">
+      <div class="option" id="optionA" onclick="vote('A')">
+        <img id="imgA" src="" alt="Skin A">
       </div>
-      <div style="align-self: center; color: #feca57; font-size: 1.8em;">:</div>
-      <div class="cd-unit">
-        <div class="cd-value" id="minutes">--</div>
-        <div class="cd-label">MIN</div>
-      </div>
-      <div style="align-self: center; color: #feca57; font-size: 1.8em;">:</div>
-      <div class="cd-unit">
-        <div class="cd-value" id="seconds">--</div>
-        <div class="cd-label">SEG</div>
+      <div class="vs">VS</div>
+      <div class="option" id="optionB" onclick="vote('B')">
+        <img id="imgB" src="" alt="Skin B">
       </div>
     </div>
 
-    <div id="countdown-message" style="margin-top: 10px; font-style: italic; color: #4ecdc4;"></div>
-    <p style="margin-top: 15px; font-style: italic; color: #feca57;">
-      ¡Prepárate para la batalla definitiva!
-    </p>
-  </div>
+    <div class="results" id="results"></div>
 
-  <!-- 💎 TIENDA DE OBJETOS - DISPONIBLE HOY A LA 1:00 AM 💎 -->
-  <div class="store-countdown" id="storeCountdown">
-    <h3 style="color: #ff6b6b; font-family: 'Bebas Neue', sans-serif;">⏳ ¡TIENDA DISPONIBLE HOY A LA 1:00 AM! ⏳</h3>
-    <div id="store-timer" style="font-size: 1.4em; color: gold; margin: 10px 0; font-weight: bold;"></div>
-  </div>
+    <div class="winner-section" id="winnerSection">
+      <h2>🎉 ¡VICTORY ROYALE! 🎉</h2>
+      <img class="winner-img" id="winnerImg" src="" alt="Ganador">
+      <h3>👑 ¡NÚMERO 1 DEL TORNEO! 👑</h3>
+      <button class="share-btn" onclick="shareWinner()">📤 Compartir Ganador</button>
+      <button class="restart-btn" onclick="restartTournament()">🔄 Jugar de Nuevo</button>
+    </div>
 
-  <div class="store-section" id="storeSection" style="display:none;">
-    <h2 style="color: gold; font-family: 'Bebas Neue', sans-serif; font-size: 2em;">🛒 TIENDA DE OBJETOS</h2>
-    <p>Tus créditos: <span id="userCredits" style="color: #4ecdc4; font-weight: bold;">0</span> 💎</p>
-    
-    <div class="store-items">
-      <!-- Objeto 1 -->
-      <div class="store-item" style="border: 1px solid #4ecdc4;">
-        <div style="font-weight: bold; color: white;">Skin Dorada</div>
-        <div style="font-size: 0.9em; color: #96ceb4; margin: 5px 0;">¡Brilla en el torneo!</div>
-        <div style="color: gold; font-weight: bold;">50 💎</div>
-        <button class="buy-btn" onclick="buyItem('golden_skin', 50)" style="background: #4ecdc4; margin-top: 8px; font-size: 0.9em; padding: 5px 10px;">Comprar</button>
+    <div class="chart-container" id="chartContainer"></div>
+
+    <div class="leaderboard" id="leaderboard">
+      <h2>📊 TABLA DE CLASIFICACIÓN FINAL</h2>
+      <ul id="leaderboardList"></ul>
+    </div>
+
+    <button class="restart-btn" onclick="restartTournament()">🔄 Reiniciar Torneo</button>
+
+    <!-- ✨ PRÓXIMA ACTUALIZACIÓN -->
+    <div class="coming-soon" id="comingSoon">
+      <h2>⏰ ¡PRÓXIMA ACTUALIZACIÓN! ⏰</h2>
+      <p><strong>Mañana a las 10:00 AM</strong></p>
+      <div id="highlight">✨ MODO ONLINE + ¡MÁS SKINS! ✨</div>
+      <p>¡Juega en tiempo real con tus amigas y vota por las mejores skins del momento!</p>
+
+      <div id="epic-countdown">
+        <div class="cd-unit">
+          <div class="cd-value" id="hours">--</div>
+          <div class="cd-label">HORAS</div>
+        </div>
+        <div style="align-self: center; color: #feca57; font-size: 1.8em;">:</div>
+        <div class="cd-unit">
+          <div class="cd-value" id="minutes">--</div>
+          <div class="cd-label">MIN</div>
+        </div>
+        <div style="align-self: center; color: #feca57; font-size: 1.8em;">:</div>
+        <div class="cd-unit">
+          <div class="cd-value" id="seconds">--</div>
+          <div class="cd-label">SEG</div>
+        </div>
+      </div>
+
+      <div id="countdown-message" style="margin-top: 10px; font-style: italic; color: #4ecdc4;"></div>
+      <p style="margin-top: 15px; font-style: italic; color: #feca57;">
+        ¡Prepárate para la batalla definitiva!
+      </p>
+    </div>
+
+    <!-- 💎 TIENDA -->
+    <div class="store-countdown" id="storeCountdown">
+      <h3 style="color: #ff6b6b; font-family: 'Bebas Neue', sans-serif;">⏳ ¡TIENDA DISPONIBLE HOY A LA 1:00 AM! ⏳</h3>
+      <div id="store-timer" style="font-size: 1.4em; color: gold; margin: 10px 0; font-weight: bold;"></div>
+    </div>
+
+    <div class="store-section" id="storeSection" style="display:none;">
+      <h2 style="color: gold; font-family: 'Bebas Neue', sans-serif; font-size: 2em;">🛒 TIENDA DE OBJETOS</h2>
+      <p>Tus créditos: <span id="userCredits" style="color: #4ecdc4; font-weight: bold;">0</span> 💎</p>
+      
+      <div class="store-items">
+        <div class="store-item" style="border: 1px solid #4ecdc4;">
+          <div style="font-weight: bold; color: white;">Skin Dorada</div>
+          <div style="font-size: 0.9em; color: #96ceb4; margin: 5px 0;">¡Brilla en el torneo!</div>
+          <div style="color: gold; font-weight: bold;">50 💎</div>
+          <button class="buy-btn" onclick="buyItem('golden_skin', 50)" style="background: #4ecdc4; margin-top: 8px; font-size: 0.9em; padding: 5px 10px;">Comprar</button>
+        </div>
+        
+        <div class="store-item" style="border: 1px solid #ff6b6b;">
+          <div style="font-weight: bold; color: white;">Confeti Épico</div>
+          <div style="font-size: 0.9em; color: #96ceb4; margin: 5px 0;">¡Más confeti al ganar!</div>
+          <div style="color: gold; font-weight: bold;">30 💎</div>
+          <button class="buy-btn" onclick="buyItem('epic_confetti', 30)" style="background: #ff6b6b; color: white; margin-top: 8px; font-size: 0.9em; padding: 5px 10px;">Comprar</button>
+        </div>
+        
+        <div class="store-item" style="border: 1px solid #feca57;">
+          <div style="font-weight: bold; color: white;">Doble Voto</div>
+          <div style="font-size: 0.9em; color: #96ceb4; margin: 5px 0;">¡Vota 2 veces seguidas!</div>
+          <div style="color: gold; font-weight: bold;">70 💎</div>
+          <button class="buy-btn" onclick="buyItem('double_vote', 70)" style="background: #feca57; margin-top: 8px; font-size: 0.9em; padding: 5px 10px;">Comprar</button>
+        </div>
       </div>
       
-      <!-- Objeto 2 -->
-      <div class="store-item" style="border: 1px solid #ff6b6b;">
-        <div style="font-weight: bold; color: white;">Confeti Épico</div>
-        <div style="font-size: 0.9em; color: #96ceb4; margin: 5px 0;">¡Más confeti al ganar!</div>
-        <div style="color: gold; font-weight: bold;">30 💎</div>
-        <button class="buy-btn" onclick="buyItem('epic_confetti', 30)" style="background: #ff6b6b; color: white; margin-top: 8px; font-size: 0.9em; padding: 5px 10px;">Comprar</button>
-      </div>
-      
-      <!-- Objeto 3 -->
-      <div class="store-item" style="border: 1px solid #feca57;">
-        <div style="font-weight: bold; color: white;">Doble Voto</div>
-        <div style="font-size: 0.9em; color: #96ceb4; margin: 5px 0;">¡Vota 2 veces seguidas!</div>
-        <div style="color: gold; font-weight: bold;">70 💎</div>
-        <button class="buy-btn" onclick="buyItem('double_vote', 70)" style="background: #feca57; margin-top: 8px; font-size: 0.9em; padding: 5px 10px;">Comprar</button>
-      </div>
+      <p id="storeMessage" style="margin-top: 15px; font-style: italic; color: #4ecdc4;"></p>
     </div>
-    
-    <p id="storeMessage" style="margin-top: 15px; font-style: italic; color: #4ecdc4;"></p>
   </div>
 
   <!-- Sonidos -->
   <audio id="winSound" src="https://github.com/pancitaibiza-blip/assets/raw/main/victory-royale.mp3" preload="auto"></audio>
-
   <div class="confetti" id="confetti"></div>
 
   <script>
+    // Crear partículas de fondo
+    function createParticles() {
+      const container = document.getElementById('particles');
+      const particleCount = window.innerWidth > 768 ? 30 : 15;
+      
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        
+        // Tamaño aleatorio
+        const size = Math.random() * 4 + 1;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        
+        // Posición inicial
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.top = `${Math.random() * 100}%`;
+        
+        // Color aleatorio (tonos Fortnite)
+        const colors = ['rgba(255,107,107,0.7)', 'rgba(78,205,196,0.7)', 'rgba(254,202,87,0.7)', 'rgba(150,206,180,0.7)'];
+        particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+        
+        // Animación única
+        const tx = (Math.random() - 0.5) * 200;
+        const ty = (Math.random() - 0.5) * 200;
+        particle.style.setProperty('--tx', `${tx}px`);
+        particle.style.setProperty('--ty', `${ty}px`);
+        particle.style.animationDuration = `${15 + Math.random() * 20}s`;
+        
+        container.appendChild(particle);
+      }
+    }
+
+    // SKINS
     const skins = [
       'https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894',
       'https://s93.erome.com/5472/K3IRZbxx/0B8OzReu.jpeg?v=1764815871',
@@ -503,7 +607,7 @@
 
       const sound = document.getElementById('winSound');
       sound.currentTime = 0;
-      sound.play().catch(e => console.log("Audio autoplay blocked, but it's OK!"));
+      sound.play().catch(e => console.log("Audio autoplay blocked"));
 
       createConfetti();
       updateChart();
@@ -593,7 +697,7 @@
       initTournament();
     }
 
-    // ✨ CONTADOR PRÓXIMA ACTUALIZACIÓN
+    // CONTADORES
     function getNextUpdate() {
       const now = new Date();
       let nextUpdate = new Date(now);
@@ -608,7 +712,6 @@
       const now = new Date();
       const nextUpdate = getNextUpdate();
       let diff = nextUpdate - now;
-
       const messageEl = document.getElementById('countdown-message');
       const hoursEl = document.getElementById('hours');
       const minutesEl = document.getElementById('minutes');
@@ -644,12 +747,10 @@
       }
     }
 
-    // 💎 SISTEMA DE CRÉDITOS Y TIENDA
     function getDailyCredits() {
       const today = new Date().toDateString();
       const lastClaim = localStorage.getItem('lastCreditClaim');
       let credits = parseInt(localStorage.getItem('userCredits')) || 0;
-
       if (lastClaim !== today) {
         credits = 100;
         localStorage.setItem('userCredits', credits);
@@ -678,16 +779,13 @@
       }
     }
 
-    // Contador para tienda: hoy a la 1:00 AM
     function updateStoreCountdown() {
       const now = new Date();
       const target = new Date(now);
-      target.setHours(1, 0, 0, 0); // 1:00 AM
-
+      target.setHours(1, 0, 0, 0);
       if (now > target) {
         target.setDate(target.getDate() + 1);
       }
-
       const diff = target - now;
       const hours = Math.floor(diff / (1000 * 60 * 60));
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
@@ -705,12 +803,11 @@
     }
 
     // Iniciar todo
+    createParticles();
     updateEpicCountdown();
     setInterval(updateEpicCountdown, 1000);
-
     updateStoreCountdown();
     setInterval(updateStoreCountdown, 1000);
-
     initTournament();
   </script>
 </body>
