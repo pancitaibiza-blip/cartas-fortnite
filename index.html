@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>¿Cuál skin te gusta más?</title>
+  <title>Votación de Skins de Fortnite</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -27,12 +27,13 @@
     .option {
       cursor: pointer;
       transition: transform 0.2s;
-      max-width: 200px;
+      max-width: 220px;
     }
     .option img {
       width: 100%;
       border-radius: 12px;
       border: 3px solid #333;
+      object-fit: cover;
     }
     .option:hover {
       transform: scale(1.05);
@@ -47,12 +48,12 @@
   </style>
 </head>
 <body>
-  <h1>¿Cuál skin de Fortnite te gusta más?</h1>
+  <h1>Votación de Skins de Fortnite</h1>
   <div class="voting-container">
     <div class="option" id="optionA" onclick="vote('A')">
       <img id="imgA" src="" alt="Skin A">
     </div>
-    <div style="font-size: 2em; align-self: center;">VS</div>
+    <div style="font-size: 2em; align-self: center; font-weight: bold;">VS</div>
     <div class="option" id="optionB" onclick="vote('B')">
       <img id="imgB" src="" alt="Skin B">
     </div>
@@ -61,25 +62,29 @@
   <div class="results" id="results"></div>
 
   <script>
-    // Lista de skins (ajusta las rutas a tus imágenes)
+    // Tus skins de Fortnite (enlaces directos)
     const skins = [
-      'img/skin1.jpg',
-      'img/skin2.jpg',
-      'img/skin3.jpg',
-      'img/skin4.jpg',
-      'img/skin5.jpg',
-      // Añade más...
+      'https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894',
+      'https://s93.erome.com/5472/K3IRZbxx/0B8OzReu.jpeg?v=1764815871',
+      'https://s93.erome.com/5472/K3IRZbxx/7GmdJa3U.jpeg?v=1764802552',
+      'https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177',
+      'https://s93.erome.com/5472/K3IRZbxx/0VxSvgAl.jpeg?v=1764818017'
     ];
 
-    // Contador de votos (opcional, solo en memoria)
+    // Contador de votos
     const votes = {};
     skins.forEach(skin => votes[skin] = 0);
 
     let currentA, currentB;
 
+    // Elegir dos skins diferentes al azar
     function getRandomPair() {
-      const shuffled = [...skins].sort(() => 0.5 - Math.random());
-      return [shuffled[0], shuffled[1]];
+      let a, b;
+      do {
+        a = skins[Math.floor(Math.random() * skins.length)];
+        b = skins[Math.floor(Math.random() * skins.length)];
+      } while (a === b);
+      return [a, b];
     }
 
     function displayPair() {
@@ -92,19 +97,16 @@
       if (choice === 'A') votes[currentA]++;
       if (choice === 'B') votes[currentB]++;
 
-      // Mostrar resultado parcial
-      const total = votes[currentA] + votes[currentB];
       document.getElementById('results').innerHTML = `
-        <p>Resultados actuales:</p>
+        <p>🎯 ¡Voto registrado!</p>
         <p>✔️ ${votes[currentA]} votos | ❌ ${votes[currentB]} votos</p>
-        <p><em>Próxima ronda en 1 segundo...</em></p>
+        <p><em>Siguiente ronda en 1 segundo...</em></p>
       `;
       
-      // Cambiar a nueva pareja después de un breve delay
       setTimeout(displayPair, 1000);
     }
 
-    // Iniciar
+    // Iniciar la primera votación
     displayPair();
   </script>
 </body>
