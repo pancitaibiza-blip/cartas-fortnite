@@ -3,117 +3,216 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Chicas Más Guapas 2025</title>
+  <title>Top Chicas Más Guapas 2025</title>
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
     body {
-      font-family: Arial, sans-serif;
-      background: #ffeef2;
+      font-family: 'Segoe UI', sans-serif;
+      background: #fff9fb;
+      color: #333;
+      line-height: 1.6;
+    }
+    header {
       text-align: center;
-      padding: 20px;
+      padding: 2rem 1rem;
+      background: linear-gradient(135deg, #ff6b9d, #ff8e9e);
+      color: white;
     }
-    .girl {
+    h1 {
+      font-size: 2.4rem;
+      margin-bottom: 0.5rem;
+    }
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2rem;
+      padding: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .section {
+      flex: 1;
+      min-width: 300px;
+    }
+    .section-title {
+      text-align: center;
+      margin: 1.5rem 0;
+      color: #e91e63;
+      font-size: 1.8rem;
+    }
+    .profile-card {
       background: white;
-      border-radius: 12px;
-      padding: 15px;
-      margin: 15px auto;
-      max-width: 300px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      border-radius: 16px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+      padding: 1.2rem;
+      text-align: center;
+      margin-bottom: 1.5rem;
     }
-    .girl img {
+    .profile-card img {
       width: 100%;
       height: 280px;
       object-fit: cover;
-      border-radius: 10px;
+      border-radius: 12px;
+      margin-bottom: 1rem;
     }
     .stars {
-      font-size: 24px;
-      margin: 10px 0;
+      font-size: 2rem;
       color: #ddd;
-    }
-    .stars span {
       cursor: pointer;
     }
-    .stars .active {
-      color: gold;
+    .stars span.active {
+      color: #ffcc00;
+    }
+    .rating-text {
+      margin-top: 0.5rem;
+      font-size: 0.95rem;
+      color: #666;
+    }
+    .top-list {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+      padding: 1.5rem;
+    }
+    .top-list ol {
+      list-style: none;
+      counter-reset: top-counter;
+      padding: 0;
+    }
+    .top-list li {
+      counter-increment: top-counter;
+      padding: 0.8rem 0;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+    }
+    .top-list li::before {
+      content: counter(top-counter) ". ";
+      font-weight: bold;
+      color: #e91e63;
+    }
+    .top-list li:last-child {
+      border-bottom: none;
+    }
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      color: #888;
+      font-size: 0.9rem;
     }
   </style>
 </head>
 <body>
-  <h1>✨ Chicas Más Guapas 2025</h1>
 
-  <!-- Sophie Rain -->
-  <div class="girl">
-    <img src="https://i.pinimg.com/736x/46/ff/b0/46ffb0a38143740aca5984d1606a5f27.jpg" alt="Sophie Rain">
-    <h2>Sophie Rain</h2>
-    <div class="stars" id="stars-sophie">
-      <span data-value="1">★</span>
-      <span data-value="2">★</span>
-      <span data-value="3">★</span>
-      <span data-value="4">★</span>
-      <span data-value="5">★</span>
+  <header>
+    <h1>✨ Top Chicas Más Guapas 2025</h1>
+    <p>¡Vota con estrellas y mira el ranking en tiempo real!</p>
+  </header>
+
+  <div class="container">
+    <div class="section">
+      <h2 class="section-title">Vota por tu favorita</h2>
+      <div id="voting-area"></div>
     </div>
-    <p>Tu voto: <span id="vote-sophie">0</span></p>
+    <div class="section">
+      <h2 class="section-title">🏆 Top 10 Más Votadas</h2>
+      <div class="top-list">
+        <ol id="top-list"></ol>
+      </div>
+    </div>
   </div>
 
-  <!-- Valeria Mia -->
-  <div class="girl">
-    <img src="https://i.pinimg.com/736x/67/a7/1c/67a71cbd8453b7c86b95af900fd6636c.jpg" alt="Valeria Mia">
-    <h2>Valeria Mia</h2>
-    <div class="stars" id="stars-valeria">
-      <span data-value="1">★</span>
-      <span data-value="2">★</span>
-      <span data-value="3">★</span>
-      <span data-value="4">★</span>
-      <span data-value="5">★</span>
-    </div>
-    <p>Tu voto: <span id="vote-valeria">0</span></p>
-  </div>
+  <footer>
+    &copy; 2025 • Los votos se guardan en tu navegador
+  </footer>
 
   <script>
-    function initVoting(girlId) {
-      const stars = document.querySelectorAll(`#stars-${girlId} span`);
-      const voteDisplay = document.getElementById(`vote-${girlId}`);
-      const saved = localStorage.getItem(`vote_${girlId}`);
-      if (saved) {
-        updateStars(stars, saved);
-        voteDisplay.textContent = saved;
+    // Lista de 10 chicas con fotos públicas de Unsplash (libres de derechos)
+    const girls = [
+      { id: "sophie", name: "Sophie Rain", img: "https://i.pinimg.com/736x/46/ff/b0/46ffb0a38143740aca5984d1606a5f27.jpg" },
+      { id: "valeria", name: "Valeria Mia", img: "https://i.pinimg.com/736x/67/a7/1c/67a71cbd8453b7c86b95af900fd6636c.jpg" },
+      { id: "lucia", name: "Lucía Torres", img: "https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300&q=80" },
+      { id: "camila", name: "Camila Ruiz", img: "https://images.unsplash.com/photo-1529626455594-4ff0802e3620?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300&q=80" },
+      { id: "daniela", name: "Daniela Morales", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300&q=80" },
+      { id: "valeria2", name: "Valeria Castro", img: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300&q=80" },
+      { id: "sofia", name: "Sofía Méndez", img: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300&q=80" },
+      { id: "isabel", name: "Isabel Navarro", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300&q=80" },
+      { id: "mariana", name: "Mariana López", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300&q=80" },
+      { id: "ana", name: "Ana Pérez", img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300&q=80" }
+    ];
+
+    function getVotes() {
+      const saved = localStorage.getItem('votes');
+      return saved ? JSON.parse(saved) : {};
+    }
+
+    function saveVotes(votes) {
+      localStorage.setItem('votes', JSON.stringify(votes));
+    }
+
+    function renderVotingCards() {
+      const container = document.getElementById('voting-area');
+      const votes = getVotes();
+      container.innerHTML = girls.map(girl => {
+        const rating = votes[girl.id] || 0;
+        let stars = '';
+        for (let i = 1; i <= 5; i++) {
+          stars += `<span class="${i <= rating ? 'active' : ''}" data-value="${i}">★</span>`;
+        }
+        return `
+          <div class="profile-card">
+            <img src="${girl.img}" alt="${girl.name}">
+            <h3>${girl.name}</h3>
+            <div class="stars" data-id="${girl.id}">${stars}</div>
+            <p class="rating-text">Tu voto: <span>${rating}</span></p>
+          </div>
+        `;
+      }).join('');
+
+      // Añadir eventos de voto
+      document.querySelectorAll('.stars').forEach(group => {
+        const girlId = group.getAttribute('data-id');
+        group.querySelectorAll('span').forEach(star => {
+          star.addEventListener('click', () => {
+            const value = parseInt(star.getAttribute('data-value'));
+            const votes = getVotes();
+            votes[girlId] = value;
+            saveVotes(votes);
+            renderVotingCards();
+            renderTopList();
+          });
+        });
+      });
+    }
+
+    function renderTopList() {
+      const votes = getVotes();
+      const ranked = girls
+        .map(girl => ({ ...girl, rating: votes[girl.id] || 0 }))
+        .filter(girl => girl.rating > 0)
+        .sort((a, b) => b.rating - a.rating)
+        .slice(0, 10);
+
+      const list = document.getElementById('top-list');
+      if (ranked.length === 0) {
+        list.innerHTML = '<li>No hay votos aún.</li>';
+        return;
       }
-
-      stars.forEach(star => {
-        star.addEventListener('click', () => {
-          const value = star.getAttribute('data-value');
-          localStorage.setItem(`vote_${girlId}`, value);
-          updateStars(stars, value);
-          voteDisplay.textContent = value;
-        });
-        star.addEventListener('mouseenter', () => {
-          const value = star.getAttribute('data-value');
-          highlightStars(stars, value);
-        });
-      });
-
-      document.getElementById(`stars-${girlId}`).addEventListener('mouseleave', () => {
-        const saved = localStorage.getItem(`vote_${girlId}`) || 0;
-        highlightStars(stars, saved);
-      });
+      list.innerHTML = ranked.map(girl => `
+        <li>
+          <span>${girl.name}</span>
+          <span>⭐ ${girl.rating}</span>
+        </li>
+      `).join('');
     }
 
-    function updateStars(stars, max) {
-      stars.forEach(s => {
-        const val = s.getAttribute('data-value');
-        s.classList.toggle('active', val <= max);
-      });
-    }
-
-    function highlightStars(stars, max) {
-      stars.forEach(s => {
-        const val = s.getAttribute('data-value');
-        s.style.color = val <= max ? '#ffcc00' : '#ddd';
-      });
-    }
-
-    initVoting('sophie');
-    initVoting('valeria');
+    renderVotingCards();
+    renderTopList();
   </script>
 </body>
 </html>
