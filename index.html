@@ -5,29 +5,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Torneo de Skins de Fortnite</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #0f0f23;
+      font-family: 'Segoe UI', 'Arial', sans-serif;
+      background: #0a0a1a;
       color: white;
       text-align: center;
-      padding: 20px;
+      padding: 10px;
       overflow-x: hidden;
+      margin: 0;
     }
     h1 {
-      color: #4e73df;
-      margin-bottom: 20px;
+      color: #ff6b6b;
+      margin: 10px 0;
+      font-size: 1.8em;
+    }
+    .round-indicator {
+      font-size: 1.3em;
+      font-weight: bold;
+      color: #4ecdc4;
+      margin: 10px 0;
     }
     .voting-container {
       display: flex;
-      justify-content: space-around;
+      justify-content: center;
       align-items: center;
-      gap: 20px;
-      margin: 30px 0;
+      gap: 15px;
+      margin: 20px 0;
+      flex-wrap: wrap;
     }
     .option {
       cursor: pointer;
       transition: transform 0.2s;
-      max-width: 220px;
+      max-width: 160px;
+      width: 100%;
     }
     .option img {
       width: 100%;
@@ -36,34 +49,37 @@
       object-fit: cover;
     }
     .option:hover {
-      transform: scale(1.05);
+      transform: scale(1.03);
     }
     .option:hover img {
-      border-color: #4e73df;
+      border-color: #4ecdc4;
+    }
+    .vs {
+      font-size: 1.8em;
+      font-weight: bold;
+      color: #feca57;
+      margin: 0 10px;
     }
     .results {
-      margin-top: 20px;
-      font-size: 1.1em;
-    }
-    .round-indicator {
-      font-size: 1.2em;
-      font-weight: bold;
-      color: #ff6b6b;
-      margin: 10px 0;
+      margin: 15px 0;
+      font-size: 1em;
+      color: #ff9ff3;
     }
     .winner-section {
       display: none;
-      padding: 30px;
-      background: rgba(78, 115, 223, 0.2);
+      padding: 20px;
+      background: rgba(78, 115, 223, 0.15);
       border-radius: 15px;
-      margin-top: 30px;
+      margin: 20px auto;
+      max-width: 500px;
     }
     .winner-img {
-      width: 300px;
+      width: 240px;
+      max-width: 100%;
       border-radius: 15px;
       border: 5px solid gold;
-      box-shadow: 0 0 20px gold;
-      margin: 20px auto;
+      box-shadow: 0 0 15px gold;
+      margin: 15px auto;
     }
     .confetti {
       position: fixed;
@@ -75,39 +91,84 @@
       z-index: 9999;
     }
     .leaderboard {
-      margin-top: 40px;
-      background: rgba(255, 255, 255, 0.05);
-      padding: 20px;
+      margin: 30px auto;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 15px;
       border-radius: 10px;
-      text-align: left;
+      max-width: 500px;
     }
     .leaderboard h2 {
       color: #4caf50;
+      margin: 10px 0;
     }
-    .leaderboard ul {
-      list-style: none;
-      padding: 0;
-    }
-    .leaderboard li {
+    .chart-container {
+      margin: 20px auto;
+      max-width: 500px;
+      height: 200px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 10px;
       padding: 10px;
-      border-bottom: 1px solid #333;
       display: flex;
-      justify-content: space-between;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
     }
-    .leaderboard li:last-child {
-      border-bottom: none;
+    .bar {
+      width: 40px;
+      background: linear-gradient(to top, #ff6b6b, #ff9ff3);
+      border-radius: 5px 5px 0 0;
+      margin: 0 8px;
+      transition: height 1s ease;
+      position: relative;
+    }
+    .bar-label {
+      position: absolute;
+      bottom: -25px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.8em;
+      white-space: nowrap;
+    }
+    .restart-btn {
+      background: #4ecdc4;
+      color: #0a0a1a;
+      border: none;
+      padding: 12px 25px;
+      font-size: 1.1em;
+      font-weight: bold;
+      border-radius: 50px;
+      cursor: pointer;
+      margin: 20px 0;
+      transition: all 0.3s;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+    .restart-btn:hover {
+      background: #feca57;
+      transform: scale(1.05);
+    }
+    @media (max-width: 500px) {
+      .voting-container {
+        flex-direction: column;
+      }
+      .vs {
+        font-size: 2em;
+        margin: 10px 0;
+      }
+      .option {
+        max-width: 240px;
+      }
     }
   </style>
 </head>
 <body>
   <h1>🏆 Torneo de Skins de Fortnite 🏆</h1>
-  <div class="round-indicator" id="roundIndicator">Ronda 1 de 4</div>
+  <div class="round-indicator" id="roundIndicator">Ronda 1</div>
 
-  <div class="voting-container">
+  <div class="voting-container" id="votingContainer">
     <div class="option" id="optionA" onclick="vote('A')">
       <img id="imgA" src="" alt="Skin A">
     </div>
-    <div style="font-size: 2em; align-self: center; font-weight: bold;">VS</div>
+    <div class="vs">VS</div>
     <div class="option" id="optionB" onclick="vote('B')">
       <img id="imgB" src="" alt="Skin B">
     </div>
@@ -117,18 +178,26 @@
 
   <div class="winner-section" id="winnerSection">
     <h2>🎉 ¡GANADOR DEL TORNEO! 🎉</h2>
-    <div class="confetti" id="confetti"></div>
     <img class="winner-img" id="winnerImg" src="" alt="Ganador">
     <h3>🥇 NÚMERO 1 🥇</h3>
+    <button class="restart-btn" onclick="restartTournament()">🔄 Jugar de Nuevo</button>
   </div>
 
+  <div class="chart-container" id="chartContainer"></div>
+
   <div class="leaderboard" id="leaderboard">
-    <h2>📊 Tabla de Clasificación Final</h2>
+    <h2>📊 Tabla de Clasificación</h2>
     <ul id="leaderboardList"></ul>
   </div>
 
+  <button class="restart-btn" onclick="restartTournament()">🔄 Reiniciar Torneo</button>
+
+  <!-- Sonido de celebración -->
+  <audio id="winSound" src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3" preload="auto"></audio>
+
+  <div class="confetti" id="confetti"></div>
+
   <script>
-    // Tus skins de Fortnite
     const skins = [
       'https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894',
       'https://s93.erome.com/5472/K3IRZbxx/0B8OzReu.jpeg?v=1764815871',
@@ -137,14 +206,25 @@
       'https://s93.erome.com/5472/K3IRZbxx/0VxSvgAl.jpeg?v=1764818017'
     ];
 
-    // Contador de votos
-    const votes = {};
-    skins.forEach(skin => votes[skin] = 0);
-
+    let votes = {};
+    let remainingSkins = [];
     let currentA, currentB;
     let round = 1;
-    let totalRounds = Math.floor(Math.log2(skins.length)) + 1; // Para 5 skins: 3 rondas (2^3=8 > 5)
-    let remainingSkins = [...skins];
+
+    function initTournament() {
+      votes = {};
+      skins.forEach(skin => votes[skin] = 0);
+      remainingSkins = [...skins];
+      round = 1;
+
+      document.getElementById('winnerSection').style.display = 'none';
+      document.getElementById('votingContainer').style.display = 'flex';
+      document.getElementById('results').innerText = '';
+      document.getElementById('confetti').innerHTML = '';
+      document.getElementById('chartContainer').innerHTML = '';
+
+      displayPair();
+    }
 
     function getRandomPair() {
       if (remainingSkins.length < 2) return [null, null];
@@ -161,50 +241,46 @@
         showWinner();
         return;
       }
-
       [currentA, currentB] = getRandomPair();
       document.getElementById('imgA').src = currentA;
       document.getElementById('imgB').src = currentB;
-      document.getElementById('roundIndicator').innerText = `Ronda ${round} de ${totalRounds}`;
+      document.getElementById('roundIndicator').innerText = `Ronda ${round}`;
     }
 
     function vote(choice) {
       if (choice === 'A') votes[currentA]++;
       if (choice === 'B') votes[currentB]++;
 
-      // Eliminar la skin perdedora
       let loser = choice === 'A' ? currentB : currentA;
       remainingSkins = remainingSkins.filter(skin => skin !== loser);
-
-      // Mostrar resultado parcial
-      document.getElementById('results').innerHTML = `
-        <p>✔️ ${votes[currentA]} votos | ❌ ${votes[currentB]} votos</p>
-        <p><em>Siguiente ronda en 1 segundo...</em></p>
-      `;
-
       round++;
-      setTimeout(displayPair, 1000);
+      displayPair();
     }
 
     function showWinner() {
-      // Encontrar el ganador (el que más votos tiene)
       const winner = Object.keys(votes).reduce((a, b) => votes[a] > votes[b] ? a : b);
       document.getElementById('winnerImg').src = winner;
       document.getElementById('winnerSection').style.display = 'block';
-      document.getElementById('voting-container').style.display = 'none';
+      document.getElementById('votingContainer').style.display = 'none';
       document.getElementById('roundIndicator').style.display = 'none';
-      document.getElementById('results').style.display = 'none';
 
-      // Generar confeti
+      // Sonido
+      const sound = document.getElementById('winSound');
+      sound.currentTime = 0;
+      sound.play();
+
+      // Confeti
       createConfetti();
 
-      // Actualizar tabla de clasificación
+      // Actualizar gráfico y tabla
+      updateChart();
       updateLeaderboard();
     }
 
     function createConfetti() {
       const confettiContainer = document.getElementById('confetti');
-      for (let i = 0; i < 100; i++) {
+      confettiContainer.innerHTML = '';
+      for (let i = 0; i < 120; i++) {
         const confetti = document.createElement('div');
         confetti.style.position = 'absolute';
         confetti.style.width = Math.random() * 10 + 5 + 'px';
@@ -212,15 +288,14 @@
         confetti.style.backgroundColor = getRandomColor();
         confetti.style.left = Math.random() * 100 + '%';
         confetti.style.top = '-10px';
+        confetti.style.opacity = '1';
         confetti.style.animation = `fall ${Math.random() * 3 + 2}s linear forwards`;
         confettiContainer.appendChild(confetti);
       }
-
-      // Agregar animación CSS
       const style = document.createElement('style');
       style.textContent = `
         @keyframes fall {
-          to { transform: translateY(100vh); opacity: 0; }
+          to { transform: translateY(105vh) rotate(360deg); opacity: 0; }
         }
       `;
       document.head.appendChild(style);
@@ -231,22 +306,44 @@
       return colors[Math.floor(Math.random() * colors.length)];
     }
 
-    function updateLeaderboard() {
-      const leaderboardList = document.getElementById('leaderboardList');
-      leaderboardList.innerHTML = '';
+    function updateChart() {
+      const container = document.getElementById('chartContainer');
+      container.innerHTML = '<h3 style="margin-bottom:10px;color:#4ecdc4;">Votos por Skin</h3>';
+      
+      const sortedSkins = Object.keys(votes).sort((a, b) => votes[b] - votes[a]);
+      const maxVotes = Math.max(...Object.values(votes), 1);
 
-      // Ordenar skins por votos (de mayor a menor)
+      sortedSkins.forEach(skin => {
+        const bar = document.createElement('div');
+        bar.className = 'bar';
+        bar.style.height = `${(votes[skin] / maxVotes) * 150}px`;
+
+        const label = document.createElement('div');
+        label.className = 'bar-label';
+        label.innerText = `Skin ${Object.keys(votes).indexOf(skin) + 1}`;
+        bar.appendChild(label);
+
+        container.appendChild(bar);
+      });
+    }
+
+    function updateLeaderboard() {
+      const list = document.getElementById('leaderboardList');
+      list.innerHTML = '';
       const sortedSkins = Object.keys(votes).sort((a, b) => votes[b] - votes[a]);
 
       sortedSkins.forEach((skin, index) => {
         const li = document.createElement('li');
         li.innerHTML = `<span>${index + 1}. Skin ${index + 1}</span><span>${votes[skin]} votos</span>`;
-        leaderboardList.appendChild(li);
+        list.appendChild(li);
       });
     }
 
-    // Iniciar el torneo
-    displayPair();
+    function restartTournament() {
+      initTournament();
+    }
+
+    initTournament();
   </script>
 </body>
 </html>
