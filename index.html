@@ -10,47 +10,211 @@
       background: #fff5f7;
       color: #333;
       margin: 0;
-      padding: 2rem;
+      overflow: hidden;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+    body.loaded {
+      opacity: 1;
+      overflow: auto;
+    }
+
+    /* Lightbox para zoom */
+    #lightbox {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.95);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      cursor: pointer;
+    }
+    #lightbox img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 8px;
+      box-shadow: 0 0 30px rgba(255,255,255,0.2);
+    }
+
+    header {
       text-align: center;
+      padding: 2rem 1rem;
+      background: linear-gradient(135deg, #ff6b9d, #ff8e9e);
+      color: white;
     }
     h1 {
-      color: #e91e63;
-      margin-bottom: 2rem;
+      font-size: 2.2rem;
+      margin-bottom: 0.5rem;
     }
-    .girl {
+    .container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2rem;
+    }
+    .profile-card {
       background: white;
       border-radius: 16px;
-      padding: 1.5rem;
-      margin: 1.5rem auto;
-      max-width: 320px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+      width: 280px;
+      padding: 1.2rem;
+      text-align: center;
+      transition: transform 0.25s ease;
     }
-    .girl img {
+    .profile-card:hover {
+      transform: translateY(-6px);
+    }
+    .profile-card img {
       width: 100%;
       height: 300px;
       object-fit: cover;
       border-radius: 12px;
       margin-bottom: 1rem;
+      cursor: zoom-in;
+    }
+    .stars {
+      font-size: 2rem;
+      color: #ddd;
+      cursor: pointer;
+      user-select: none;
+    }
+    .stars span.active {
+      color: #ffcc00;
+    }
+    .rating-text {
+      margin-top: 0.6rem;
+      font-size: 0.9rem;
+      color: #666;
+    }
+    .comments {
+      margin-top: 1.2rem;
+      padding-top: 1.2rem;
+      border-top: 1px solid #eee;
+    }
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      color: #888;
+      font-size: 0.9rem;
     }
   </style>
 </head>
 <body>
-  <h1>✨ Top Chicas Más Guapas 2025</h1>
-  
-  <!-- Sophie Rain -->
-  <div class="girl">
-    <img src="https://res.cloudinary.com/dv1uqjz4p/image/upload/v1734074875/sophie_rain_9d084f56732a8c4f996543695744ff94.jpg" alt="Sophie Rain">
-    <h2>Sophie Rain</h2>
-    <p>¡Vota por ella!</p>
+
+  <header>
+    <h1>✨ Top Chicas Más Guapas 2025</h1>
+    <p>¡Vota, comenta y haz zoom en sus fotos!</p>
+  </header>
+
+  <div class="container" id="gallery">
+    <!-- Las chicas se cargarán aquí -->
   </div>
 
-  <!-- Valeria Mia -->
-  <div class="girl">
-    <img src="https://i.pinimg.com/736x/67/a7/1c/67a71cbd8453b7c86b95af900fd6636c.jpg" alt="Valeria Mia">
-    <h2>Valeria Mia</h2>
-    <p>¡Nueva participante!</p>
+  <!-- Lightbox (zoom) -->
+  <div id="lightbox" onclick="this.style.display='none'">
+    <img id="lightbox-img">
   </div>
 
-  <p>✅ Dos chicas, listas para ser votadas</p>
+  <footer>
+    &copy; 2025 • Comentarios con GitHub
+  </footer>
+
+  <script>
+    const girls = [
+      {
+        id: "sophie",
+        name: "Sophie Rain",
+        img: "https://res.cloudinary.com/dv1uqjz4p/image/upload/v1734074875/sophie_rain_9d084f56732a8c4f996543695744ff94.jpg"
+      },
+      {
+        id: "valeria",
+        name: "Valeria Mia",
+        img: "https://i.pinimg.com/736x/67/a7/1c/67a71cbd8453b7c86b95af900fd6636c.jpg"
+      }
+    ];
+
+    // Activar transición de entrada
+    window.addEventListener('load', () => {
+      document.body.classList.add('loaded');
+    });
+
+    // Zoom en foto
+    function openLightbox(src) {
+      const lightbox = document.getElementById('lightbox');
+      const img = document.getElementById('lightbox-img');
+      img.src = src;
+      lightbox.style.display = 'flex';
+    }
+
+    // Votos
+    function getVotes() {
+      const saved = localStorage.getItem('votes');
+      return saved ? JSON.parse(saved) : {};
+    }
+    function saveVotes(votes) {
+      localStorage.setItem('votes', JSON.stringify(votes));
+    }
+
+    // Renderizar chicas
+    function renderGirls() {
+      const container = document.getElementById('gallery');
+      const votes = getVotes();
+
+      container.innerHTML = girls.map(girl => {
+        const rating = votes[girl.id] || 0;
+        let stars = '';
+        for (let i = 1; i <= 5; i++) {
+          stars += `<span class="${i <= rating ? 'active' : ''}" data-value="${i}">★</span>`;
+        }
+
+        return `
+          <div class="profile-card">
+            <img src="${girl.img}" alt="${girl.name}" onclick="openLightbox('${girl.img}')">
+            <h2>${girl.name}</h2>
+            <div class="stars" data-id="${girl.id}">${stars}</div>
+            <p class="rating-text">Tu voto: <span>${rating}</span></p>
+
+            <!-- Comentarios (Utterances) -->
+            <div class="comments">
+              <script src="https://utteranc.es/client.js"
+                      repo="pancitaibiza-blip/chicas-2025"
+                      issue-term="pathname"
+                      theme="github-light"
+                      label="comentario"
+                      crossorigin="anonymous"
+                      async>
+                {
+                  "issue-term": "${girl.id}"
+                }
+              </script>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Añadir eventos de voto
+      document.querySelectorAll('.stars').forEach(group => {
+        const girlId = group.getAttribute('data-id');
+        group.querySelectorAll('span').forEach(star => {
+          star.addEventListener('click', () => {
+            const value = parseInt(star.getAttribute('data-value'));
+            const votes = getVotes();
+            votes[girlId] = value;
+            saveVotes(votes);
+            renderGirls();
+          });
+        });
+      });
+    }
+
+    renderGirls();
+  </script>
 </body>
 </html>
