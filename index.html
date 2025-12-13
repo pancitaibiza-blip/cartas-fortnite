@@ -296,13 +296,15 @@
       text-align: center;
       margin-bottom: 24px;
     }
-    .battle-ia {
+    .battle-ia-cards {
       display: flex;
       justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
       margin-bottom: 40px;
       perspective: 1000px;
     }
-    .battle-ia-card {
+    .ia-card {
       background: rgba(0, 0, 0, 0.6);
       border: 3px solid #d42020;
       border-radius: 20px;
@@ -313,10 +315,10 @@
       transition: transform 0.5s ease;
       transform-style: preserve-3d;
     }
-    .battle-ia-card:hover {
+    .ia-card:hover {
       transform: rotateY(10deg) rotateX(5deg);
     }
-    .battle-ia-card img {
+    .ia-card img {
       width: 100%;
       height: 160px;
       object-fit: cover;
@@ -324,15 +326,15 @@
       margin-bottom: 12px;
       transition: transform 0.5s ease;
     }
-    .battle-ia-card:hover img {
+    .ia-card:hover img {
       transform: translateZ(50px);
     }
-    .battle-ia-card .name {
+    .ia-card .name {
       font-weight: bold;
       margin: 12px 0;
       font-size: 18px;
     }
-    .battle-ia-card .stats {
+    .ia-card .stats {
       display: flex;
       justify-content: center;
       gap: 12px;
@@ -456,6 +458,27 @@
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
       border: 1px solid rgba(255, 255, 255, 0.18);
     }
+    /* Victory/Defeat Message */
+    #battleMessage {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.8);
+      padding: 40px;
+      border-radius: 20px;
+      text-align: center;
+      z-index: 2000;
+      box-shadow: 0 0 50px rgba(255, 255, 255, 0.5);
+    }
+    #battleMessage h2 {
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+    #battleMessage button {
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
@@ -482,18 +505,7 @@
         <h2 class="text-3xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-600">⚔️ BATALLA</h2>
         <p class="text-lg">¡Elige una carta y ataca con estilo navideño!</p>
       </div>
-      <div class="battle-ia">
-        <div class="battle-ia-card">
-          <img src="https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894" alt="IA Básica">
-          <div class="name">IA Básica</div>
-          <div class="stats">
-            <span>⚔️ 60</span>
-            <span>🛡️ 40</span>
-          </div>
-          <div class="hp-bar"><div class="hp-fill" style="width:100%"></div></div>
-          <div class="hp-text">HP: 100/100</div>
-        </div>
-      </div>
+      <div class="battle-ia-cards" id="battleIaCards"></div>
       <div class="battle-player-cards" id="battlePlayerCards"></div>
       <div class="text-center mt-8">
         <button class="attack-button" onclick="playerAttack()">🔥 ATACAR</button>
@@ -562,6 +574,12 @@
       <button class="btn bg-gray-700 mt-6" onclick="closeCardModal()">Cerrar</button>
     </div>
   </div>
+  <!-- Mensaje de Batalla -->
+  <div id="battleMessage">
+    <h2 id="messageText"></h2>
+    <button class="btn bg-green-600" onclick="rematch()">REVANCHA</button>
+    <button class="btn bg-blue-600" onclick="closeBattleMessage()">Cerrar</button>
+  </div>
   <!-- Navegación inferior -->
   <div class="fixed bottom-0 left-0 right-0 flex justify-center gap-3 z-10 flex-wrap px-4 py-4 bg-black/50 backdrop-blur-md rounded-t-2xl shadow-lg">
     <button class="btn bg-gray-800 text-sm px-6 py-3" onclick="showView('battle')">Batalla</button>
@@ -583,6 +601,8 @@
     const GEMS_OFFER_END = getGemsOfferEndTime();
     const SABRINA_START = new Date('2025-12-14T15:00:00');
     const DECK_MAX_SIZE = 3;
+    const MAX_LEVEL = 10;
+    const UPGRADE_COST_BASE = 50;
     // ✅ CARTAS (con nivel de mejora)
     const ALL_CARDS = [
       { id: 0, name: "Ramírez", rarity: "common", baseAtk: 60, baseDef: 50, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", shopPrice: null },
@@ -614,7 +634,8 @@
         diamonds: 200,
         cards: [7, 11, 12, 13],
         description: "¡Regalo navideño! Gana Francine Smith y cartas de torneo.",
-        image: "https://wimg.rule34.xxx//images/1888/0334e8239c387a302348c01810815aef.jpeg?15738062"
+        image: "https://wimg.rule34.xxx//images/1888/0334e8239c387a302348c01810815aef.jpeg?15738062",
+        iaDeck: [0,1,2] // Example IA deck for this tournament
       },
       {
         id: 2,
@@ -624,7 +645,8 @@
         diamonds: 50,
         cards: [3, 4],
         description: "Para nuevos jugadores. Gana cartas raras y épicas.",
-        image: "https://s93.erome.com/5472/K3IRZbxx/0B8OzReu.jpeg?v=1764815871"
+        image: "https://s93.erome.com/5472/K3IRZbxx/0B8OzReu.jpeg?v=1764815871",
+        iaDeck: [0,2,3]
       },
       {
         id: 3,
@@ -634,7 +656,8 @@
         diamonds: 150,
         cards: [14, 16, 18],
         description: "Gana cartas épicas exclusivas.",
-        image: "https://rule34.xxx//samples/2288/sample_ce3c07d28a9fdd2475d6fc67df8ff4e4.jpg?15302020"
+        image: "https://rule34.xxx//samples/2288/sample_ce3c07d28a9fdd2475d6fc67df8ff4e4.jpg?15302020",
+        iaDeck: [4,14,16]
       },
       {
         id: 4,
@@ -644,7 +667,8 @@
         diamonds: 300,
         cards: [5, 6],
         description: "Recompensas legendarias y ultra raras.",
-        image: "https://s93.erome.com/5472/K3IRZbxx/LsMURibY.jpeg?v=1764812622"
+        image: "https://s93.erome.com/5472/K3IRZbxx/LsMURibY.jpeg?v=1764812622",
+        iaDeck: [5,6,7]
       },
       {
         id: 5,
@@ -654,7 +678,8 @@
         diamonds: 500,
         cards: [17],
         description: "Gana cartas exóticas e ídolos.",
-        image: "https://rule34.xxx//samples/714/sample_799c5e73f8d6f088e9a1930fe6d3f791.jpg?15175590"
+        image: "https://rule34.xxx//samples/714/sample_799c5e73f8d6f088e9a1930fe6d3f791.jpg?15175590",
+        iaDeck: [17,18,19]
       },
       {
         id: 6,
@@ -664,7 +689,8 @@
         diamonds: 250,
         cards: [21],
         description: "¡Especial! Gana la carta épica Sabrina Carpente La Diva.",
-        image: "https://i.pinimg.com/736x/4d/c9/b3/4dc9b3acdf2ab04c3c783d3fb2730a0c.jpg"
+        image: "https://i.pinimg.com/736x/4d/c9/b3/4dc9b3acdf2ab04c3c783d3fb2730a0c.jpg",
+        iaDeck: [20,21,0]
       }
     ];
     let gameState = {
@@ -746,6 +772,32 @@
         alert("¡Compra exitosa! Has recibido 1000 gemas 💎");
       }
     }
+    // ✅ SUBIR NIVEL DE CARTA
+    function upgradeCard(cardId) {
+      const card = ALL_CARDS.find(c => c.id === cardId);
+      if (!card) return;
+      const currentLevel = gameState.cardUpgrades[cardId] || 1;
+      if (currentLevel >= MAX_LEVEL) {
+        alert("¡Esta carta ya está al nivel máximo!");
+        return;
+      }
+      const cost = currentLevel * UPGRADE_COST_BASE;
+      if (gameState.diamonds < cost) {
+        alert("¡No tienes suficientes gemas! 💎");
+        return;
+      }
+      if (confirm(`¿Subir ${card.name} al nivel ${currentLevel + 1} por ${cost} gemas?`)) {
+        gameState.diamonds -= cost;
+        gameState.cardUpgrades[cardId] = currentLevel + 1;
+        saveGame();
+        applyCardUpgrades();
+        updateUI();
+        renderDeck();
+        renderShop();
+        renderBattleCards();
+        alert(`¡${card.name} subida al nivel ${currentLevel + 1}! 🎉`);
+      }
+    }
     // ✅ AGREGAR/QUITAR DEL MAZO CON LÍMITE
     function addToDeck(cardId) {
       if (gameState.currentDeck.includes(cardId)) return;
@@ -801,6 +853,7 @@
         const buttonText = inDeck ? 'Quitar del Mazo' : 'Añadir al Mazo';
         const buttonAction = inDeck ? `removeFromDeck(${card.id})` : `addToDeck(${card.id})`;
         const buttonDisabled = !inDeck && gameState.currentDeck.length >= DECK_MAX_SIZE ? 'disabled' : '';
+        const upgradeDisabled = card.level >= MAX_LEVEL ? 'disabled' : '';
         cardEl.innerHTML = `
           <div class="card-base">
             <div class="card-glow"></div>
@@ -810,6 +863,7 @@
               <div class="text-xs">⚔️${card.atk} 🛡️${card.def}</div>
               <div class="upgrade-badge">Nivel ${card.level}</div>
               <button class="btn bg-${inDeck ? 'red' : 'green'}-600 text-sm mt-3" onclick="${buttonAction}" ${buttonDisabled}>${buttonText}</button>
+              <button class="btn bg-blue-600 text-sm mt-1" onclick="upgradeCard(${card.id})" ${upgradeDisabled}>Subir Nivel</button>
             </div>
           </div>
         `;
@@ -972,38 +1026,23 @@
       isTournament = true;
       isCupBattle = false;
       currentTournamentId = tournamentId;
-      iaAtk = 60 + ((tournament.id - 1) * 10);
-      iaDef = 40 + ((tournament.id - 1) * 10);
-      iaHp = 100 + ((tournament.id - 1) * 20);
-      iaMaxHp = iaHp;
-      document.querySelector('.battle-ia-card .name').textContent = `IA ${tournament.name}`;
-      document.querySelector('.battle-ia-card .stats span:nth-child(1)').textContent = `⚔️ ${iaAtk}`;
-      document.querySelector('.battle-ia-card .stats span:nth-child(2)').textContent = `🛡️ ${iaDef}`;
-      document.querySelector('.battle-ia-card .hp-text').textContent = `HP: ${iaHp}/${iaMaxHp}`;
+      iaDeckIds = tournament.iaDeck || [0,1,2];
+      iaLevelMultiplier = tournament.id; // Increase IA strength based on tournament id
+      renderIaCards();
       renderBattleCards();
-      playerCards.forEach(card => {
-        card.hp = card.maxHp;
-      });
-      updateHpBars();
+      resetBattle();
       showView('battle');
     }
     // ✅ INICIAR BATALLA POR COPAS
     function startCupBattle() {
       isCupBattle = true;
       isTournament = false;
-      iaAtk = 60;
-      iaDef = 40;
-      iaHp = 100;
-      iaMaxHp = 100;
-      document.querySelector('.battle-ia-card .name').textContent = 'IA Fácil';
-      document.querySelector('.battle-ia-card .stats span:nth-child(1)').textContent = `⚔️ ${iaAtk}`;
-      document.querySelector('.battle-ia-card .stats span:nth-child(2)').textContent = `🛡️ ${iaDef}`;
-      document.querySelector('.battle-ia-card .hp-text').textContent = `HP: ${iaHp}/${iaMaxHp}`;
+      currentTournamentId = null;
+      iaDeckIds = [0,1,2]; // Simple deck for cup battles
+      iaLevelMultiplier = 1;
+      renderIaCards();
       renderBattleCards();
-      playerCards.forEach(card => {
-        card.hp = card.maxHp;
-      });
-      updateHpBars();
+      resetBattle();
       showView('battle');
     }
     function showView(view) {
@@ -1015,18 +1054,53 @@
       if (view === 'shop') renderShop();
       if (view === 'ranking') updateRanking();
       if (view === 'tournament') renderTournaments();
-      if (view === 'battle') renderBattleCards();
+      if (view === 'battle') {
+        renderIaCards();
+        renderBattleCards();
+      }
     }
     // Battle logic
-    let iaHp = 100;
-    let iaMaxHp = 100;
-    let iaAtk = 60;
-    let iaDef = 40;
+    let iaCards = [];
+    let playerCards = [];
     let selectedPlayerCard = null;
     let isTournament = false;
     let isCupBattle = false;
     let currentTournamentId = null;
-    let playerCards = [];
+    let iaDeckIds = [];
+    let iaLevelMultiplier = 1;
+    let currentBattleType = null; // To store if it's tournament or cup for rematch
+    function renderIaCards() {
+      const container = document.getElementById('battleIaCards');
+      container.innerHTML = '';
+      iaCards = [];
+      iaDeckIds.forEach((id, index) => {
+        let card = {...ALL_CARDS.find(c => c.id === id)}; // Copy to avoid modifying original
+        if (!card) return;
+        card.atk = card.baseAtk * iaLevelMultiplier;
+        card.def = card.baseDef * iaLevelMultiplier;
+        const cardEl = document.createElement('div');
+        cardEl.className = 'ia-card';
+        cardEl.innerHTML = `
+          <img src="${card.img}" alt="${card.name}">
+          <div class="name">${card.name}</div>
+          <div class="stats">
+            <span>⚔️ ${card.atk}</span>
+            <span>🛡️ ${card.def}</span>
+          </div>
+          <div class="hp-bar"><div class="hp-fill" style="width:100%"></div></div>
+          <div class="hp-text">HP: ${card.def}/${card.def}</div>
+        `;
+        container.appendChild(cardEl);
+        iaCards.push({
+          name: card.name,
+          atk: card.atk,
+          def: card.def,
+          hp: card.def,
+          maxHp: card.def,
+          element: cardEl
+        });
+      });
+    }
     function renderBattleCards() {
       const container = document.getElementById('battlePlayerCards');
       container.innerHTML = '';
@@ -1066,9 +1140,22 @@
         container.innerHTML = '<p class="text-center text-xl">¡Añade cartas a tu mazo para batallar!</p>';
       }
     }
+    function resetBattle() {
+      playerCards.forEach(card => {
+        card.hp = card.maxHp;
+      });
+      iaCards.forEach(card => {
+        card.hp = card.maxHp;
+      });
+      updateHpBars();
+      selectedPlayerCard = null;
+      document.querySelectorAll('.player-card').forEach(e => e.style.borderColor = '#00bcd4');
+    }
     function updateHpBars() {
-      document.querySelector('.battle-ia-card .hp-fill').style.width = `${(iaHp / iaMaxHp) * 100}%`;
-      document.querySelector('.battle-ia-card .hp-text').textContent = `HP: ${iaHp}/${iaMaxHp}`;
+      iaCards.forEach(card => {
+        card.element.querySelector('.hp-fill').style.width = `${(card.hp / card.maxHp) * 100}%`;
+        card.element.querySelector('.hp-text').textContent = `HP: ${card.hp}/${card.maxHp}`;
+      });
       playerCards.forEach(card => {
         card.element.querySelector('.hp-fill').style.width = `${(card.hp / card.maxHp) * 100}%`;
         card.element.querySelector('.hp-text').textContent = `HP: ${card.hp}/${card.maxHp}`;
@@ -1083,85 +1170,31 @@
         alert("Esta carta está derrotada! Elige otra.");
         return;
       }
-      const damage = Math.max(selectedPlayerCard.atk - iaDef, 0);
-      iaHp -= damage;
-      if (iaHp <= 0) {
-        iaHp = 0;
-        if (isTournament) {
-          const tournament = TOURNAMENTS.find(t => t.id === currentTournamentId);
-          alert(`¡FELICIDADES! 🎄 Has ganado el ${tournament.name}.`);
-          tournament.cards.forEach(id => {
-            if (!gameState.ownedCardIds.includes(id)) {
-              gameState.ownedCardIds.push(id);
-              const card = ALL_CARDS.find(c => c.id === id);
-              showNewCard(card);
-            }
-          });
-          gameState.trophies += tournament.trophies;
-          gameState.diamonds += tournament.diamonds;
-          gameState.completedTournaments.push(tournament.id);
-          saveGame();
-          updateUI();
-          renderDeck();
-          renderTournaments();
-          isTournament = false;
-          isCupBattle = false;
-          currentTournamentId = null;
-          iaAtk = 60;
-          iaDef = 40;
-          iaHp = 100;
-          iaMaxHp = 100;
-          document.querySelector('.battle-ia-card .name').textContent = 'IA Básica';
-          document.querySelector('.battle-ia-card .stats span:nth-child(1)').textContent = `⚔️ 60`;
-          document.querySelector('.battle-ia-card .stats span:nth-child(2)').textContent = `🛡️ 40`;
-        } else if (isCupBattle) {
-          alert("¡Ganaste la batalla por copas!");
-          gameState.cups += 1;
-          saveGame();
-          updateUI();
-          isCupBattle = false;
-          isTournament = false;
-          iaAtk = 60;
-          iaDef = 40;
-          iaHp = 100;
-          iaMaxHp = 100;
-          document.querySelector('.battle-ia-card .name').textContent = 'IA Básica';
-          document.querySelector('.battle-ia-card .stats span:nth-child(1)').textContent = `⚔️ 60`;
-          document.querySelector('.battle-ia-card .stats span:nth-child(2)').textContent = `🛡️ 40`;
-        } else {
-          alert("¡Ganaste la batalla!");
-        }
-        updateHpBars();
-        return;
+      const targetIaCard = getRandomAliveIaCard();
+      if (!targetIaCard) return;
+      const damage = Math.max(selectedPlayerCard.atk - targetIaCard.def, 0);
+      targetIaCard.hp -= damage;
+      if (targetIaCard.hp <= 0) {
+        targetIaCard.hp = 0;
       }
       updateHpBars();
-      iaAttack();
+      checkBattleEnd();
+      if (!battleEnded) {
+        iaAttack();
+      }
     }
     function iaAttack() {
-      const damage = Math.max(iaAtk - selectedPlayerCard.def, 0);
-      selectedPlayerCard.hp -= damage;
-      if (selectedPlayerCard.hp <= 0) {
-        selectedPlayerCard.hp = 0;
+      const attackerIaCard = getRandomAliveIaCard();
+      if (!attackerIaCard) return;
+      const targetPlayerCard = getRandomAlivePlayerCard();
+      if (!targetPlayerCard) return;
+      const damage = Math.max(attackerIaCard.atk - targetPlayerCard.def, 0);
+      targetPlayerCard.hp -= damage;
+      if (targetPlayerCard.hp <= 0) {
+        targetPlayerCard.hp = 0;
       }
       updateHpBars();
-      if (playerCards.every(c => c.hp <= 0)) {
-        alert("Perdiste la batalla!");
-        if (isTournament) {
-          alert("Perdiste el torneo. Intenta de nuevo.");
-          isTournament = false;
-          currentTournamentId = null;
-          iaAtk = 60;
-          iaDef = 40;
-          iaHp = 100;
-          iaMaxHp = 100;
-          document.querySelector('.battle-ia-card .name').textContent = 'IA Básica';
-          document.querySelector('.battle-ia-card .stats span:nth-child(1)').textContent = `⚔️ 60`;
-          document.querySelector('.battle-ia-card .stats span:nth-child(2)').textContent = `🛡️ 40`;
-        } else if (isCupBattle) {
-          alert("Perdiste la batalla por copas.");
-          isCupBattle = false;
-        }
-      }
+      checkBattleEnd();
     }
     function playerDefend() {
       if (!selectedPlayerCard) {
@@ -1176,6 +1209,68 @@
       selectedPlayerCard.def *= 2;
       iaAttack();
       selectedPlayerCard.def = originalDef;
+      updateHpBars();
+      checkBattleEnd();
+    }
+    let battleEnded = false;
+    function checkBattleEnd() {
+      if (iaCards.every(c => c.hp <= 0)) {
+        battleEnded = true;
+        showBattleMessage("¡FELICIDADES! HAS GANADO");
+        if (isTournament) {
+          const tournament = TOURNAMENTS.find(t => t.id === currentTournamentId);
+          tournament.cards.forEach(id => {
+            if (!gameState.ownedCardIds.includes(id)) {
+              gameState.ownedCardIds.push(id);
+              const card = ALL_CARDS.find(c => c.id === id);
+              showNewCard(card);
+            }
+          });
+          gameState.trophies += tournament.trophies;
+          gameState.diamonds += tournament.diamonds;
+          gameState.completedTournaments.push(tournament.id);
+        } else if (isCupBattle) {
+          gameState.cups += 1;
+        }
+        saveGame();
+        updateUI();
+        renderDeck();
+        renderTournaments();
+      } else if (playerCards.every(c => c.hp <= 0)) {
+        battleEnded = true;
+        showBattleMessage("HAS PERDIDO LA BATALLA");
+      }
+    }
+    function getRandomAliveIaCard() {
+      const alive = iaCards.filter(c => c.hp > 0);
+      if (alive.length === 0) return null;
+      return alive[Math.floor(Math.random() * alive.length)];
+    }
+    function getRandomAlivePlayerCard() {
+      const alive = playerCards.filter(c => c.hp > 0);
+      if (alive.length === 0) return null;
+      return alive[Math.floor(Math.random() * alive.length)];
+    }
+    function showBattleMessage(message) {
+      document.getElementById('messageText').textContent = message;
+      document.getElementById('battleMessage').style.display = 'block';
+    }
+    function closeBattleMessage() {
+      document.getElementById('battleMessage').style.display = 'none';
+      battleEnded = false;
+      if (isTournament) {
+        isTournament = false;
+        currentTournamentId = null;
+      }
+      if (isCupBattle) {
+        isCupBattle = false;
+      }
+      showView('battle'); // Or back to main
+    }
+    function rematch() {
+      document.getElementById('battleMessage').style.display = 'none';
+      battleEnded = false;
+      resetBattle();
     }
     // Función para mostrar nueva carta con fuegos artificiales
     function showNewCard(card) {
@@ -1209,11 +1304,9 @@
         document.body.appendChild(snowflake);
       }
     }
-    updateHpBars();
     updateUI();
     showView('battle');
     createSnowflakes(); // Llama a la función para generar la nieve
-    renderBattleCards(); // Inicializar cartas de batalla
   </script>
 </body>
 </html>
