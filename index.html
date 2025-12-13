@@ -53,7 +53,7 @@
     }
     .card-battle {
       width: 160px;
-      height: 220px;
+      height: 240px;
       background: rgba(10, 10, 30, 0.95);
       border-radius: 16px;
       padding: 10px;
@@ -73,16 +73,16 @@
       50% { transform: scale(1.1); filter: brightness(1.5); box-shadow: 0 0 40px gold; }
     }
     .hp-bar {
-      height: 6px;
+      height: 8px;
       background: #333;
-      border-radius: 3px;
+      border-radius: 4px;
       overflow: hidden;
       margin-top: 4px;
     }
     .hp-fill {
       height: 100%;
       background: linear-gradient(to right, #ff416c, #ff4b2b);
-      transition: width 0.5s;
+      transition: width 0.5s ease;
     }
     .timer-badge {
       position: absolute;
@@ -166,7 +166,6 @@
       <div id="tournament" class="view hidden">
         <h2 class="text-3xl font-bold text-center mb-2 text-yellow-400">🏆 TORNEO ÉPICO</h2>
         
-        <!-- ANUNCIO DESTACADO -->
         <div class="bg-gradient-to-r from-red-900 via-orange-800 to-yellow-900 border-2 border-yellow-500 rounded-xl p-4 mb-6 mx-auto max-w-2xl animate-pulse">
           <div class="flex items-center justify-center gap-3 mb-2">
             <i class="fas fa-star text-yellow-300 text-xl"></i>
@@ -207,14 +206,10 @@
   </div>
 
   <script>
-    // === DATOS DEL JUEGO ===
     const ALL_CARDS = [
-      // Cartas iniciales (gratis, desbloqueadas al inicio)
       { id: 0, name: "Ramírez", rarity: "common", atk: 60, def: 50, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", shopPrice: null },
       { id: 1, name: "Fortaleza", rarity: "rare", atk: 60, def: 70, img: "https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177", shopPrice: null },
       { id: 2, name: "Escudera", rarity: "common", atk: 55, def: 65, img: "https://s93.erome.com/5472/K3IRZbxx/9RweIpam.jpeg?v=1764813677", shopPrice: null },
-      
-      // Cartas de tienda (solo accesibles al comprar)
       { id: 3, name: "Azulita", rarity: "rare", atk: 70, def: 55, img: "https://s93.erome.com/5472/K3IRZbxx/0B8OzReu.jpeg?v=1764815871", shopPrice: 80 },
       { id: 4, name: "Tormenta", rarity: "epic", atk: 80, def: 45, img: "https://s93.erome.com/5472/K3IRZbxx/7GmdJa3U.jpeg?v=1764802552", shopPrice: 120 },
       { id: 5, name: "Furia", rarity: "legendary", atk: 90, def: 40, img: "https://s93.erome.com/5472/K3IRZbxx/LsMURibY.jpeg?v=1764812622", shopPrice: 200 },
@@ -222,18 +217,21 @@
     ];
 
     const IA_CARDS = [
-      { id: 100, name: "IA Básica", rarity: "common", atk: 60, def: 70, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894" },
+      { id: 100, name: "IA Básica", rarity: "common", atk: 65, def: 70, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894" },
       { id: 101, name: "IA Élite", rarity: "legendary", atk: 95, def: 60, img: "https://s206.erome.com/4699/lpRzYjBO/gU2HfmRY.jpeg?v=1745795818" }
     ];
 
-    // === ESTADO ===
     let gameState = {
-      playerCards: [0, 1, 2], // Solo cartas iniciales
-      ownedCardIds: [0, 1, 2], // IDs que el jugador posee
-      diamonds: 100
+      playerCards: [
+        { ...ALL_CARDS[0], currentHp: 50 },
+        { ...ALL_CARDS[1], currentHp: 70 },
+        { ...ALL_CARDS[2], currentHp: 65 }
+      ],
+      enemyCard: { ...IA_CARDS[0], currentHp: 70 },
+      diamonds: 100,
+      ownedCardIds: [0, 1, 2]
     };
 
-    // === UTILIDADES ===
     function saveGame() {
       localStorage.setItem('ownedCardIds', JSON.stringify(gameState.ownedCardIds));
       localStorage.setItem('diamonds', gameState.diamonds);
@@ -251,7 +249,6 @@
       gameState.diamonds = parseInt(localStorage.getItem('diamonds') || '100');
     }
 
-    // === RENDER ===
     function renderDeck() {
       const container = document.getElementById('deckCards');
       const rarity = document.getElementById('rarityFilter').value;
@@ -292,27 +289,35 @@
     }
 
     function renderBattle() {
-      const enemy = IA_CARDS[0];
+      // Enemigo
+      const enemy = gameState.enemyCard;
+      const enemyHpPercent = Math.max(0, Math.min(100, Math.round((enemy.currentHp / enemy.def) * 100)));
       document.getElementById('enemyCard').innerHTML = `
         <div class="card-battle ${enemy.rarity}">
           <img src="${enemy.img}" style="width:100%; height:140px; object-fit:cover; border-radius:8px;">
           <div class="font-bold">${enemy.name}</div>
-          <div>⚔️${enemy.atk} 🛡️${enemy.def}</div>
+          <div class="text-sm">⚔️${enemy.atk} 🛡️${enemy.def}</div>
+          <div class="hp-bar"><div class="hp-fill" style="width:${enemyHpPercent}%"></div></div>
+          <div class="text-xs">HP: ${enemy.currentHp}/${enemy.def}</div>
         </div>
       `;
 
+      // Jugador
       const playerContainer = document.getElementById('playerCards');
-      const playerCards = ALL_CARDS.filter(c => gameState.playerCards.includes(c.id));
-      playerContainer.innerHTML = playerCards.map(c => `
-        <div class="card-battle ${c.rarity}" style="cursor:pointer;" onclick="selectCard(${c.id})">
-          <img src="${c.img}" style="width:100%; height:140px; object-fit:cover; border-radius:8px;">
-          <div class="font-bold">${c.name}</div>
-          <div>⚔️${c.atk} 🛡️${c.def}</div>
-        </div>
-      `).join('');
+      playerContainer.innerHTML = gameState.playerCards.map((card, i) => {
+        const hpPercent = Math.max(0, Math.min(100, Math.round((card.currentHp / card.def) * 100)));
+        return `
+          <div class="card-battle ${card.rarity}" style="cursor:pointer;" onclick="selectPlayerCard(${i})">
+            <img src="${card.img}" style="width:100%; height:140px; object-fit:cover; border-radius:8px;">
+            <div class="font-bold">${card.name}</div>
+            <div class="text-sm">⚔️${card.atk} 🛡️${card.def}</div>
+            <div class="hp-bar"><div class="hp-fill" style="width:${hpPercent}%"></div></div>
+            <div class="text-xs">HP: ${card.currentHp}/${card.def}</div>
+          </div>
+        `;
+      }).join('');
     }
 
-    // === LÓGICA DE JUEGO ===
     function buyCard(cardId) {
       const card = ALL_CARDS.find(c => c.id === cardId);
       if (!card || !card.shopPrice) return;
@@ -328,33 +333,48 @@
       }
     }
 
-    let selectedCardId = null;
-    function selectCard(cardId) {
-      selectedCardId = cardId;
+    let selectedPlayerIndex = 0;
+    function selectPlayerCard(index) {
+      selectedPlayerIndex = index;
       document.querySelectorAll('.card-battle').forEach(el => el.classList.remove('attacking'));
-      event.target.closest('.card-battle').classList.add('attacking');
+      document.querySelectorAll('.card-battle')[index + 1]?.classList.add('attacking'); // +1 por la carta enemiga
     }
 
     function playerAttack() {
-      if (selectedCardId === null) {
-        document.getElementById('battleLog').innerHTML = "¡Selecciona una carta primero!";
+      const playerCard = gameState.playerCards[selectedPlayerIndex];
+      const enemy = gameState.enemyCard;
+
+      if (!playerCard || playerCard.currentHp <= 0) {
+        document.getElementById('battleLog').innerHTML = "¡Esta carta está fuera de combate!";
         return;
       }
-      const card = ALL_CARDS.find(c => c.id === selectedCardId);
-      document.getElementById('battleLog').innerHTML = `¡${card.name} lanza <strong>${card.power || 'ataque épico'}!</strong>`;
-      
+
+      const damage = Math.max(5, playerCard.atk - Math.floor(enemy.def * 0.3));
+      enemy.currentHp = Math.max(0, enemy.currentHp - damage);
+
+      document.getElementById('battleLog').innerHTML = `¡${playerCard.name} ataca a ${enemy.name} por <strong>${damage} daño</strong>!`;
+
+      // Efecto visual
       const enemyEl = document.getElementById('enemyCard').querySelector('.card-battle');
-      enemyEl.style.animation = 'attackPulse 0.8s 2';
-      setTimeout(() => enemyEl.style.animation = '', 1600);
+      enemyEl.style.animation = 'attackPulse 0.8s 1';
+      setTimeout(() => enemyEl.style.animation = '', 800);
+
+      // Actualizar vista
+      setTimeout(() => {
+        renderBattle();
+        if (enemy.currentHp <= 0) {
+          document.getElementById('battleLog').innerHTML = `¡<strong>${enemy.name}</strong> fue derrotado! 🏆 +30 trofeos`;
+        }
+      }, 800);
     }
 
     function playerDefend() {
-      if (selectedCardId === null) {
-        document.getElementById('battleLog').innerHTML = "¡Selecciona una carta primero!";
+      const playerCard = gameState.playerCards[selectedPlayerIndex];
+      if (playerCard.currentHp <= 0) {
+        document.getElementById('battleLog').innerHTML = "¡Esta carta está fuera de combate!";
         return;
       }
-      const card = ALL_CARDS.find(c => c.id === selectedCardId);
-      document.getElementById('battleLog').innerHTML = `¡${card.name} se prepara para defender con fuerza!`;
+      document.getElementById('battleLog').innerHTML = `¡${playerCard.name} se defiende y reduce el próximo daño!`;
     }
 
     function startTournament() {
@@ -369,7 +389,6 @@
       if (view === 'battle') renderBattle();
     }
 
-    // === INICIAR ===
     loadGame();
     showView('battle');
   </script>
