@@ -1,156 +1,353 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>FORTNITE SKIN BATTLE</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oxanium:wght@600&display=swap" rel="stylesheet">
   <style>
     body {
-      background: #0a0a1a;
+      font-family: 'Oxanium', sans-serif;
       color: white;
-      font-family: Arial, sans-serif;
       text-align: center;
       margin: 0;
-      padding: 20px;
+      padding: 10px;
+      background: #0a0a1a;
+      position: relative;
+      overflow-x: hidden;
+      min-height: 100vh;
     }
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: radial-gradient(ellipse at center, #1a1a2e 0%, #0a0a1a 70%);
+      z-index: -3;
+    }
+    .content { position: relative; z-index: 10; }
+
+    .player-bar {
+      background: rgba(10,10,26,0.7);
+      padding: 12px;
+      border-radius: 12px;
+      margin: 15px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1.2em;
+      border: 2px solid gold;
+    }
+
     .nav-buttons {
-      margin: 20px 0;
+      margin: 15px 0;
     }
     .nav-btn {
-      background: #4ecdc4;
-      color: #0a0a1a;
-      border: none;
-      padding: 10px 20px;
-      margin: 0 10px;
+      background: rgba(78,205,196,0.2);
+      color: white;
+      border: 1px solid #4ecdc4;
+      padding: 10px 18px;
+      margin: 0 5px;
       border-radius: 20px;
       cursor: pointer;
+      transition: all 0.2s;
       font-weight: bold;
     }
     .nav-btn.active {
-      background: gold;
+      background: #4ecdc4;
+      color: #0a0a1a;
     }
+
     .view {
       display: none;
-      margin-top: 20px;
     }
     .view.active {
       display: block;
     }
-    .card-grid {
+
+    .collection-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 15px;
-      max-width: 500px;
-      margin: 0 auto;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 12px;
+      margin: 20px auto;
+      max-width: 600px;
     }
-    .card {
-      background: rgba(30,30,50,0.8);
+    .collection-card {
+      background: rgba(20,20,40,0.8);
       border-radius: 10px;
-      padding: 10px;
+      padding: 8px;
+      position: relative;
       cursor: pointer;
-      border: 2px solid #45b7d1;
+      border: 2px solid #333;
     }
-    .card.locked {
+    .collection-card.locked {
       opacity: 0.5;
       cursor: not-allowed;
     }
-    .card.locked::after {
+    .collection-card.locked::after {
       content: "🔒";
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 2em;
+      font-size: 1.8em;
       color: #ff6b6b;
     }
-    .card img {
+    .collection-card img {
+      width: 100%;
+      border-radius: 6px;
+    }
+
+    .deck-section {
+      background: rgba(10,10,26,0.6);
+      padding: 15px;
+      border-radius: 12px;
+      margin: 20px 0;
+      border: 1px solid #4ecdc4;
+    }
+    .deck-cards {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .deck-card {
+      width: 100px;
+    }
+    .deck-card img {
       width: 100%;
       border-radius: 8px;
     }
-    .deck {
+
+    .battle-table {
+      margin: 20px auto;
+      max-width: 700px;
+      background: rgba(5, 5, 15, 0.9);
+      border: 3px solid gold;
+      border-radius: 20px;
+      padding: 25px;
+      display: none;
+    }
+    .battle-table.active {
+      display: block;
+    }
+    .battle-zone {
+      display: flex;
+      justify-content: space-between;
+      margin: 30px 0;
+    }
+    .player-zone, .enemy-zone {
+      width: 48%;
+      text-align: center;
+    }
+    .battle-card {
+      width: 160px;
+      margin: 0 auto;
+    }
+    .card-image {
+      width: 100%;
+      border-radius: 12px;
+      border: 3px solid #333;
+    }
+
+    .hand {
       display: flex;
       justify-content: center;
       gap: 15px;
       margin: 20px 0;
       flex-wrap: wrap;
     }
-    .deck-card {
-      width: 80px;
+    .hand-card {
+      background: rgba(20,20,40,0.9);
+      border-radius: 12px;
+      padding: 10px;
+      width: 120px;
+      cursor: pointer;
+      border: 2px solid #45b7d1;
     }
-    .deck-card img {
+    .hand-card img {
       width: 100%;
       border-radius: 8px;
+    }
+
+    .battle-log {
+      background: rgba(0,0,0,0.6);
+      padding: 15px;
+      border-radius: 12px;
+      margin: 20px 0;
+      min-height: 80px;
+      font-size: 1.15em;
+      color: #feca57;
+      border: 1px solid #4ecdc4;
+    }
+
+    .action-btn {
+      background: #4ecdc4;
+      color: #0a0a1a;
+      border: none;
+      padding: 12px 25px;
+      font-size: 1.15em;
+      font-weight: bold;
+      border-radius: 50px;
+      cursor: pointer;
+      margin: 10px 5px;
+    }
+
+    .coming-soon {
+      margin: 30px auto;
+      max-width: 500px;
+      background: rgba(0,0,0,0.4);
+      padding: 20px;
+      border-radius: 15px;
+      text-align: center;
+      border: 2px dashed gold;
+    }
+
+    /* Vista detallada de carta */
+    .card-preview {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      background: rgba(10,10,26,0.95);
+      padding: 20px;
+      border-radius: 15px;
+      max-width: 300px;
+      z-index: 2000;
+      border: 3px solid gold;
+      box-shadow: 0 0 30px gold;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+    .card-preview.show {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+    }
+    .card-preview img {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 12px;
     }
   </style>
 </head>
 <body>
-  <h1>🎮 FORTNITE SKIN BATTLE 🎮</h1>
-  
-  <div class="nav-buttons">
-    <button class="nav-btn active" onclick="showView('battle')">⚔️ Batalla</button>
-    <button class="nav-btn" onclick="showView('collection')">🃏 Mazo</button>
-    <button class="nav-btn" onclick="showView('store')">🛒 Tienda</button>
-    <button class="nav-btn" onclick="showView('ranking')">📊 Ranking</button>
-  </div>
-
-  <div id="battleView" class="view active">
-    <h2>⚔️ Batalla</h2>
-    <p>¡Prepárate para luchar contra la IA!</p>
-    <button onclick="startBattle()">Iniciar Batalla</button>
-  </div>
-
-  <div id="collectionView" class="view">
-    <h2>🃏 Mazo (elige 3 cartas)</h2>
-    <div class="card-grid" id="collectionGrid"></div>
+  <div class="content">
+    <h1>FORTNITE SKIN BATTLE</h1>
     
-    <h3>Tu Mazo Actual:</h3>
-    <div class="deck" id="currentDeck"></div>
-    <button onclick="saveDeck()">Guardar Mazo</button>
+    <div class="player-bar">
+      <div>👤 <span id="playerName">Jugador</span></div>
+      <div>🏆 <span id="trophyCount">0</span></div>
+    </div>
+
+    <div class="nav-buttons">
+      <button class="nav-btn active" onclick="showView('battle')">⚔️ Batalla</button>
+      <button class="nav-btn" onclick="showView('collection')">🃏 Mazo</button>
+      <button class="nav-btn" onclick="showView('ranking')">📊 Ranking</button>
+    </div>
+
+    <div id="battleView" class="view active">
+      <button class="action-btn" onclick="startBattle()">⚔️ INICIAR BATALLA</button>
+    </div>
+
+    <div id="collectionView" class="view">
+      <h2>🃏 MAZO - Elige 3 cartas</h2>
+      <p>Haz clic en cualquier carta para verla en grande</p>
+      <div class="collection-grid" id="collectionGrid"></div>
+      
+      <div class="deck-section">
+        <h3>Tu Mazo Actual</h3>
+        <div class="deck-cards" id="currentDeck"></div>
+        <button class="action-btn" onclick="saveDeck()">💾 Guardar Mazo</button>
+      </div>
+    </div>
+
+    <div id="rankingView" class="view">
+      <h2>📊 RANKING</h2>
+      <div id="rankingList"></div>
+    </div>
+
+    <div id="battleTable" class="battle-table">
+      <h2>BATALLA CONTRA LA IA</h2>
+      
+      <div class="battle-zone">
+        <div class="enemy-zone">
+          <h3>IA</h3>
+          <div class="battle-card">
+            <img id="enemyCardImg" class="card-image" src="" alt="IA">
+          </div>
+        </div>
+        
+        <div class="player-zone">
+          <h3>TÚ</h3>
+          <div class="battle-card">
+            <img id="playerCardImg" class="card-image" src="" alt="Jugador">
+          </div>
+        </div>
+      </div>
+
+      <div class="battle-log" id="battleLog">
+        ¡Elige una carta para atacar!
+      </div>
+
+      <div class="hand" id="playerHand"></div>
+
+      <button class="action-btn" onclick="exitBattle()">🚪 Salir</button>
+    </div>
+
+    <div class="coming-soon">
+      <h3>🔔 ¡PRÓXIMA ACTUALIZACIÓN!</h3>
+      <p><strong>Mañana a las 13:00</strong></p>
+      <p>¡Modo Multijugador, Nuevas Cartas y Más!</p>
+      <div id="updateTimer" style="font-size:1.3em; color:#4ecdc4; margin:10px 0; font-weight:bold;"></div>
+    </div>
   </div>
 
-  <div id="storeView" class="view">
-    <h2>🛒 Tienda</h2>
-    <p>Compra mejoras con diamantes.</p>
-  </div>
-
-  <div id="rankingView" class="view">
-    <h2>📊 Ranking</h2>
-    <p>Tus trofeos y posición.</p>
+  <div class="card-preview" id="cardPreview">
+    <img id="previewImg" src="" alt="">
+    <h3 id="previewName"></h3>
   </div>
 
   <script>
-    // Cartas (9 desbloqueadas + 1 legendaria bloqueada)
+    // Inicializar nombre
+    let playerName = localStorage.getItem('playerName');
+    if (!playerName) {
+      playerName = prompt("¿Cómo te llamas?") || "Jugador";
+      localStorage.setItem('playerName', playerName);
+    }
+    document.getElementById('playerName').innerText = playerName;
+
+    // Cartas
     const CARDS = [
-      { id:0, name:"Ramírez", img:"https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", unlocked: true },
-      { id:1, name:"Azulita", img:"https://s93.erome.com/5472/K3IRZbxx/0B8OzReu.jpeg?v=1764815871", unlocked: true },
-      { id:2, name:"Tormenta", img:"https://s93.erome.com/5472/K3IRZbxx/7GmdJa3U.jpeg?v=1764802552", unlocked: true },
-      { id:3, name:"Fortaleza", img:"https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177", unlocked: true },
-      { id:4, name:"Danza", img:"https://s93.erome.com/5472/K3IRZbxx/0VxSvgAl.jpeg?v=1764818017", unlocked: true },
-      { id:5, name:"Furia", img:"https://s93.erome.com/5472/K3IRZbxx/LsMURibY.jpeg?v=1764812622", unlocked: true },
-      { id:6, name:"Escudera", img:"https://s93.erome.com/5472/K3IRZbxx/9RweIpam.jpeg?v=1764813677", unlocked: true },
-      { id:7, name:"Asesina", img:"https://s206.erome.com/4699/lpRzYjBO/Z5Tc5k2v.jpeg?v=1745795818", unlocked: true },
-      { id:8, name:"Guardiana", img:"https://s206.erome.com/4699/lpRzYjBO/P9p2wv5y.jpeg?v=1745795818", unlocked: true },
-      { id:10, name:"Sellamara Gemelas", img:"https://s326.erome.com/5139/YBnb1NTO/R8jmYVqr.jpeg?v=1750357395", unlocked: false }
+      { id:0, name:"Ramírez", img:"https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", atk:60, def:50, unlocked: true },
+      { id:1, name:"Azulita", img:"https://s93.erome.com/5472/K3IRZbxx/0B8OzReu.jpeg?v=1764815871", atk:70, def:55, unlocked: true },
+      { id:2, name:"Tormenta", img:"https://s93.erome.com/5472/K3IRZbxx/7GmdJa3U.jpeg?v=1764802552", atk:80, def:45, unlocked: true },
+      { id:3, name:"Fortaleza", img:"https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177", atk:60, def:70, unlocked: true },
+      { id:4, name:"Danza", img:"https://s93.erome.com/5472/K3IRZbxx/0VxSvgAl.jpeg?v=1764818017", atk:75, def:50, unlocked: true },
+      { id:5, name:"Furia", img:"https://s93.erome.com/5472/K3IRZbxx/LsMURibY.jpeg?v=1764812622", atk:90, def:40, unlocked: true },
+      { id:6, name:"Escudera", img:"https://s93.erome.com/5472/K3IRZbxx/9RweIpam.jpeg?v=1764813677", atk:55, def:65, unlocked: true },
+      { id:7, name:"Asesina", img:"https://s206.erome.com/4699/lpRzYjBO/Z5Tc5k2v.jpeg?v=1745795818", atk:95, def:30, unlocked: true },
+      { id:8, name:"Guardiana", img:"https://s206.erome.com/4699/lpRzYjBO/P9p2wv5y.jpeg?v=1745795818", atk:50, def:80, unlocked: true },
+      { id:10, name:"Sellamara Gemelas", img:"https://s326.erome.com/5139/YBnb1NTO/R8jmYVqr.jpeg?v=1750357395", atk:120, def:60, unlocked: false }
     ];
 
     let currentDeck = JSON.parse(localStorage.getItem('currentDeck')) || [0, 1, 2];
-    
+    let trophies = parseInt(localStorage.getItem('trophies')) || 0;
+    document.getElementById('trophyCount').innerText = trophies;
+
     // Mostrar vista
     function showView(viewName) {
-      // Quitar active de todos
       document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
       
-      // Añadir active a la seleccionada
       document.getElementById(viewName + 'View').classList.add('active');
       event.target.classList.add('active');
       
-      // Si es el mazo, renderizar
       if (viewName === 'collection') {
         renderCollection();
+      } else if (viewName === 'ranking') {
+        updateRanking();
       }
     }
-    
+
     // Renderizar colección
     function renderCollection() {
       const grid = document.getElementById('collectionGrid');
@@ -158,17 +355,16 @@
       
       CARDS.forEach(card => {
         const div = document.createElement('div');
-        div.className = `card ${!card.unlocked ? 'locked' : ''}`;
+        div.className = `collection-card ${!card.unlocked ? 'locked' : ''}`;
         div.innerHTML = `<img src="${card.img}" alt="${card.name}">`;
         
         if (card.unlocked) {
-          div.onclick = () => addToDeck(card.id);
+          div.onclick = () => showCardPreview(card);
         }
         
         grid.appendChild(div);
       });
       
-      // Renderizar mazo actual
       const deck = document.getElementById('currentDeck');
       deck.innerHTML = '';
       currentDeck.forEach(id => {
@@ -181,38 +377,135 @@
         }
       });
     }
-    
+
+    // Vista detallada de carta
+    function showCardPreview(card) {
+      document.getElementById('previewImg').src = card.img;
+      document.getElementById('previewName').innerText = card.name;
+      document.getElementById('cardPreview').classList.add('show');
+    }
+
+    document.getElementById('cardPreview').onclick = () => {
+      document.getElementById('cardPreview').classList.remove('show');
+    };
+
     // Añadir al mazo
     function addToDeck(cardId) {
       if (currentDeck.length >= 3) {
-        alert('Máximo 3 cartas en el mazo.');
+        alert('Máximo 3 cartas');
         return;
       }
       if (currentDeck.includes(cardId)) {
-        alert('Ya está en tu mazo.');
+        alert('Ya está en tu mazo');
         return;
       }
       currentDeck.push(cardId);
       renderCollection();
     }
-    
+
     // Guardar mazo
     function saveDeck() {
       if (currentDeck.length !== 3) {
-        alert('Necesitas 3 cartas en el mazo.');
+        alert('Necesitas 3 cartas');
         return;
       }
       localStorage.setItem('currentDeck', JSON.stringify(currentDeck));
       alert('¡Mazo guardado!');
     }
-    
-    // Batalla (simplificada)
-    function startBattle() {
-      alert('¡Batalla iniciada! (versión simplificada)');
+
+    // Ranking
+    function updateRanking() {
+      const rankings = JSON.parse(localStorage.getItem('rankings')) || [];
+      const existing = rankings.find(r => r.name === playerName);
+      if (existing) {
+        existing.trophies = trophies;
+      } else {
+        rankings.push({ name: playerName, trophies });
+      }
+      rankings.sort((a, b) => b.trophies - a.trophies);
+      localStorage.setItem('rankings', JSON.stringify(rankings));
+      
+      const list = document.getElementById('rankingList');
+      list.innerHTML = '';
+      rankings.slice(0, 10).forEach((r, i) => {
+        const div = document.createElement('div');
+        div.innerHTML = `${i+1}. ${r.name} - ${r.trophies} 🏆`;
+        list.appendChild(div);
+      });
     }
-    
+
+    // Batalla
+    function startBattle() {
+      document.getElementById('battleView').classList.remove('active');
+      document.getElementById('battleTable').classList.add('active');
+      
+      const iaCard = CARDS[8]; // Guardiana
+      document.getElementById('enemyCardImg').src = iaCard.img;
+      
+      const playerCard = CARDS[currentDeck[0]];
+      document.getElementById('playerCardImg').src = playerCard.img;
+      
+      const hand = document.getElementById('playerHand');
+      hand.innerHTML = '';
+      currentDeck.forEach(id => {
+        const card = CARDS.find(c => c.id === id);
+        if (card) {
+          const div = document.createElement('div');
+          div.className = 'hand-card';
+          div.innerHTML = `<img src="${card.img}" alt="${card.name}">`;
+          div.onclick = () => playerAttack(card);
+          hand.appendChild(div);
+        }
+      });
+    }
+
+    function playerAttack(card) {
+      const log = document.getElementById('battleLog');
+      log.innerHTML = `¡${card.name} ataca!`;
+      
+      setTimeout(() => {
+        trophies += 10;
+        localStorage.setItem('trophies', trophies);
+        document.getElementById('trophyCount').innerText = trophies;
+        updateRanking();
+        
+        log.innerHTML = `¡Victoria! Ganaste 10 trofeos.<br>Total: ${trophies}`;
+        setTimeout(() => {
+          exitBattle();
+          alert('¡Victoria! Ganaste 10 trofeos.');
+        }, 2000);
+      }, 1000);
+    }
+
+    function exitBattle() {
+      document.getElementById('battleTable').classList.remove('active');
+      document.getElementById('battleView').classList.add('active');
+    }
+
+    // Contador de actualización
+    function startUpdateCountdown() {
+      function updateTimer() {
+        const now = new Date();
+        const target = new Date(now);
+        target.setHours(13, 0, 0, 0);
+        if (now >= target) {
+          target.setDate(target.getDate() + 1);
+        }
+        const diff = target - now;
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        
+        document.getElementById('updateTimer').innerText = 
+          `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      }
+      updateTimer();
+      setInterval(updateTimer, 1000);
+    }
+
     // Inicializar
     renderCollection();
+    startUpdateCountdown();
   </script>
 </body>
 </html>
