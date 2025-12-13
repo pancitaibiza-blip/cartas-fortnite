@@ -68,7 +68,7 @@
       border-radius: 12px;
       overflow: hidden;
       position: relative;
-      width: 110px;
+      width: 150px;
       background: rgba(10, 15, 25, 0.9);
     }
     .card-glow {
@@ -151,7 +151,7 @@
     #deck.active, #shop.active, #tournament.active, #cupMode.active, #ranking.active { display: block; }
     .card-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
       gap: 12px;
       justify-content: center;
       margin-top: 16px;
@@ -681,7 +681,7 @@
           <div class="card-base">
             <div class="card-glow"></div>
             <div class="card-content">
-              <img src="${card.img}" onerror="this.src='https://via.placeholder.com/150/555/fff?text=${card.name}'" style="width:100%; height:130px; object-fit:cover; border-radius:6px;">
+              <img src="${card.img}" onerror="this.src='https://via.placeholder.com/150/555/fff?text=${card.name}'" style="width:100%; height:170px; object-fit:cover; border-radius:6px;">
               <div class="font-bold text-xs mt-1 truncate">${card.name}</div>
               <div class="text-[10px]">⚔️${card.atk} 🛡️${card.def}</div>
             </div>
@@ -703,7 +703,7 @@
           <div class="card-base">
             <div class="card-glow"></div>
             <div class="card-content">
-              <img src="${card.img}" onerror="this.src='https://via.placeholder.com/150/555/fff?text=${card.name}'" style="width:100%; height:130px; object-fit:cover; border-radius:6px;">
+              <img src="${card.img}" onerror="this.src='https://via.placeholder.com/150/555/fff?text=${card.name}'" style="width:100%; height:170px; object-fit:cover; border-radius:6px;">
               <div class="font-bold text-xs mt-1 truncate">${card.name}</div>
               <div class="text-[10px]">⚔️${card.atk} 🛡️${card.def}</div>
               <div class="text-[10px] text-yellow-400">💎 ${card.shopPrice}</div>
@@ -746,7 +746,7 @@
       localStorage.setItem('cardUpgrades', JSON.stringify(gameState.cardUpgrades));
       localStorage.setItem('currentDeck', JSON.stringify(gameState.currentDeck));
       localStorage.setItem('completedTournaments', JSON.stringify(gameState.completedTournaments));
-    
+   
       // ✅ Guardar en ranking
       let rankings = JSON.parse(localStorage.getItem('rankings') || '[]');
       const existingIndex = rankings.findIndex(r => r.name === gameState.playerName);
@@ -830,21 +830,28 @@
         alert(`¡Necesitas ${tournament.cost} copas para este torneo! 🎄`);
         return;
       }
-      // Simular victoria
-      alert(`¡FELICIDADES! 🎄 Has ganado el ${tournament.name}.`);
-      tournament.cards.forEach(id => {
-        if (!gameState.ownedCardIds.includes(id)) {
-          gameState.ownedCardIds.push(id);
-        }
-      });
       gameState.cups -= tournament.cost;
-      gameState.trophies += tournament.trophies;
-      gameState.diamonds += tournament.diamonds;
-      gameState.completedTournaments.push(tournament.id); // Marcar como completado
       saveGame();
       updateUI();
-      renderDeck();
-      renderTournaments(); // Actualizar lista de torneos
+      isTournament = true;
+      currentTournamentId = tournamentId;
+      iaAtk = 65 + ((tournament.id - 1) * 10);
+      iaDef = 70 + ((tournament.id - 1) * 10);
+      iaHp = 70 + ((tournament.id - 1) * 20);
+      iaMaxHp = iaHp;
+      document.querySelector('.battle-ia-card .name').textContent = `IA ${tournament.name}`;
+      document.querySelector('.battle-ia-card .stats span:nth-child(1)').textContent = `⚔️ ${iaAtk}`;
+      document.querySelector('.battle-ia-card .stats span:nth-child(2)').textContent = `🛡️ ${iaDef}`;
+      playerCards.forEach(card => {
+        const allCard = ALL_CARDS.find(c => c.name === card.name);
+        card.atk = allCard.atk;
+        card.def = allCard.def;
+        card.hp = card.maxHp;
+        card.element.querySelector('.stats span:nth-child(1)').textContent = `⚔️ ${card.atk}`;
+        card.element.querySelector('.stats span:nth-child(2)').textContent = `🛡️ ${card.def}`;
+      });
+      updateHpBars();
+      showView('battle');
     }
     function showView(view) {
       ['battle', 'deck', 'shop', 'tournament', 'cupMode', 'ranking'].forEach(id => {
@@ -856,6 +863,118 @@
       if (view === 'ranking') updateRanking();
       if (view === 'tournament') renderTournaments();
     }
+    // Battle logic
+    let iaHp = 70;
+    let iaMaxHp = 70;
+    let iaAtk = 65;
+    let iaDef = 70;
+    let selectedPlayerCard = null;
+    let isTournament = false;
+    let currentTournamentId = null;
+    let playerCards = [
+      {name: "Ramírez", atk: 60, def: 50, hp: 50, maxHp: 50, element: document.querySelector('.battle-player-cards .player-card:nth-child(1)')},
+      {name: "Fortaleza", atk: 60, def: 70, hp: 70, maxHp: 70, element: document.querySelector('.battle-player-cards .player-card:nth-child(2)')},
+      {name: "Escudera", atk: 55, def: 65, hp: 65, maxHp: 65, element: document.querySelector('.battle-player-cards .player-card:nth-child(3)')}
+    ];
+    document.querySelectorAll('.player-card').forEach((el, index) => {
+      el.onclick = () => {
+        selectedPlayerCard = playerCards[index];
+        document.querySelectorAll('.player-card').forEach(e => e.style.borderColor = '#00bcd4');
+        el.style.borderColor = 'yellow';
+      }
+    });
+    function updateHpBars() {
+      document.querySelector('.battle-ia-card .hp-fill').style.width = `${(iaHp / iaMaxHp) * 100}%`;
+      document.querySelector('.battle-ia-card .hp-text').textContent = `HP: ${iaHp}/${iaMaxHp}`;
+      playerCards.forEach(card => {
+        card.element.querySelector('.hp-fill').style.width = `${(card.hp / card.maxHp) * 100}%`;
+        card.element.querySelector('.hp-text').textContent = `HP: ${card.hp}/${card.maxHp}`;
+      });
+    }
+    function playerAttack() {
+      if (!selectedPlayerCard) {
+        alert("Selecciona una carta primero!");
+        return;
+      }
+      if (selectedPlayerCard.hp <= 0) {
+        alert("Esta carta está derrotada! Elige otra.");
+        return;
+      }
+      const damage = Math.max(selectedPlayerCard.atk - iaDef, 0);
+      iaHp -= damage;
+      if (iaHp <= 0) {
+        iaHp = 0;
+        if (isTournament) {
+          const tournament = TOURNAMENTS.find(t => t.id === currentTournamentId);
+          alert(`¡FELICIDADES! 🎄 Has ganado el ${tournament.name}.`);
+          tournament.cards.forEach(id => {
+            if (!gameState.ownedCardIds.includes(id)) {
+              gameState.ownedCardIds.push(id);
+            }
+          });
+          gameState.trophies += tournament.trophies;
+          gameState.diamonds += tournament.diamonds;
+          gameState.completedTournaments.push(tournament.id);
+          saveGame();
+          updateUI();
+          renderDeck();
+          renderTournaments();
+          isTournament = false;
+          currentTournamentId = null;
+          iaAtk = 65;
+          iaDef = 70;
+          iaHp = 70;
+          iaMaxHp = 70;
+          document.querySelector('.battle-ia-card .name').textContent = 'IA Básica';
+          document.querySelector('.battle-ia-card .stats span:nth-child(1)').textContent = `⚔️ 65`;
+          document.querySelector('.battle-ia-card .stats span:nth-child(2)').textContent = `🛡️ 70`;
+        } else {
+          alert("¡Ganaste la batalla!");
+        }
+        updateHpBars();
+        return;
+      }
+      updateHpBars();
+      iaAttack();
+    }
+    function iaAttack() {
+      const damage = Math.max(iaAtk - selectedPlayerCard.def, 0);
+      selectedPlayerCard.hp -= damage;
+      if (selectedPlayerCard.hp <= 0) {
+        selectedPlayerCard.hp = 0;
+      }
+      updateHpBars();
+      if (playerCards.every(c => c.hp <= 0)) {
+        alert("Perdiste la batalla!");
+        if (isTournament) {
+          alert("Perdiste el torneo. Intenta de nuevo.");
+          isTournament = false;
+          currentTournamentId = null;
+          iaAtk = 65;
+          iaDef = 70;
+          iaHp = 70;
+          iaMaxHp = 70;
+          document.querySelector('.battle-ia-card .name').textContent = 'IA Básica';
+          document.querySelector('.battle-ia-card .stats span:nth-child(1)').textContent = `⚔️ 65`;
+          document.querySelector('.battle-ia-card .stats span:nth-child(2)').textContent = `🛡️ 70`;
+        }
+      }
+    }
+    function playerDefend() {
+      if (!selectedPlayerCard) {
+        alert("Selecciona una carta primero!");
+        return;
+      }
+      if (selectedPlayerCard.hp <= 0) {
+        alert("Esta carta está derrotada! Elige otra.");
+        return;
+      }
+      const originalDef = selectedPlayerCard.def;
+      selectedPlayerCard.def *= 2;
+      iaAttack();
+      selectedPlayerCard.def = originalDef;
+    }
+    updateHpBars();
     updateUI();
     showView('battle');
   </script>
