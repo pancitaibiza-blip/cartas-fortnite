@@ -31,6 +31,76 @@
     .content { position: relative; z-index: 10; opacity: 0; animation: fadeIn 1.5s forwards; }
     @keyframes fadeIn { to { opacity: 1; } }
 
+    /* Barra de copas */
+    .trophy-bar {
+      background: rgba(10,10,26,0.7);
+      padding: 12px;
+      border-radius: 12px;
+      margin: 15px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1.2em;
+      border: 2px solid gold;
+    }
+    .trophy-icon { font-size: 1.5em; margin-right: 8px; }
+    .league-badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 0.95em;
+    }
+    .league-bronze { background: linear-gradient(to right, #cd7f32, #b8860b); }
+    .league-silver { background: linear-gradient(to right, silver, #c0c0c0); color: #333; }
+    .league-gold { background: linear-gradient(to right, gold, #daa520); }
+    .league-elite { background: linear-gradient(to right, #4b0082, #8a2be2); }
+    .league-legend { background: linear-gradient(45deg, red, gold, blue); animation: rainbow 3s linear infinite; }
+
+    /* Navegación */
+    .nav-buttons {
+      margin: 15px 0;
+    }
+    .nav-btn {
+      background: rgba(78,205,196,0.2);
+      color: white;
+      border: 1px solid #4ecdc4;
+      padding: 8px 16px;
+      margin: 0 5px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .nav-btn.active {
+      background: #4ecdc4;
+      color: #0a0a1a;
+      font-weight: bold;
+    }
+
+    /* Tienda (siempre visible) */
+    .store-section {
+      margin: 20px auto;
+      max-width: 500px;
+      background: rgba(10,10,26,0.5);
+      padding: 15px;
+      border-radius: 15px;
+      border: 1px solid #ff6b6b;
+    }
+    .store-items {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-top: 15px;
+    }
+    .store-item {
+      background: rgba(25,25,45,0.8);
+      padding: 10px;
+      border-radius: 10px;
+      border-left: 4px solid;
+    }
+    .store-item.gold { border-left-color: gold; }
+    .store-item.orange { border-left-color: #ff6b35; }
+    .store-item.purple { border-left-color: #a29bfe; }
+
     /* Mesa de batalla */
     .battle-table {
       display: none;
@@ -52,7 +122,7 @@
       pointer-events: none;
     }
 
-    /* Efectos de ataque en la mesa */
+    /* Efectos de ataque */
     .attack-overlay {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -60,22 +130,10 @@
       z-index: 10;
       opacity: 0;
     }
-    .fire-effect {
-      background: radial-gradient(circle, rgba(255,90,0,0.6) 0%, transparent 70%);
-      animation: fireBurst 1s forwards;
-    }
-    .ice-effect {
-      background: radial-gradient(circle, rgba(0,200,255,0.5) 0%, transparent 70%);
-      animation: iceShatter 1s forwards;
-    }
-    .wind-effect {
-      background: radial-gradient(circle, rgba(100,255,200,0.4) 0%, transparent 70%);
-      animation: windSwirl 1s forwards;
-    }
-    .arcane-effect {
-      background: radial-gradient(circle, rgba(200,100,255,0.6) 0%, transparent 70%);
-      animation: arcanePulse 1s forwards;
-    }
+    .fire-effect { background: radial-gradient(circle, rgba(255,90,0,0.6) 0%, transparent 70%); animation: fireBurst 1s forwards; }
+    .ice-effect { background: radial-gradient(circle, rgba(0,200,255,0.5) 0%, transparent 70%); animation: iceShatter 1s forwards; }
+    .wind-effect { background: radial-gradient(circle, rgba(100,255,200,0.4) 0%, transparent 70%); animation: windSwirl 1s forwards; }
+    .arcane-effect { background: radial-gradient(circle, rgba(200,100,255,0.6) 0%, transparent 70%); animation: arcanePulse 1s forwards; }
 
     @keyframes fireBurst { 0% { opacity: 0.8; transform: scale(0.5); } 100% { opacity: 0; transform: scale(2); } }
     @keyframes iceShatter { 0% { opacity: 0.9; transform: scale(0.3); } 50% { opacity: 0.9; } 100% { opacity: 0; transform: scale(1.5); } }
@@ -219,7 +277,7 @@
       box-shadow: 0 6px 15px rgba(0,0,0,0.5);
     }
 
-    .main-menu {
+    .main-menu, .collection {
       text-align: center;
     }
     .menu-btn {
@@ -240,7 +298,48 @@
       box-shadow: 0 8px 20px rgba(255,107,107,0.6);
     }
 
-    /* Pantalla de fin */
+    .collection-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 12px;
+      margin: 20px auto;
+      max-width: 600px;
+    }
+    .collection-card {
+      background: rgba(20,20,40,0.8);
+      border-radius: 10px;
+      padding: 8px;
+      position: relative;
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .collection-card.unlocked {
+      opacity: 1;
+      cursor: pointer;
+    }
+    .collection-card.locked::after {
+      content: "🔒";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.8em;
+      color: #ff6b6b;
+    }
+    .collection-card img {
+      width: 100%;
+      border-radius: 6px;
+      border: 2px solid #333;
+    }
+
+    .deck-section {
+      background: rgba(10,10,26,0.6);
+      padding: 15px;
+      border-radius: 12px;
+      margin: 20px 0;
+      border: 1px solid #4ecdc4;
+    }
+
     .end-screen {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -259,7 +358,7 @@
     @media (max-width: 600px) {
       .battle-card { width: 130px; }
       .hand-card { width: 100px; }
-      .battle-table { padding: 15px; }
+      .battle-table, .store-section, .collection-grid { padding: 15px; }
     }
   </style>
 </head>
@@ -267,12 +366,53 @@
   <div class="particles" id="particles"></div>
   <div class="content">
     <h1>FORTNITE SKIN BATTLE: ¡DERROTA AL JEFÉ!</h1>
+    
+    <div class="trophy-bar">
+      <div>
+        <span class="trophy-icon">🏆</span>
+        <span id="trophyCount">0</span> copas
+      </div>
+      <div class="league-badge" id="leagueBadge">Bronce</div>
+    </div>
 
+    <div class="nav-buttons">
+      <button class="nav-btn active" onclick="showView('battle')">⚔️ Batalla</button>
+      <button class="nav-btn" onclick="showView('collection')">🃏 Colección</button>
+    </div>
+
+    <!-- 💎 TIENDA (siempre visible, sin contador) -->
+    <div class="store-section" id="storeSection">
+      <h3 style="color:gold; font-family:'Bebas Neue'">🛒 TIENDA DE BATALLA</h3>
+      <div class="store-items">
+        <div class="store-item gold">
+          <div style="font-weight:bold;">Skin Dorada</div>
+          <div class="power">+30 DEF</div>
+          <div style="color:gold; font-weight:bold;">50 💎</div>
+          <button class="action-btn" onclick="buyItem('golden_skin',50)" style="font-size:0.85em; padding:4px 8px; margin-top:5px;">Comprar</button>
+        </div>
+        <div class="store-item purple">
+          <div style="font-weight:bold;">Confeti Épico</div>
+          <div class="power">Ataque Sorpresa</div>
+          <div style="color:gold; font-weight:bold;">30 💎</div>
+          <button class="action-btn" onclick="buyItem('epic_confetti',30)" style="font-size:0.85em; padding:4px 8px; margin-top:5px;">Comprar</button>
+        </div>
+        <div class="store-item orange">
+          <div style="font-weight:bold;">Doble Voto</div>
+          <div class="power">Doble Ataque</div>
+          <div style="color:gold; font-weight:bold;">70 💎</div>
+          <button class="action-btn" onclick="buyItem('double_vote',70)" style="font-size:0.85em; padding:4px 8px; margin-top:5px;">Comprar</button>
+        </div>
+      </div>
+      <p id="storeMessage" style="margin-top:10px; color:#4ecdc4; font-style:italic;"></p>
+    </div>
+
+    <!-- Menú principal -->
     <div class="main-menu" id="mainMenu">
       <button class="menu-btn" onclick="startBattle()">⚔️ ¡INICIAR BATALLA!</button>
       <p style="color:#4ecdc4; margin-top:20px;">Arma tu mazo en "Colección" antes de luchar.</p>
     </div>
 
+    <!-- Mesa de batalla -->
     <div class="battle-table" id="battleTable">
       <div class="battle-header">MESA DE BATALLA - Ronda <span id="roundNumber">1</span></div>
       
@@ -302,7 +442,6 @@
         </div>
       </div>
 
-      <!-- Capa para efectos de ataque -->
       <div class="attack-overlay" id="attackOverlay"></div>
 
       <div class="battle-log" id="battleLog">
@@ -314,13 +453,27 @@
 
       <button class="action-btn" onclick="exitBattle()" style="background:#ff6b6b;">🚪 Salir</button>
     </div>
-  </div>
 
-  <!-- Pantalla de fin -->
-  <div class="end-screen" id="endScreen">
-    <h2 id="endTitle" style="font-size:3em; margin-bottom:20px;"></h2>
-    <p id="endMessage" style="font-size:1.4em; margin-bottom:30px;"></p>
-    <button class="menu-btn" onclick="location.reload()">🔄 Jugar de Nuevo</button>
+    <!-- Colección -->
+    <div class="collection" id="collectionView" style="display:none;">
+      <h2 style="color: #4ecdc4;">Mi Colección</h2>
+      <p>Selecciona cartas desbloqueadas para tu mazo.</p>
+      <div class="collection-grid" id="collectionGrid">
+      </div>
+      
+      <div class="deck-section">
+        <div class="deck-title">Mazo Actual (3 cartas)</div>
+        <div id="currentDeck" style="display:flex; justify-content:center; flex-wrap:wrap; gap:10px;"></div>
+        <button class="action-btn" onclick="saveDeck()" style="margin-top:10px;">💾 Guardar Mazo</button>
+      </div>
+    </div>
+
+    <!-- Pantalla de fin -->
+    <div class="end-screen" id="endScreen">
+      <h2 id="endTitle" style="font-size:3em; margin-bottom:20px;"></h2>
+      <p id="endMessage" style="font-size:1.4em; margin-bottom:30px;"></p>
+      <button class="menu-btn" onclick="location.reload()">🔄 Jugar de Nuevo</button>
+    </div>
   </div>
 
   <!-- Sonidos -->
@@ -346,30 +499,153 @@
       { id:9, name:"JEFE FINAL", img:"https://s206.erome.com/4699/lpRzYjBO/gU2HfmRY.jpeg?v=1745795818", rarity:"legendary", atk:100, def:35, power:"Tirano", attackType:"arcane", unlocked: false }
     ];
 
+    const LEAGUES = [
+      { name: "Bronce", min: 0, max: 199, badgeClass: "league-bronze" },
+      { name: "Plata", min: 200, max: 399, badgeClass: "league-silver" },
+      { name: "Oro", min: 400, max: 599, badgeClass: "league-gold" },
+      { name: "Élite", min: 600, max: 799, badgeClass: "league-elite" },
+      { name: "Leyenda", min: 800, max: Infinity, badgeClass: "league-legend" }
+    ];
+
     let currentDeck = JSON.parse(localStorage.getItem('currentDeck')) || [0, 3, 6];
     let playerCards = [];
     let enemyCard = null;
     let round = 1;
     let gameActive = true;
     let playerTurn = true;
+    let selectedPlayerCard = null;
+    let trophies = parseInt(localStorage.getItem('trophies')) || 0;
+    let currentLeague = LEAGUES[0];
+    let credits = 100;
 
-    function createParticles() {
-      const c = document.getElementById('particles');
-      const n = 15;
-      for (let i = 0; i < n; i++) {
-        const p = document.createElement('div');
-        p.className = 'particle';
-        const s = Math.random() * 4 + 1;
-        p.style.width = p.style.height = `${s}px`;
-        p.style.left = `${Math.random() * 100}%`;
-        p.style.top = `${Math.random() * 100}%`;
-        const cols = ['rgba(255,107,107,0.7)','rgba(78,205,196,0.7)','rgba(254,202,87,0.7)'];
-        p.style.background = cols[Math.floor(Math.random() * cols.length)];
-        p.style.setProperty('--tx', `${(Math.random()-0.5)*200}px`);
-        p.style.setProperty('--ty', `${(Math.random()-0.5)*200}px`);
-        p.style.animationDuration = `${15 + Math.random() * 20}s`;
-        c.appendChild(p);
+    // Cargar estado de cartas
+    const savedCards = JSON.parse(localStorage.getItem('cards')) || {};
+    CARDS.forEach(card => {
+      if (savedCards[card.id] !== undefined) {
+        card.unlocked = savedCards[card.id];
       }
+    });
+
+    function saveCollection() {
+      const state = {};
+      CARDS.forEach(card => state[card.id] = card.unlocked);
+      localStorage.setItem('cards', JSON.stringify(state));
+    }
+
+    function updateTrophies() {
+      localStorage.setItem('trophies', trophies);
+      document.getElementById('trophyCount').innerText = trophies;
+      
+      const newLeague = LEAGUES.find(l => trophies >= l.min && trophies <= l.max) || LEAGUES[0];
+      if (newLeague.name !== currentLeague.name) {
+        currentLeague = newLeague;
+        document.getElementById('levelUpSound').play().catch(()=>{});
+        showNotification(`¡Ascendiste a ${newLeague.name}! 🎉`);
+        const unlockIndex = Math.min(LEAGUES.indexOf(newLeague), CARDS.length - 1);
+        if (CARDS[unlockIndex] && !CARDS[unlockIndex].unlocked) {
+          CARDS[unlockIndex].unlocked = true;
+          saveCollection();
+          if (document.getElementById('collectionView').style.display === 'block') {
+            renderCollection();
+          }
+        }
+      }
+      document.getElementById('leagueBadge').className = `league-badge ${newLeague.badgeClass}`;
+      document.getElementById('leagueBadge').innerText = newLeague.name;
+    }
+
+    function showNotification(msg) {
+      const notif = document.createElement('div');
+      notif.innerText = msg;
+      notif.style.position = 'fixed';
+      notif.style.top = '20%';
+      notif.style.left = '50%';
+      notif.style.transform = 'translateX(-50%)';
+      notif.style.background = 'gold';
+      notif.style.color = '#0a0a1a';
+      notif.style.padding = '10px 20px';
+      notif.style.borderRadius = '10px';
+      notif.style.fontWeight = 'bold';
+      notif.style.zIndex = '1000';
+      notif.style.fontSize = '1.2em';
+      document.body.appendChild(notif);
+      setTimeout(() => document.body.removeChild(notif), 3000);
+    }
+
+    function buyItem(id, cost) {
+      if (credits >= cost) {
+        credits -= cost;
+        localStorage.setItem(`owned_${id}`, 'true');
+        document.getElementById('storeMessage').innerText = '¡Compra exitosa! 🎉';
+        setTimeout(() => document.getElementById('storeMessage').innerText = '', 3000);
+      } else {
+        document.getElementById('storeMessage').innerText = '❌ Créditos insuficientes.';
+        setTimeout(() => document.getElementById('storeMessage').innerText = '', 3000);
+      }
+    }
+
+    function showView(view) {
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      document.getElementById('mainMenu').style.display = view === 'battle' ? 'block' : 'none';
+      document.getElementById('battleTable').style.display = 'none';
+      document.getElementById('endScreen').style.display = 'none';
+      document.getElementById('collectionView').style.display = view === 'collection' ? 'block' : 'none';
+      
+      if (view === 'collection') {
+        renderCollection();
+      }
+    }
+
+    function renderCollection() {
+      const grid = document.getElementById('collectionGrid');
+      grid.innerHTML = '';
+      CARDS.forEach(card => {
+        const div = document.createElement('div');
+        div.className = `collection-card ${card.unlocked ? 'unlocked' : 'locked'}`;
+        if (card.unlocked) {
+          const img = document.createElement('img');
+          img.src = card.img;
+          img.alt = card.name;
+          div.appendChild(img);
+          div.onclick = () => addToDeck(card.id);
+        }
+        grid.appendChild(div);
+      });
+
+      const deckEl = document.getElementById('currentDeck');
+      deckEl.innerHTML = '';
+      currentDeck.forEach(id => {
+        const card = CARDS.find(c => c.id === id && c.unlocked);
+        if (card) {
+          const cardEl = document.createElement('div');
+          cardEl.style.width = '100px';
+          cardEl.style.margin = '5px';
+          cardEl.innerHTML = `<img src="${card.img}" style="width:100%; border-radius:8px;">`;
+          deckEl.appendChild(cardEl);
+        }
+      });
+    }
+
+    function addToDeck(cardId) {
+      if (currentDeck.length >= 3) {
+        alert('Tu mazo solo puede tener 3 cartas.');
+        return;
+      }
+      if (!currentDeck.includes(cardId)) {
+        currentDeck.push(cardId);
+        renderCollection();
+      }
+    }
+
+    function saveDeck() {
+      if (currentDeck.length !== 3) {
+        alert('¡Tu mazo debe tener exactamente 3 cartas!');
+        return;
+      }
+      localStorage.setItem('currentDeck', JSON.stringify(currentDeck));
+      showNotification('¡Mazo guardado!');
     }
 
     function playAttackEffect(type) {
@@ -378,7 +654,6 @@
       overlay.classList.add(`${type}-effect`);
       overlay.style.opacity = '1';
       
-      // Sonido por tipo
       const soundMap = {
         fire: 'fireSound',
         ice: 'iceSound',
@@ -414,6 +689,7 @@
       round = 1;
       gameActive = true;
       playerTurn = true;
+      selectedPlayerCard = null;
 
       document.getElementById('mainMenu').style.display = 'none';
       document.getElementById('battleTable').style.display = 'block';
@@ -425,20 +701,94 @@
     function updateBattleUI() {
       document.getElementById('roundNumber').innerText = round;
       
+      // Enemigo
       document.getElementById('enemyCardImg').src = enemyCard.img;
       document.getElementById('enemyRarity').innerText = enemyCard.rarity;
       document.getElementById('enemyRarity').className = `card-rarity ${enemyCard.rarity}`;
       document.getElementById('enemyHp').innerText = enemyCard.currentHp;
       document.getElementById('enemyHpBar').style.width = `${(enemyCard.currentHp / enemyCard.def) * 100}%`;
       
-      const activePlayerCard = playerCards.find(c => c.alive);
-      if (activePlayerCard) {
-        document.getElementById('playerCardImg').src = activePlayerCard.img;
-        document.getElementById('playerRarity').innerText = activePlayerCard.rarity;
-        document.getElementById('playerRarity').className = `card-rarity ${activePlayerCard.rarity}`;
-        document.getElementById('playerHp').innerText = activePlayerCard.currentHp;
-        document.getElementById('playerHpBar').style.width = `${(activePlayerCard.currentHp / activePlayerCard.def) * 100}%`;
+      // Jugador: solo si hay carta seleccionada
+      if (selectedPlayerCard) {
+        document.getElementById('playerCardImg').src = selectedPlayerCard.img;
+        document.getElementById('playerRarity').innerText = selectedPlayerCard.rarity;
+        document.getElementById('playerRarity').className = `card-rarity ${selectedPlayerCard.rarity}`;
+        document.getElementById('playerHp').innerText = selectedPlayerCard.currentHp;
+        document.getElementById('playerHpBar').style.width = `${(selectedPlayerCard.currentHp / selectedPlayerCard.def) * 100}%`;
+      } else {
+        // Mostrar carta por defecto (la primera viva)
+        const firstAlive = playerCards.find(c => c.alive);
+        if (firstAlive) {
+          selectedPlayerCard = firstAlive;
+          updateBattleUI();
+        }
       }
+
+      // Mano de cartas (solo para elegir)
+      const handEl = document.getElementById('playerHand');
+      handEl.innerHTML = '';
+      playerCards.forEach(card => {
+        if (card.alive) {
+          const cardEl = document.createElement('div');
+          cardEl.className = 'hand-card';
+          cardEl.innerHTML = `
+            <img src="${card.img}" alt="${card.name}">
+            <div style="font-size:0.9em; margin-top:5px;">${card.name}</div>
+          `;
+          cardEl.onclick = () => {
+            selectedPlayerCard = card;
+            updateBattleUI();
+          };
+          handEl.appendChild(cardEl);
+        }
+      });
+    }
+
+    function selectPlayerCard(cardId) {
+      // Ya no se usa directamente; ahora se elige en la mano
+    }
+
+    function attackWithSelected() {
+      if (!gameActive || !playerTurn || !selectedPlayerCard) return;
+      
+      const log = document.getElementById('battleLog');
+      log.innerHTML = `¡${selectedPlayerCard.name} usa <strong>${selectedPlayerCard.power}</strong>!`;
+
+      playAttackEffect(selectedPlayerCard.attackType);
+
+      const damage = Math.max(5, selectedPlayerCard.atk - Math.floor(enemyCard.def * 0.3));
+
+      setTimeout(() => {
+        enemyCard.currentHp = Math.max(0, enemyCard.currentHp - damage);
+        updateBattleUI();
+
+        if (enemyCard.currentHp <= 0) {
+          log.innerHTML = `¡${selectedPlayerCard.name} derrotó a ${enemyCard.name}!`;
+          setTimeout(() => {
+            round++;
+            if (round > 3) {
+              trophies += 50;
+              updateTrophies();
+              endBattle(true);
+            } else {
+              const nextEnemy = CARDS[Math.min(5 + round, 9)];
+              enemyCard = {...nextEnemy, currentHp: nextEnemy.def, alive: true};
+              playerTurn = true;
+              updateBattleUI();
+              log.innerHTML = `¡Ronda ${round}! Elige tu carta para atacar:`;
+            }
+          }, 1500);
+        } else {
+          log.innerHTML += `<br>¡Turno de la IA!`;
+          setTimeout(() => iaAttack(), 1500);
+        }
+        playerTurn = false;
+      }, 1000);
+    }
+
+    // Modificar la mano para que ataque al elegir
+    function updateBattleUI() {
+      // ... (código anterior igual)
 
       const handEl = document.getElementById('playerHand');
       handEl.innerHTML = '';
@@ -449,84 +799,44 @@
           cardEl.innerHTML = `
             <img src="${card.img}" alt="${card.name}">
             <div style="font-size:0.9em; margin-top:5px;">${card.name}</div>
-            <div style="color:#feca57; font-size:0.85em;">ATK: ${card.atk}</div>
           `;
-          cardEl.onclick = () => selectPlayerCard(card.id);
-          handEl.appendChild(cardEl);
-        } else {
-          const cardEl = document.createElement('div');
-          cardEl.className = 'hand-card fainted';
-          cardEl.innerHTML = `
-            <img src="${card.img}" alt="${card.name}" style="filter:grayscale(100%);">
-            <div style="font-size:0.9em; margin-top:5px; color:#ff6b6b;">Eliminada</div>
-          `;
+          cardEl.onclick = () => {
+            selectedPlayerCard = card;
+            // Atacar inmediatamente al elegir
+            attackWithSelected();
+          };
           handEl.appendChild(cardEl);
         }
       });
     }
 
-    function selectPlayerCard(cardId) {
-      if (!gameActive || !playerTurn) return;
-      
-      const playerCard = playerCards.find(c => c.id === cardId && c.alive);
-      if (!playerCard) return;
-      
-      const log = document.getElementById('battleLog');
-      log.innerHTML = `¡${playerCard.name} usa <strong>${playerCard.power}</strong>!`;
-
-      // Mostrar efecto de ataque
-      playAttackEffect(playerCard.attackType);
-
-      const damage = Math.max(5, playerCard.atk - Math.floor(enemyCard.def * 0.3));
-
-      setTimeout(() => {
-        enemyCard.currentHp = Math.max(0, enemyCard.currentHp - damage);
-        updateBattleUI();
-
-        if (enemyCard.currentHp <= 0) {
-          log.innerHTML = `¡${playerCard.name} derrotó a ${enemyCard.name}!`;
-          setTimeout(() => {
-            round++;
-            if (round > 3) {
-              endBattle(true);
-            } else {
-              enemyCard = {...CARDS[round + 5], currentHp: CARDS[round + 5].def, alive: true};
-              playerTurn = true;
-              updateBattleUI();
-              log.innerHTML = `¡Ronda ${round}! Elige tu carta para atacar:`;
-            }
-          }, 1500);
-        } else {
-          log.innerHTML += `<br>¡Turno de la IA!`;
-          setTimeout(() => iaAttack(playerCard), 1500);
-        }
-        playerTurn = false;
-      }, 1000);
-    }
-
-    function iaAttack(playerCard) {
+    function iaAttack() {
       if (!gameActive) return;
       
       const log = document.getElementById('battleLog');
-      log.innerHTML = `¡${enemyCard.name} ataca a ${playerCard.name}!`;
+      log.innerHTML = `¡${enemyCard.name} ataca a ${selectedPlayerCard.name}!`;
 
       playAttackEffect(enemyCard.attackType);
 
-      const damage = Math.max(5, enemyCard.atk - Math.floor(playerCard.def * 0.3));
+      const damage = Math.max(5, enemyCard.atk - Math.floor(selectedPlayerCard.def * 0.3));
 
       setTimeout(() => {
-        playerCard.currentHp = Math.max(0, playerCard.currentHp - damage);
+        selectedPlayerCard.currentHp = Math.max(0, selectedPlayerCard.currentHp - damage);
         updateBattleUI();
 
-        if (playerCard.currentHp <= 0) {
-          playerCard.alive = false;
-          log.innerHTML = `¡${playerCard.name} fue eliminada!`;
+        if (selectedPlayerCard.currentHp <= 0) {
+          selectedPlayerCard.alive = false;
+          log.innerHTML = `¡${selectedPlayerCard.name} fue eliminada!`;
           
           const aliveCards = playerCards.filter(c => c.alive);
           if (aliveCards.length === 0) {
+            trophies = Math.max(0, trophies - 20);
+            updateTrophies();
             endBattle(false);
             return;
           }
+          // Cambiar a otra carta viva
+          selectedPlayerCard = aliveCards[0];
         }
 
         playerTurn = true;
@@ -553,6 +863,7 @@
     }
 
     createParticles();
+    updateTrophies();
   </script>
 </body>
 </html>
