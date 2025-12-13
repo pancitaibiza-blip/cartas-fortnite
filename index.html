@@ -404,11 +404,11 @@
           <img src="https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894" alt="IA Básica">
           <div class="name">IA Básica</div>
           <div class="stats">
-            <span>⚔️ 65</span>
-            <span>🛡️ 70</span>
+            <span>⚔️ 60</span>
+            <span>🛡️ 40</span>
           </div>
           <div class="hp-bar"><div class="hp-fill" style="width:100%"></div></div>
-          <div class="hp-text">HP: 70/70</div>
+          <div class="hp-text">HP: 100/100</div>
         </div>
       </div>
       <div class="battle-player-cards" id="battlePlayerCards"></div>
@@ -846,9 +846,9 @@
       updateUI();
       isTournament = true;
       currentTournamentId = tournamentId;
-      iaAtk = 65 + ((tournament.id - 1) * 10);
-      iaDef = 70 + ((tournament.id - 1) * 10);
-      iaHp = 70 + ((tournament.id - 1) * 20);
+      iaAtk = 60 + ((tournament.id - 1) * 10);
+      iaDef = 40 + ((tournament.id - 1) * 10);
+      iaHp = 100 + ((tournament.id - 1) * 20);
       iaMaxHp = iaHp;
       document.querySelector('.battle-ia-card .name').textContent = `IA ${tournament.name}`;
       document.querySelector('.battle-ia-card .stats span:nth-child(1)').textContent = `⚔️ ${iaAtk}`;
@@ -872,10 +872,10 @@
       if (view === 'battle') renderBattleCards();
     }
     // Battle logic
-    let iaHp = 70;
-    let iaMaxHp = 70;
-    let iaAtk = 65;
-    let iaDef = 70;
+    let iaHp = 100;
+    let iaMaxHp = 100;
+    let iaAtk = 60;
+    let iaDef = 40;
     let selectedPlayerCard = null;
     let isTournament = false;
     let currentTournamentId = null;
@@ -897,7 +897,7 @@
             <span>🛡️ ${card.def}</span>
           </div>
           <div class="hp-bar"><div class="hp-fill" style="width:100%"></div></div>
-          <div class="hp-text">HP: ${card.def}/${card.def}</div>
+          <div class="hp-text">HP: 100/100</div>
         `;
         cardEl.onclick = () => {
           selectedPlayerCard = playerCards[index];
@@ -909,8 +909,8 @@
           name: card.name,
           atk: card.atk,
           def: card.def,
-          hp: card.def,
-          maxHp: card.def,
+          hp: 100,
+          maxHp: 100,
           element: cardEl
         });
       });
@@ -956,13 +956,13 @@
           renderTournaments();
           isTournament = false;
           currentTournamentId = null;
-          iaAtk = 65;
-          iaDef = 70;
-          iaHp = 70;
-          iaMaxHp = 70;
+          iaAtk = 60;
+          iaDef = 40;
+          iaHp = 100;
+          iaMaxHp = 100;
           document.querySelector('.battle-ia-card .name').textContent = 'IA Básica';
-          document.querySelector('.battle-ia-card .stats span:nth-child(1)').textContent = `⚔️ 65`;
-          document.querySelector('.battle-ia-card .stats span:nth-child(2)').textContent = `🛡️ 70`;
+          document.querySelector('.battle-ia-card .stats span:nth-child(1)').textContent = `⚔️ 60`;
+          document.querySelector('.battle-ia-card .stats span:nth-child(2)').textContent = `🛡️ 40`;
         } else {
           alert("¡Ganaste la batalla!");
         }
@@ -985,13 +985,13 @@
           alert("Perdiste el torneo. Intenta de nuevo.");
           isTournament = false;
           currentTournamentId = null;
-          iaAtk = 65;
-          iaDef = 70;
-          iaHp = 70;
-          iaMaxHp = 70;
+          iaAtk = 60;
+          iaDef = 40;
+          iaHp = 100;
+          iaMaxHp = 100;
           document.querySelector('.battle-ia-card .name').textContent = 'IA Básica';
-          document.querySelector('.battle-ia-card .stats span:nth-child(1)').textContent = `⚔️ 65`;
-          document.querySelector('.battle-ia-card .stats span:nth-child(2)').textContent = `🛡️ 70`;
+          document.querySelector('.battle-ia-card .stats span:nth-child(1)').textContent = `⚔️ 60`;
+          document.querySelector('.battle-ia-card .stats span:nth-child(2)').textContent = `🛡️ 40`;
         }
       }
     }
