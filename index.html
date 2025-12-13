@@ -27,17 +27,17 @@
       background: #8b5cf6;
       color: white;
       border: none;
-      padding: 10px 20px;
-      margin: 6px;
-      border-radius: 10px;
+      padding: 8px 16px;
+      margin: 4px;
+      border-radius: 8px;
       cursor: pointer;
       font-weight: bold;
       transition: all 0.3s;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     }
     .btn:hover {
       transform: scale(1.05);
-      box-shadow: 0 0 20px rgba(139, 92, 246, 0.8);
+      box-shadow: 0 0 15px rgba(139, 92, 246, 0.8);
     }
     .card-small {
       width: 110px;
@@ -46,10 +46,35 @@
       padding: 6px;
       text-align: center;
       transition: all 0.3s;
+      position: relative;
     }
     .card-small:hover {
       transform: translateY(-5px);
       box-shadow: 0 0 15px rgba(100, 100, 255, 0.6);
+    }
+    .reactions-bar {
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+      margin-top: 4px;
+    }
+    .reaction-btn {
+      background: rgba(255,255,255,0.15);
+      border: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .reaction-btn:hover {
+      background: rgba(255,255,255,0.3);
+      transform: scale(1.2);
+    }
+    .reaction-count {
+      font-size: 10px;
+      margin-top: -2px;
     }
     .card-battle {
       width: 160px;
@@ -176,6 +201,27 @@
       from { text-shadow: 0 0 20px rgba(255, 0, 85, 0.8); }
       to { text-shadow: 0 0 40px rgba(255, 0, 85, 1), 0 0 60px rgba(255, 0, 150, 1); }
     }
+
+    /* === PERFIL === */
+    #playerProfile {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    #profileAvatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 2px solid #8b5cf6;
+      object-fit: cover;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    #profileAvatar:hover {
+      transform: scale(1.1);
+    }
   </style>
 </head>
 <body>
@@ -187,13 +233,22 @@
     </span>
   </div>
 
-  <!-- EFECTO DE CALAVERA (INICIALMENTE OCULTO) -->
+  <!-- EFECTO DE CALAVERA -->
   <div id="skullEffect" class="skull-effect">
     <i class="fas fa-skull skull-icon"></i>
   </div>
 
   <div class="container mx-auto px-4 py-6 pt-20">
-    <h1 class="text-3xl font-bold text-center mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-500 to-yellow-400">
+    <!-- PERFIL -->
+    <div id="playerProfile" class="text-center">
+      <img id="profileAvatar" src="https://via.placeholder.com/50/4f46e5/ffffff?text=👤" alt="Avatar">
+      <div>
+        <div class="font-bold text-xl" id="playerName">Jugador</div>
+        <button class="btn text-xs mt-1" onclick="changeAvatar()">Cambiar avatar</button>
+      </div>
+    </div>
+
+    <h1 class="text-3xl font-bold text-center mb-4 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-500 to-yellow-400">
       🛡️ FORTNITE: BATALLA DE CARTAS
     </h1>
 
@@ -201,17 +256,14 @@
       <!-- Batalla -->
       <div id="battle" class="view">
         <div id="battleLog">¡Elige una carta y ataca!</div>
-        
         <div class="text-center mb-8">
           <h3 class="text-xl font-bold text-red-400 mb-3">IA</h3>
           <div id="enemyCard" class="inline-block"></div>
         </div>
-
         <div class="text-center">
           <h3 class="text-xl font-bold text-green-400 mb-3">TU MAZO</h3>
           <div id="playerCards" class="flex flex-wrap justify-center gap-4"></div>
         </div>
-
         <div class="text-center mt-6">
           <button class="btn bg-red-600" onclick="playerAttack()">🔥 ATACAR</button>
           <button class="btn bg-blue-600" onclick="playerDefend()">🛡️ DEFENDER</button>
@@ -221,16 +273,6 @@
       <!-- Mazo -->
       <div id="deck" class="view hidden">
         <h2 class="text-2xl text-center mb-4">🎴 TU MAZO</h2>
-        <div class="text-center mb-4">
-          <select id="rarityFilter" onchange="renderDeck()" class="bg-gray-800 text-white p-2 rounded">
-            <option value="all">Todas</option>
-            <option value="common">Común</option>
-            <option value="rare">Rara</option>
-            <option value="epic">Épica</option>
-            <option value="legendary">Legendaria</option>
-            <option value="tournament">Torneo</option>
-          </select>
-        </div>
         <div id="deckCards" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 justify-center"></div>
       </div>
 
@@ -243,7 +285,6 @@
       <!-- Torneo -->
       <div id="tournament" class="view hidden">
         <h2 class="text-3xl font-bold text-center mb-2 text-yellow-400">🏆 TORNEO ÉPICO</h2>
-        
         <div class="bg-gradient-to-r from-red-900 via-orange-800 to-yellow-900 border-2 border-yellow-500 rounded-xl p-4 mb-6 mx-auto max-w-2xl animate-pulse">
           <div class="flex items-center justify-center gap-3 mb-2">
             <i class="fas fa-star text-yellow-300 text-xl"></i>
@@ -262,13 +303,11 @@
             <div class="text-yellow-200 text-sm font-bold mt-1">IA ÉLITE</div>
           </div>
         </div>
-
         <p class="text-center text-gray-300 mb-6">
           ¡Derrota a 5 jefes poderosos en ronda consecutiva y desbloquearás esta carta exclusiva!
         </p>
-        
         <div class="text-center">
-          <button class="btn bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white px-6 py-3 rounded-lg text-lg font-bold shadow-lg hover:shadow-xl transition-all" onclick="startTournament()">
+          <button class="btn bg-gradient-to-r from-orange-600 to-red-600" onclick="startTournament()">
             ⚔️ ENTRAR AL TORNEO
           </button>
         </div>
@@ -284,29 +323,57 @@
   </div>
 
   <script>
+    // === PERFIL Y AVATAR ===
+    let playerProfile = {
+      name: localStorage.getItem('playerName') || 'Jugador',
+      avatar: localStorage.getItem('playerAvatar') || 'https://via.placeholder.com/50/4f46e5/ffffff?text=👤'
+    };
+
+    function changeAvatar() {
+      const newAvatar = prompt("Pega la URL de tu imagen (debe ser directa, tipo .jpg/.png):", playerProfile.avatar);
+      if (newAvatar && newAvatar.trim() !== '') {
+        playerProfile.avatar = newAvatar;
+        localStorage.setItem('playerAvatar', newAvatar);
+        document.getElementById('profileAvatar').src = newAvatar;
+      }
+    }
+
+    document.getElementById('playerName').textContent = playerProfile.name;
+    document.getElementById('profileAvatar').src = playerProfile.avatar;
+
+    // === REACCIONES ===
+    let cardReactions = JSON.parse(localStorage.getItem('cardReactions') || '{}');
+
+    function addReaction(cardId, emoji) {
+      if (!cardReactions[cardId]) cardReactions[cardId] = {};
+      if (!cardReactions[cardId][emoji]) cardReactions[cardId][emoji] = 0;
+      cardReactions[cardId][emoji]++;
+      localStorage.setItem('cardReactions', JSON.stringify(cardReactions));
+      renderDeck(); // o renderShop si es desde tienda
+    }
+
+    function getReactionCount(cardId, emoji) {
+      return cardReactions[cardId]?.[emoji] || 0;
+    }
+
     // === CONTADOR DE COFRES ===
     function updateChestCountdown() {
       const lastUpdate = localStorage.getItem('lastShopUpdate') || new Date().toISOString();
       const nextUpdate = new Date(new Date(lastUpdate).getTime() + 5 * 24 * 60 * 60 * 1000);
       const now = new Date();
       let diff = nextUpdate - now;
-
       if (diff <= 0) {
         localStorage.setItem('lastShopUpdate', new Date().toISOString());
         document.getElementById('countdownTimer').textContent = '¡AHORA!';
         setTimeout(() => location.reload(), 3000);
         return;
       }
-
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
       const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
       const secs = Math.floor((diff % (1000 * 60)) / 1000);
-
-      document.getElementById('countdownTimer').textContent = 
-        `${days}d ${hours}h ${mins}m ${secs}s`;
+      document.getElementById('countdownTimer').textContent = `${days}d ${hours}h ${mins}m ${secs}s`;
     }
-
     setInterval(updateChestCountdown, 1000);
     updateChestCountdown();
 
@@ -321,7 +388,7 @@
       }, 2000);
     }
 
-    // === RESTO DEL JUEGO ===
+    // === DATOS DEL JUEGO ===
     const ALL_CARDS = [
       { id: 0, name: "Ramírez", rarity: "common", atk: 60, def: 50, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", shopPrice: null },
       { id: 1, name: "Fortaleza", rarity: "rare", atk: 60, def: 70, img: "https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177", shopPrice: null },
@@ -367,17 +434,19 @@
 
     function renderDeck() {
       const container = document.getElementById('deckCards');
-      const rarity = document.getElementById('rarityFilter').value;
-      const cardsToShow = ALL_CARDS.filter(c => 
-        gameState.ownedCardIds.includes(c.id) &&
-        (rarity === 'all' || c.rarity === rarity)
-      );
-
-      container.innerHTML = cardsToShow.map(c => `
+      container.innerHTML = ALL_CARDS.filter(c => gameState.ownedCardIds.includes(c.id)).map(c => `
         <div class="card-small ${c.rarity}">
           <img src="${c.img}" style="width:100%; height:130px; object-fit:cover; border-radius:6px;">
           <div class="font-bold text-xs mt-1 truncate">${c.name}</div>
-          <div class="text-[10px] opacity-80">${c.rarity}</div>
+          <div class="reactions-bar">
+            <button class="reaction-btn" onclick="addReaction(${c.id}, '❤️')">❤️</button>
+            <button class="reaction-btn" onclick="addReaction(${c.id}, '🔥')">🔥</button>
+            <button class="reaction-btn" onclick="addReaction(${c.id}, '💀')">💀</button>
+          </div>
+          <div class="reaction-count">
+            ❤️${getReactionCount(c.id, '❤️')} 
+            🔥${getReactionCount(c.id, '🔥')}
+          </div>
         </div>
       `).join('');
     }
@@ -387,26 +456,26 @@
       const lastUpdate = localStorage.getItem('lastShopUpdate');
       const now = new Date();
       let daysPassed = 0;
-      if (lastUpdate) {
-        daysPassed = Math.floor((now - new Date(lastUpdate)) / (1000 * 60 * 60 * 24));
-      }
+      if (lastUpdate) daysPassed = Math.floor((now - new Date(lastUpdate)) / (1000 * 60 * 60 * 24));
       const daysLeft = Math.max(0, 5 - daysPassed);
 
-      const shopCards = ALL_CARDS.filter(c => c.shopPrice !== null && !gameState.ownedCardIds.includes(c.id));
-      container.innerHTML = shopCards.map(c => `
+      container.innerHTML = ALL_CARDS.filter(c => c.shopPrice && !gameState.ownedCardIds.includes(c.id)).map(c => `
         <div class="card-small ${c.rarity} relative">
           <div class="timer-badge">${daysLeft}d</div>
           <img src="${c.img}" style="width:100%; height:130px; object-fit:cover; border-radius:6px;">
           <div class="font-bold text-xs mt-1 truncate">${c.name}</div>
           <div class="text-yellow-400 text-[11px]">💎${c.shopPrice}</div>
           <button class="btn w-full mt-1 py-1 text-[10px]" onclick="buyCard(${c.id})">Comprar</button>
+          <div class="reactions-bar">
+            <button class="reaction-btn" onclick="addReaction(${c.id}, '👀')">👀</button>
+          </div>
         </div>
       `).join('');
     }
 
     function renderBattle() {
       const enemy = gameState.enemyCard;
-      const enemyHpPercent = Math.max(0, Math.min(100, Math.round((enemy.currentHp / enemy.def) * 100)));
+      const enemyHpPercent = Math.max(0, Math.round((enemy.currentHp / enemy.def) * 100));
       document.getElementById('enemyCard').innerHTML = `
         <div class="card-battle ${enemy.rarity}" style="${!enemy.alive ? 'opacity:0.4; filter: grayscale(1);' : ''}">
           <img src="${enemy.img}" style="width:100%; height:140px; object-fit:cover; border-radius:8px;">
@@ -419,7 +488,7 @@
 
       const playerContainer = document.getElementById('playerCards');
       playerContainer.innerHTML = gameState.playerCards.map((card, i) => {
-        const hpPercent = Math.max(0, Math.min(100, Math.round((card.currentHp / card.def) * 100)));
+        const hpPercent = Math.max(0, Math.round((card.currentHp / card.def) * 100));
         return `
           <div class="card-battle ${card.rarity}" style="cursor:pointer; ${!card.alive ? 'opacity:0.4; filter: grayscale(1);' : ''}" onclick="selectPlayerCard(${i})">
             <img src="${card.img}" style="width:100%; height:140px; object-fit:cover; border-radius:8px;">
@@ -432,6 +501,7 @@
       }).join('');
     }
 
+    // === FUNCIONES DE JUEGO (buyCard, playerAttack, etc.) ===
     function buyCard(cardId) {
       const card = ALL_CARDS.find(c => c.id === cardId);
       if (!card || !card.shopPrice) return;
@@ -458,21 +528,16 @@
     function playerAttack() {
       const playerCard = gameState.playerCards[selectedPlayerIndex];
       const enemy = gameState.enemyCard;
-
       if (!playerCard || !playerCard.alive) {
         document.getElementById('battleLog').innerHTML = "¡Esta carta está fuera de combate!";
         return;
       }
-
       const damage = Math.max(5, playerCard.atk - Math.floor(enemy.def * 0.3));
       enemy.currentHp = Math.max(0, enemy.currentHp - damage);
-
       document.getElementById('battleLog').innerHTML = `¡${playerCard.name} ataca a ${enemy.name} por <strong>${damage} daño</strong>!`;
-
       const enemyEl = document.getElementById('enemyCard').querySelector('.card-battle');
       enemyEl.style.animation = 'attackPulse 0.8s 1';
       setTimeout(() => enemyEl.style.animation = '', 800);
-
       setTimeout(() => {
         renderBattle();
         if (enemy.currentHp <= 0 && enemy.alive) {
