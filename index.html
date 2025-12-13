@@ -858,14 +858,40 @@
     const isLocked = (card.id === 10) ? true : !card.unlocked;
     const div = document.createElement('div');
     div.className = `collection-card ${isLocked ? 'locked' : 'unlocked'}`;
-    if (!isLocked) {
+    
+    if (card.id === 10) {
+      // 🌟 ¡SELLAMARA GEMELAS CON EFECTO ÉPICO!
+      const img = document.createElement('img');
+      img.src = card.img;
+      img.alt = card.name;
+      img.style.cursor = 'pointer';
+      div.appendChild(img);
+      
+      // Añadir partículas si está desbloqueada
+      if (!isLocked) {
+        div.className += ' sellamara-glow';
+        // Partículas flotantes
+        for (let i = 0; i < 5; i++) {
+          const particle = document.createElement('div');
+          particle.className = 'sellamara-particle';
+          particle.style.left = `${Math.random() * 100}%`;
+          particle.style.animationDelay = `${Math.random() * 3}s`;
+          div.appendChild(particle);
+        }
+      } else {
+        // Candado para bloqueada
+        div.className += ' locked';
+        div.innerHTML += '<div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:2em; color:#ff6b6b;">🔒</div>';
+      }
+      div.onclick = () => showCardPreview(card);
+    } else if (!isLocked) {
       const img = document.createElement('img');
       img.src = card.img;
       img.alt = card.name;
       img.style.cursor = 'pointer';
       img.onclick = () => showCardPreview(card);
       div.appendChild(img);
-    } else if (card.id === 10) {
+    } else {
       const img = document.createElement('img');
       img.src = card.img;
       img.alt = card.name;
@@ -877,6 +903,7 @@
     grid.appendChild(div);
   });
 
+  // Mazo actual
   const deckEl = document.getElementById('currentDeck');
   deckEl.innerHTML = '';
   currentDeck.forEach(id => {
@@ -885,26 +912,40 @@
       const cardEl = document.createElement('div');
       cardEl.style.width = '100px';
       cardEl.style.margin = '5px';
+      
       if (card.id === 10) {
-        // Carta legendaria bloqueada en el mazo
-        cardEl.innerHTML = `
-          <img src="${card.img}" style="width:100%; border-radius:8px; filter:grayscale(100%);">
-          <div style="color:#ff6b6b; font-size:0.8em; margin-top:4px;">🔒 Bloqueada</div>
-        `;
-        cardEl.onclick = () => {
-          alert('¡Sellamara Gemelas se desbloqueará mañana a las 15:00!');
-        };
+        // 🌟 SELLAMARA EN EL MAZO
+        const img = document.createElement('img');
+        img.src = card.img;
+        img.style.width = '100%';
+        img.style.borderRadius = '8px';
+        cardEl.appendChild(img);
+        
+        if (card.unlocked) {
+          cardEl.className = 'sellamara-glow';
+          // Partículas
+          for (let i = 0; i < 3; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'sellamara-particle';
+            particle.style.left = `${Math.random() * 100}%`;
+            particle.style.animationDelay = `${Math.random() * 2}s`;
+            particle.style.width = '3px';
+            particle.style.height = '3px';
+            cardEl.appendChild(particle);
+          }
+        } else {
+          img.style.filter = 'grayscale(100%)';
+          cardEl.innerHTML += '<div style="color:#ff6b6b; font-size:0.7em; margin-top:2px; text-align:center;">🔒 Bloqueada</div>';
+          cardEl.onclick = () => alert('¡Sellamara Gemelas se desbloqueará mañana a las 15:00!');
+        }
       } else if (card.unlocked) {
         cardEl.innerHTML = `<img src="${card.img}" style="width:100%; border-radius:8px;" onclick="showCardPreview(${JSON.stringify(card).replace(/"/g, '&quot;')})">`;
       } else {
-        // Carta normal bloqueada
         cardEl.innerHTML = `
           <img src="${card.img}" style="width:100%; border-radius:8px; filter:grayscale(100%);">
-          <div style="color:#ff6b6b; font-size:0.8em; margin-top:4px;">🔒 Bloqueada</div>
+          <div style="color:#ff6b6b; font-size:0.7em; margin-top:2px; text-align:center;">🔒 Bloqueada</div>
         `;
-        cardEl.onclick = () => {
-          alert('¡Esta carta se desbloquea ganando batallas!');
-        };
+        cardEl.onclick = () => alert('¡Esta carta se desbloquea ganando batallas!');
       }
       deckEl.appendChild(cardEl);
     }
