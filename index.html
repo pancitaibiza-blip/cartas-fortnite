@@ -59,7 +59,6 @@
       box-shadow: 0 0 15px rgba(255, 200, 200, 0.8);
     }
 
-    /* 7 RAREZAS CON BRILLO */
     .card-container {
       position: relative;
       display: inline-block;
@@ -136,7 +135,6 @@
     .rarity-idolos .card-battle::before { background: #ff9800; }
     .rarity-tournament .card-battle::before { background: #f44336; }
 
-    /* ✅ ANIMACIÓN DE ATAQUE ÉPICO */
     .attack-animation {
       position: fixed;
       top: 0;
@@ -190,7 +188,6 @@
       z-index: 2;
     }
 
-    /* BANNER DE OFERTA */
     #offerBanner {
       background: linear-gradient(to right, #ff416c, #ff4b2b);
       color: white;
@@ -398,12 +395,10 @@
   </style>
 </head>
 <body>
-  <!-- OFERTA DE GEMAS -->
   <div id="offerBanner">
     🎁 ¡OFERTA POR TIEMPO LIMITADO! 💎 ¡1000 GEMAS POR SOLO HOY! 🎁
   </div>
 
-  <!-- BANNER DE COFRES -->
   <div id="chestsBanner">
     <span id="tickerText">
       🎄 ¡EVENTO NAVIDAD! 🎄 Consigue la carta LEGENDARIA navideña 
@@ -411,7 +406,6 @@
     </span>
   </div>
 
-  <!-- MODAL DE CARTA -->
   <div id="cardModal" onclick="closeCardModal()">
     <div id="cardModalContent" onclick="event.stopPropagation()">
       <img id="cardModalImage" src="" alt="Carta" />
@@ -423,7 +417,6 @@
     </div>
   </div>
 
-  <!-- ANIMACIÓN DE ATAQUE -->
   <div id="attackAnimation" class="attack-animation">
     <img id="attackingCardImg" class="attacking-card" src="" />
     <div id="targetCardIndicator" class="target-card"></div>
@@ -472,7 +465,6 @@
     </h1>
 
     <div id="content" class="mb-24">
-      <!-- Batalla -->
       <div id="battle" class="view">
         <div id="battleLog"></div>
         <div class="text-center mb-6">
@@ -489,7 +481,6 @@
         </div>
       </div>
 
-      <!-- Mazo -->
       <div id="deck" class="view hidden">
         <h2 class="text-2xl text-center mb-4">🎴 TU MAZO (máx. 3 cartas)</h2>
         <div id="currentDeck"></div>
@@ -498,10 +489,8 @@
         <div id="deckCards" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 justify-center"></div>
       </div>
 
-      <!-- Tienda -->
       <div id="shop" class="view hidden">
         <h2 class="text-2xl text-center mb-4">💎 TIENDA NAVIDEÑA</h2>
-        <!-- ✅ OFERTA DE GEMAS -->
         <div class="bg-gradient-to-r from-blue-600 to-purple-600 p-4 rounded-xl text-center mb-6 animate-pulse">
           <h3 class="text-xl font-bold text-yellow-300">🔥 ¡OFERTA ÚNICA! 🔥</h3>
           <p class="text-lg">¡1000 GEMAS por tiempo limitado!</p>
@@ -510,7 +499,6 @@
         <div id="shopCards" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 justify-center"></div>
       </div>
 
-      <!-- Torneo -->
       <div id="tournament" class="view hidden">
         <h2 class="text-3xl font-bold text-center mb-2 text-yellow-400">🏆 TORNEO NAVIDEÑO</h2>
         <div class="bg-gradient-to-r from-red-900 via-green-800 to-yellow-900 border-2 border-yellow-500 rounded-xl p-4 mb-6 mx-auto max-w-2xl animate-pulse">
@@ -542,7 +530,6 @@
         </div>
       </div>
 
-      <!-- Modo Copas -->
       <div id="cupMode" class="view hidden">
         <h2 class="text-3xl font-bold text-center mb-4 text-yellow-400">🏆 CONSEGUIR COPAS</h2>
         <p class="text-center text-lg mb-6">
@@ -569,7 +556,6 @@
   </div>
 
   <script>
-    // ✅ CARTAS
     const ALL_CARDS = [
       { id: 0, name: "Ramírez", rarity: "common", atk: 60, def: 50, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", shopPrice: null },
       { id: 1, name: "Fortaleza", rarity: "rare", atk: 60, def: 70, img: "https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177", shopPrice: null },
@@ -615,7 +601,6 @@
       document.getElementById('cups').textContent = gameState.cups;
     }
 
-    // ✅ COMPRA DE GEMAS
     function buyGemsPackage() {
       if (confirm("¿Comprar 1000 gemas por $4.99?")) {
         gameState.diamonds += 1000;
@@ -625,7 +610,6 @@
       }
     }
 
-    // ✅ ANIMACIÓN DE ATAQUE ÉPICO
     function playAttackAnimation(playerCard, enemyCard) {
       const anim = document.getElementById('attackAnimation');
       const attackingImg = document.getElementById('attackingCardImg');
@@ -634,10 +618,8 @@
       attackingImg.src = playerCard.img;
       anim.style.display = 'block';
       
-      // Posición inicial (carta del jugador)
-      const playerRect = document.querySelector('#playerCards .card-battle').getBoundingClientRect();
-      // Posición final (carta enemiga)
-      const enemyRect = document.getElementById('enemyCard').getBoundingClientRect();
+      const playerRect = document.querySelector('#playerCards .card-battle')?.getBoundingClientRect() || {left:100, top:400};
+      const enemyRect = document.getElementById('enemyCard')?.getBoundingClientRect() || {left:300, top:200};
       
       attackingImg.style.left = playerRect.left + 'px';
       attackingImg.style.top = playerRect.top + 'px';
@@ -647,7 +629,6 @@
       targetIndicator.style.top = enemyRect.top + 'px';
       targetIndicator.style.display = 'block';
       
-      // Animar
       attackingImg.style.transition = 'all 0.6s cubic-bezier(0.2, 0.8, 0.3, 1)';
       attackingImg.style.left = enemyRect.left + 'px';
       attackingImg.style.top = enemyRect.top + 'px';
@@ -899,7 +880,6 @@
         return;
       }
 
-      // ✅ REPRODUCIR ANIMACIÓN ÉPICA
       playAttackAnimation(playerCard, enemy);
 
       const damage = Math.max(5, playerCard.atk - Math.floor(enemy.def * 0.3));
@@ -923,16 +903,21 @@
           if (battleState.inTournament) {
             gameState.tournament.wins++;
             if (gameState.tournament.wins >= 5) {
-              gameState.cups -= 1;
-              [11,12,13].forEach(id => {
-                if (!gameState.ownedCardIds.includes(id)) gameState.ownedCardIds.push(id);
+              // ✅ ✅ ✅ ¡AHORA SÍ SE DESBLOQUEAN LAS CARTAS DEL TORNEO!
+              gameState.cups = Math.max(0, gameState.cups - 1);
+              const tournamentCardIds = [7, 11, 12, 13]; // Francine Smith + cartas de torneo
+              tournamentCardIds.forEach(id => {
+                if (!gameState.ownedCardIds.includes(id)) {
+                  gameState.ownedCardIds.push(id);
+                }
               });
               gameState.trophies += 500;
-              alert("¡FELICIDADES! 🎄 Has ganado el evento navideño y desbloqueado las cartas del torneo.");
+              saveGame(); // ✅ Guardar inmediatamente
+              alert("¡FELICIDADES! 🎄 Has ganado el torneo y desbloqueado cartas exclusivas.");
               gameState.tournament = { active: false, round: 0, wins: 0 };
             } else {
               gameState.tournament.round++;
-              alert("¡Ronda " + gameState.tournament.wins + " ganada! 🎅");
+              alert("¡Ronda " + gameState.tournament.wins + " ganada! 🎅 Sigue así.");
               setTimeout(() => startBattle(true), 1000);
               return;
             }
