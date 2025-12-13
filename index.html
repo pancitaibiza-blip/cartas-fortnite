@@ -1,1081 +1,668 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FORTNITE SKIN BATTLE: ¡DERROTA A LA IA!</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oxanium:wght@600&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Oxanium', sans-serif;
-      color: white;
-      text-align: center;
-      margin: 0;
-      padding: 10px;
-      background: #0a0a1a;
-      position: relative;
-      overflow-x: hidden;
-      min-height: 100vh;
-    }
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: radial-gradient(ellipse at center, #1a1a2e 0%, #0a0a1a 70%);
-      z-index: -3;
-    }
-    .particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
-    .particle { position: absolute; border-radius: 50%; animation: float 15s infinite linear; }
-    @keyframes float { to { transform: translate(var(--tx), var(--ty)) rotate(360deg); opacity: 0; } }
+'use client';
 
-    .content { position: relative; z-index: 10; }
+import React, { useEffect, useState } from 'react';
+import { useFortniteGame } from '@/hooks/useFortniteGame';
+import { Card, League, GameView } from '@/types/fortnite-game';
+import { Button } from '@/components/ui/button';
+import { Card as CardComponent, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-    /* Barra de jugador y trofeos */
-    .player-bar {
-      background: rgba(10,10,26,0.7);
-      padding: 12px;
-      border-radius: 12px;
-      margin: 15px 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 1.2em;
-      border: 2px solid gold;
-    }
-    .player-info, .trophy-info, .diamonds-info {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .league-badge {
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-weight: bold;
-      font-size: 0.95em;
-    }
-    .league-bronze { background: linear-gradient(to right, #cd7f32, #b8860b); }
-    .league-silver { background: linear-gradient(to right, silver, #c0c0c0); color: #333; }
-    .league-gold { background: linear-gradient(to right, gold, #daa520); }
-    .league-elite { background: linear-gradient(to right, #4b0082, #8a2be2); }
-    .league-legend { background: linear-gradient(45deg, red, gold, blue); animation: rainbow 3s linear infinite; }
+// Importar CARDS para usar como fallback
+const CARDS_FALLBACK = [
+  { id:0, name:"Ramírez", img:"https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", rarity:"common", atk:60, def:50, power:"Paso Firme", attackType:"wind", unlocked: true },
+  { id:1, name:"Azulita", img:"https://s93.erome.com/5472/K3IRZbxx/0B8OzReu.jpeg?v=1764815871", rarity:"rare", atk:70, def:55, power:"Confeti Ácido", attackType:"fire", unlocked: true },
+  { id:2, name:"Tormenta", img:"https://s93.erome.com/5472/K3IRZbxx/7GmdJa3U.jpeg?v=1764802552", rarity:"epic", atk:80, def:45, power:"Torbellino", attackType:"wind", unlocked: true },
+  { id:3, name:"Fortaleza", img:"https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177", rarity:"rare", atk:60, def:70, power:"Muralla", attackType:"ice", unlocked: true },
+  { id:4, name:"Danza", img:"https://s93.erome.com/5472/K3IRZbxx/0VxSvgAl.jpeg?v=1764818017", rarity:"epic", atk:75, def:50, power:"Baile Épico", attackType:"wind", unlocked: true },
+  { id:5, name:"Furia", img:"https://s93.erome.com/5472/K3IRZbxx/LsMURibY.jpeg?v=1764812622", rarity:"legendary", atk:90, def:40, power:"Ira Incontenible", attackType:"fire", unlocked: true },
+  { id:6, name:"Escudera", img:"https://s93.erome.com/5472/K3IRZbxx/9RweIpam.jpeg?v=1764813677", rarity:"common", atk:55, def:65, power:"Protección", attackType:"ice", unlocked: true },
+  { id:7, name:"Asesina", img:"https://s206.erome.com/4699/lpRzYjBO/Z5Tc5k2v.jpeg?v=1745795818", rarity:"legendary", atk:95, def:30, power:"Golpe Letal", attackType:"fire", unlocked: true },
+  { id:8, name:"Guardiana", img:"https://s206.erome.com/4699/lpRzYjBO/P9p2wv5y.jpeg?v=1745795818", rarity:"epic", atk:50, def:80, power:"Escudo Energético", attackType:"ice", unlocked: true },
+  { id:9, name:"IA ÉLITE", img:"https://s206.erome.com/4699/lpRzYjBO/gU2HfmRY.jpeg?v=1745795818", rarity:"legendary", atk:100, def:35, power:"Tirano", attackType:"arcane", unlocked: true },
+  { id:10, name:"Sellamara Gemelas", img:"https://s326.erome.com/5139/YBnb1NTO/R8jmYVqr.jpeg?v=1750357395", rarity:"legendary", atk:120, def:60, power:"Desafío Final", attackType:"arcane", unlocked: false }
+];
 
-    /* Pestañas */
-    .nav-buttons {
-      margin: 15px 0;
-    }
-    .nav-btn {
-      background: rgba(78,205,196,0.2);
-      color: white;
-      border: 1px solid #4ecdc4;
-      padding: 10px 18px;
-      margin: 0 5px;
-      border-radius: 20px;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-weight: bold;
-    }
-    .nav-btn.active {
-      background: #4ecdc4;
-      color: #0a0a1a;
-    }
+// Cartas especiales para la IA con más vida
+const IA_CARDS = [
+  { id:101, name:"IA Ramírez", img:"https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", rarity:"common", atk:60, def:80, power:"Paso Firme Mejorado", attackType:"wind", unlocked: true },
+  { id:102, name:"IA Azulita", img:"https://s93.erome.com/5472/K3IRZbxx/0B8OzReu.jpeg?v=1764815871", rarity:"rare", atk:70, def:85, power:"Confeti Ácido Doble", attackType:"fire", unlocked: true },
+  { id:103, name:"IA Tormenta", img:"https://s93.erome.com/5472/K3IRZbxx/7GmdJa3U.jpeg?v=1764802552", rarity:"epic", atk:80, def:75, power:"Torbellino Destructor", attackType:"wind", unlocked: true },
+  { id:104, name:"IA Fortaleza", img:"https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177", rarity:"rare", atk:60, def:100, power:"Muralla Imbatible", attackType:"ice", unlocked: true },
+  { id:105, name:"IA Danza", img:"https://s93.erome.com/5472/K3IRZbxx/0VxSvgAl.jpeg?v=1764818017", rarity:"epic", atk:75, def:80, power:"Baile Mortal", attackType:"wind", unlocked: true },
+  { id:106, name:"IA Furia", img:"https://s93.erome.com/5472/K3IRZbxx/LsMURibY.jpeg?v=1764812622", rarity:"legendary", atk:90, def:70, power:"Ira Absoluta", attackType:"fire", unlocked: true },
+  { id:107, name:"IA Escudera", img:"https://s93.erome.com/5472/K3IRZbxx/9RweIpam.jpeg?v=1764813677", rarity:"common", atk:55, def:95, power:"Protección Total", attackType:"ice", unlocked: true },
+  { id:108, name:"IA Asesina", img:"https://s206.erome.com/4699/lpRzYjBO/Z5Tc5k2v.jpeg?v=1745795818", rarity:"legendary", atk:95, def:60, power:"Golpe Aniquilador", attackType:"fire", unlocked: true },
+  { id:109, name:"IA Guardiana", img:"https://s206.erome.com/4699/lpRzYjBO/P9p2wv5y.jpeg?v=1745795818", rarity:"epic", atk:50, def:110, power:"Escudo Divino", attackType:"ice", unlocked: true },
+  { id:110, name:"IA ÉLITE", img:"https://s206.erome.com/4699/lpRzYjBO/gU2HfmRY.jpeg?v=1745795818", rarity:"legendary", atk:100, def:65, power:"Tirano Supremo", attackType:"arcane", unlocked: true }
+];
 
-    /* Tienda */
-    .store-section {
-      margin: 20px auto;
-      max-width: 500px;
-      background: rgba(10,10,26,0.5);
-      padding: 15px;
-      border-radius: 15px;
-      border: 1px solid #ff6b6b;
-    }
-    .store-items {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 12px;
-      margin-top: 15px;
-    }
-    .store-item {
-      background: rgba(25,25,45,0.8);
-      padding: 10px;
-      border-radius: 10px;
-      border-left: 4px solid;
-    }
-    .store-item.gold { border-left-color: gold; }
-    .store-item.orange { border-left-color: #ff6b35; }
-    .store-item.purple { border-left-color: #a29bfe; }
+const FortniteGame: React.FC = () => {
+  const {
+    player,
+    currentDeck,
+    playerCards,
+    enemyCard,
+    gameActive,
+    playerTurn,
+    selectedPlayerCard,
+    currentView,
+    battleLog,
+    cards,
+    LEAGUES,
+    setCurrentView,
+    startBattle,
+    attackWithSelected,
+    exitBattle,
+    addToDeck,
+    removeFromDeck,
+    saveDeck,
+    buyItem,
+    updateRanking,
+    saveCollection,
+    setSelectedPlayerCard,
+    setBattleLog
+  } = useFortniteGame();
 
-    /* Mesa de batalla */
-    .battle-table {
-      display: none;
-      margin: 20px auto;
-      max-width: 700px;
-      background: rgba(5, 5, 15, 0.9);
-      border: 3px solid gold;
-      border-radius: 20px;
-      padding: 25px;
-      box-shadow: 0 0 30px rgba(255,215,0,0.5);
-      position: relative;
-      overflow: hidden;
-    }
-    .battle-table::after {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: radial-gradient(circle, transparent 60%, rgba(0,0,0,0.7) 100%);
-      pointer-events: none;
-    }
+  const [ranking, setRanking] = useState<any[]>([]);
+  const [selectedCard, setSelectedCard] = useState<Card | null>(null);
+  const [storeMessage, setStoreMessage] = useState<string>('');
+  const [particles, setParticles] = useState<JSX.Element[]>([]);
+  const [battleEffect, setBattleEffect] = useState<string | null>(null);
+  const [backgroundPosition, setBackgroundPosition] = useState({ x: 0, y: 0 });
 
-    /* Efectos de ataque */
-    .attack-overlay {
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
-      pointer-events: none;
-      z-index: 10;
-      opacity: 0;
-    }
-    .fire-effect { background: radial-gradient(circle, rgba(255,90,0,0.6) 0%, transparent 70%); animation: fireBurst 1s forwards; }
-    .ice-effect { background: radial-gradient(circle, rgba(0,200,255,0.5) 0%, transparent 70%); animation: iceShatter 1s forwards; }
-    .wind-effect { background: radial-gradient(circle, rgba(100,255,200,0.4) 0%, transparent 70%); animation: windSwirl 1s forwards; }
-    .arcane-effect { background: radial-gradient(circle, rgba(200,100,255,0.6) 0%, transparent 70%); animation: arcanePulse 1s forwards; }
-
-    @keyframes fireBurst { 0% { opacity: 0.8; transform: scale(0.5); } 100% { opacity: 0; transform: scale(2); } }
-    @keyframes iceShatter { 0% { opacity: 0.9; transform: scale(0.3); } 50% { opacity: 0.9; } 100% { opacity: 0; transform: scale(1.5); } }
-    @keyframes windSwirl { 0% { opacity: 0.7; transform: rotate(0) scale(0.5); } 100% { opacity: 0; transform: rotate(180deg) scale(2); } }
-    @keyframes arcanePulse { 
-      0% { opacity: 0.9; transform: scale(0.4); box-shadow: 0 0 10px #c864ff; } 
-      50% { box-shadow: 0 0 20px #ff64c8, 0 0 30px #64c8ff; } 
-      100% { opacity: 0; transform: scale(1.8); } 
-    }
-
-    .battle-header {
-      margin-bottom: 25px;
-      font-size: 1.4em;
-      color: #4ecdc4;
-      text-shadow: 0 0 10px rgba(78,205,196,0.7);
-    }
-
-    .battle-zone {
-      display: flex;
-      justify-content: space-between;
-      margin: 30px 0;
-    }
-    .player-zone, .enemy-zone {
-      width: 48%;
-      text-align: center;
-    }
-    .zone-title {
-      margin-bottom: 15px;
-      font-weight: bold;
-    }
-    .player-zone .zone-title { color: #4ecdc4; }
-    .enemy-zone .zone-title { color: #ff6b6b; }
-
-    .battle-card {
-      position: relative;
-      width: 160px;
-      margin: 0 auto;
-    }
-    .card-image {
-      width: 100%;
-      border-radius: 12px;
-      border: 3px solid #333;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-    }
-    .card-rarity {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      font-size: 0.8em;
-      font-weight: bold;
-      padding: 4px 8px;
-      border-radius: 10px;
-      background: rgba(0,0,0,0.6);
-    }
-    .common { color: white; }
-    .rare { color: #ff6b35; }
-    .epic { color: #a29bfe; }
-    .legendary { 
-      color: transparent;
-      background: linear-gradient(45deg, red, gold, blue, purple);
-      -webkit-background-clip: text;
-      background-clip: text;
-      animation: rainbow 3s linear infinite;
-    }
-
-    .hp-bar {
-      width: 100%;
-      height: 12px;
-      background: #333;
-      border-radius: 6px;
-      margin-top: 8px;
-      overflow: hidden;
-    }
-    .hp-fill {
-      height: 100%;
-      background: linear-gradient(to right, #ff416c, #ff4b2b);
-      width: 100%;
-      transition: width 0.5s ease;
-    }
-    .hp-text {
-      font-size: 0.9em;
-      margin-top: 4px;
-      color: #feca57;
-    }
-
-    .hand {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      margin: 20px 0;
-      flex-wrap: wrap;
-    }
-    .hand-card {
-      background: rgba(20,20,40,0.9);
-      border-radius: 12px;
-      padding: 10px;
-      width: 120px;
-      cursor: pointer;
-      transition: transform 0.2s;
-      border: 2px solid #45b7d1;
-    }
-    .hand-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 8px 20px rgba(78,205,196,0.6);
-    }
-    .hand-card img {
-      width: 100%;
-      border-radius: 8px;
-    }
-
-    .battle-log {
-      background: rgba(0,0,0,0.6);
-      padding: 15px;
-      border-radius: 12px;
-      margin: 20px 0;
-      min-height: 80px;
-      font-size: 1.15em;
-      color: #feca57;
-      border: 1px solid #4ecdc4;
-    }
-    .action-btn {
-      background: #4ecdc4;
-      color: #0a0a1a;
-      border: none;
-      padding: 12px 25px;
-      font-size: 1.15em;
-      font-weight: bold;
-      border-radius: 50px;
-      cursor: pointer;
-      margin: 10px 5px;
-      transition: all 0.3s;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-    }
-    .action-btn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 6px 15px rgba(0,0,0,0.5);
-    }
-
-    .main-menu {
-      text-align: center;
-    }
-    .menu-btn {
-      background: #ff6b6b;
-      color: white;
-      border: none;
-      padding: 15px 30px;
-      font-size: 1.3em;
-      font-weight: bold;
-      border-radius: 50px;
-      cursor: pointer;
-      margin: 20px 10px;
-      transition: all 0.3s;
-      box-shadow: 0 5px 15px rgba(255,107,107,0.4);
-    }
-    .menu-btn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 8px 20px rgba(255,107,107,0.6);
-    }
-
-    .collection-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-      gap: 12px;
-      margin: 20px auto;
-      max-width: 600px;
-    }
-    .collection-card {
-      background: rgba(20,20,40,0.8);
-      border-radius: 10px;
-      padding: 8px;
-      position: relative;
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-    .collection-card.unlocked {
-      opacity: 1;
-      cursor: pointer;
-    }
-    .collection-card.locked::after {
-      content: "🔒";
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 1.8em;
-      color: #ff6b6b;
-    }
-    .collection-card img {
-      width: 100%;
-      border-radius: 6px;
-      border: 2px solid #333;
-    }
-
-    .deck-section {
-      background: rgba(10,10,26,0.6);
-      padding: 15px;
-      border-radius: 12px;
-      margin: 20px 0;
-      border: 1px solid #4ecdc4;
-    }
-
-    .coming-soon {
-      margin: 30px auto;
-      max-width: 500px;
-      background: rgba(0,0,0,0.4);
-      padding: 20px;
-      border-radius: 15px;
-      text-align: center;
-      border: 2px dashed gold;
-    }
-    .coming-soon h3 {
-      color: gold;
-      font-family: 'Bebas Neue';
-    }
-
-    /* Ranking */
-    .ranking {
-      margin: 20px auto;
-      max-width: 500px;
-      background: rgba(10,10,26,0.6);
-      padding: 15px;
-      border-radius: 15px;
-      border: 1px solid #4ecdc4;
-    }
-    .ranking h2 {
-      color: #4ecdc4;
-      margin-bottom: 15px;
-    }
-    .ranking-item {
-      display: flex;
-      justify-content: space-between;
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
-    .ranking-item:first-child {
-      color: gold;
-      font-weight: bold;
-    }
-
-    /* Vista detallada de carta (ZOOM) */
-    .card-preview {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(0);
-      background: rgba(10,10,26,0.95);
-      padding: 20px;
-      border-radius: 15px;
-      max-width: 300px;
-      z-index: 2000;
-      border: 3px solid gold;
-      box-shadow: 0 0 30px gold;
-      opacity: 0;
-      transition: all 0.3s ease;
-    }
-    .card-preview.show {
-      transform: translate(-50%, -50%) scale(1);
-      opacity: 1;
-    }
-    .card-preview img {
-      width: 100%;
-      border-radius: 10px;
-      margin-bottom: 12px;
-    }
-    .rarity-tag {
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-weight: bold;
-      display: inline-block;
-      margin: 5px 0;
-    }
-    .rarity-common-tag { background: rgba(255,255,255,0.2); color: white; }
-    .rarity-rare-tag { background: rgba(255,107,53,0.3); color: #ff6b35; }
-    .rarity-epic-tag { background: rgba(162,155,254,0.3); color: #a29bfe; }
-    .rarity-legendary-tag { 
-      background: linear-gradient(45deg, red, gold, blue);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      text-fill-color: transparent;
-      font-weight: bold;
-    }
-
-    /* Contador en carta legendaria */
-    .legendary-countdown {
-      color: gold;
-      font-size: 0.8em;
-      margin-top: 5px;
-    }
-
-    @keyframes rainbow { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
-
-    @media (max-width: 600px) {
-      .battle-card { width: 130px; }
-      .hand-card { width: 100px; }
-      .battle-table, .store-section, .collection-grid { padding: 15px; }
-      .nav-btn { padding: 8px 14px; font-size: 0.95em; }
-      .card-preview { width: 90%; padding: 15px; }
-    }
-  </style>
-</head>
-<body>
-  <div class="particles" id="particles"></div>
-  <div class="content" id="mainContent">
-    <h1>FORTNITE SKIN BATTLE: ¡DERROTA A LA IA!</h1>
-    
-    <!-- ✅ BARRA DE JUGADOR, TROFEOS Y DIAMANTES -->
-    <div class="player-bar">
-      <div class="player-info">
-        <span>👤</span>
-        <span id="playerName">Cargando...</span>
-      </div>
-      <div class="league-badge" id="leagueBadge">Bronce</div>
-      <div class="trophy-info">
-        <span class="trophy-icon">🏆</span>
-        <span id="trophyCount">0</span>
-      </div>
-      <div class="diamonds-info">
-        <span>💎</span>
-        <span id="diamondCount">100</span>
-      </div>
-    </div>
-
-    <!-- Pestañas -->
-    <div class="nav-buttons">
-      <button class="nav-btn active" onclick="showView('battle')">⚔️ Batalla</button>
-      <button class="nav-btn" onclick="showView('collection')">🃏 Mazo</button>
-      <button class="nav-btn" onclick="showView('store')">🛒 Tienda</button>
-      <button class="nav-btn" onclick="showView('ranking')">📊 Ranking</button>
-    </div>
-
-    <!-- 💎 TIENDA -->
-    <div class="store-section" id="storeView" style="display:none;">
-      <h3 style="color:gold; font-family:'Bebas Neue'">🛒 TIENDA DE BATALLA</h3>
-      <div class="store-items">
-        <div class="store-item gold">
-          <div style="font-weight:bold;">Skin Dorada</div>
-          <div class="power">+30 DEF</div>
-          <div style="color:gold; font-weight:bold;">50 💎</div>
-          <button class="action-btn" onclick="buyItem('golden_skin',50)" style="font-size:0.85em; padding:4px 8px; margin-top:5px;">Comprar</button>
-        </div>
-        <div class="store-item purple">
-          <div style="font-weight:bold;">Confeti Épico</div>
-          <div class="power">Ataque Sorpresa</div>
-          <div style="color:gold; font-weight:bold;">30 💎</div>
-          <button class="action-btn" onclick="buyItem('epic_confetti',30)" style="font-size:0.85em; padding:4px 8px; margin-top:5px;">Comprar</button>
-        </div>
-        <div class="store-item orange">
-          <div style="font-weight:bold;">Doble Voto</div>
-          <div class="power">Doble Ataque</div>
-          <div style="color:gold; font-weight:bold;">70 💎</div>
-          <button class="action-btn" onclick="buyItem('double_vote',70)" style="font-size:0.85em; padding:4px 8px; margin-top:5px;">Comprar</button>
-        </div>
-      </div>
-      <p id="storeMessage" style="margin-top:10px; color:#4ecdc4; font-style:italic;"></p>
-    </div>
-
-    <!-- ⚔️ BATALLA -->
-    <div class="main-menu" id="battleView">
-      <button class="menu-btn" onclick="startBattle()">⚔️ ¡INICIAR BATALLA CONTRA LA IA!</button>
-      <p style="color:#4ecdc4; margin-top:20px;">Usa las cartas de tu mazo para derrotar a la IA.</p>
-    </div>
-
-    <!-- 🃏 MAZO -->
-    <div class="collection" id="collectionView" style="display:none;">
-      <h2 style="color: #4ecdc4;">Mi Mazo (3 cartas)</h2>
-      <p>Selecciona cartas desbloqueadas para tu mazo. ¡Haz clic para ver detalles!</p>
-      <div class="collection-grid" id="collectionGrid">
-      </div>
+  // Crear partículas de fondo
+  useEffect(() => {
+    const createParticles = () => {
+      const newParticles = [];
+      const colors = ['rgba(255,107,107,0.7)', 'rgba(78,205,196,0.7)', 'rgba(254,202,87,0.7)'];
       
-      <div class="deck-section">
-        <h3>Tu Mazo Actual</h3>
-        <div id="currentDeck" style="display:flex; justify-content:center; flex-wrap:wrap; gap:10px;"></div>
-        <button class="action-btn" onclick="saveDeck()" style="margin-top:10px;">💾 Guardar Mazo</button>
-      </div>
-    </div>
-
-    <!-- 📊 RANKING -->
-    <div class="ranking" id="rankingView" style="display:none;">
-      <h2>📊 RANKING DE JUGADORES</h2>
-      <div id="rankingList">
-        <!-- Se llena con JS -->
-      </div>
-    </div>
-
-    <!-- Mesa de batalla -->
-    <div class="battle-table" id="battleTable">
-      <div class="battle-header">BATALLA CONTRA LA IA - Arena: <span id="arenaName">Bronce</span></div>
-      
-      <div class="battle-zone">
-        <div class="enemy-zone">
-          <div class="zone-title">IA</div>
-          <div class="battle-card">
-            <img id="enemyCardImg" class="card-image" src="" alt="IA">
-            <div class="card-rarity" id="enemyRarity"></div>
-            <div class="hp-bar">
-              <div class="hp-fill" id="enemyHpBar"></div>
-            </div>
-            <div class="hp-text">HP: <span id="enemyHp">0</span></div>
-          </div>
-        </div>
+      for (let i = 0; i < 15; i++) {
+        const size = Math.random() * 4 + 1;
+        const left = Math.random() * 100;
+        const top = Math.random() * 100;
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const duration = 15 + Math.random() * 20;
+        const tx = (Math.random() - 0.5) * 200;
+        const ty = (Math.random() - 0.5) * 200;
         
-        <div class="player-zone">
-          <div class="zone-title">TÚ</div>
-          <div class="battle-card">
-            <img id="playerCardImg" class="card-image" src="" alt="Jugador">
-            <div class="card-rarity" id="playerRarity"></div>
-            <div class="hp-bar">
-              <div class="hp-fill" id="playerHpBar"></div>
-            </div>
-            <div class="hp-text">HP: <span id="playerHp">0</span></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="attack-overlay" id="attackOverlay"></div>
-
-      <div class="battle-log" id="battleLog">
-        ¡Elige una carta de tu mazo para atacar!
-      </div>
-
-      <div class="hand" id="playerHand">
-      </div>
-
-      <button class="action-btn" onclick="exitBattle()" style="background:#ff6b6b;">🚪 Salir</button>
-    </div>
-
-    <!-- 🔜 Actualización -->
-    <div class="coming-soon">
-      <h3>🔔 ¡PRÓXIMA ACTUALIZACIÓN! 🔔</h3>
-      <p><strong>Mañana a las 15:00</strong></p>
-      <p>¡Modo Multijugador + Perfil + Ranking!</p>
-      <div id="updateTimer" style="font-size:1.3em; color:#4ecdc4; margin:10px 0; font-weight:bold;"></div>
-    </div>
-  </div>
-
-  <!-- 🎵 MÚSICA DE FONDO EN LOOP -->
-  <audio id="gameMusic" autoplay loop>
-    <source src="https://www.soundjay.com/misc/music/epic-music-01.mp3" type="audio/mpeg">
-  </audio>
-
-  <!-- Vista detallada de carta (ZOOM) -->
-  <div class="card-preview" id="cardPreview">
-    <img id="previewImg" src="" alt="">
-    <h3 id="previewName"></h3>
-    <div id="previewRarity" class="rarity-tag"></div>
-    <div id="previewStats"></div>
-    <div id="previewPower" style="color:gold; font-style:italic;"></div>
-    <div id="legendaryTimer" class="legendary-countdown"></div>
-  </div>
-
-  <script>
-    // ==== INICIALIZAR SIN PANTALLA DE CARGA ====
-    function initGame() {
-      let playerName = localStorage.getItem('playerName');
-      if (!playerName) {
-        playerName = prompt("¿Cómo te llamas, jugador/a?") || "Jugador";
-        localStorage.setItem('playerName', playerName);
-      }
-      document.getElementById('playerName').innerText = playerName;
-
-      createParticles();
-      updateUI();
-      renderCollection();
-      updateRanking();
-      startUpdateCountdown();
-      startLegendaryCountdown();
-
-      const music = document.getElementById('gameMusic');
-      music.volume = 0.3;
-      music.play().catch(() => {
-        console.warn("Autoplay falló. Música en pausa.");
-      });
-    }
-
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initGame);
-    } else {
-      initGame();
-    }
-
-    // ==== CARTAS ====
-    const CARDS = [
-      { id:0, name:"Ramírez", img:"https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", rarity:"common", atk:60, def:50, power:"Paso Firme", attackType:"wind", unlocked: true },
-      { id:1, name:"Azulita", img:"https://s93.erome.com/5472/K3IRZbxx/0B8OzReu.jpeg?v=1764815871", rarity:"rare", atk:70, def:55, power:"Confeti Ácido", attackType:"fire", unlocked: true },
-      { id:2, name:"Tormenta", img:"https://s93.erome.com/5472/K3IRZbxx/7GmdJa3U.jpeg?v=1764802552", rarity:"epic", atk:80, def:45, power:"Torbellino", attackType:"wind", unlocked: false },
-      { id:3, name:"Fortaleza", img:"https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177", rarity:"rare", atk:60, def:70, power:"Muralla", attackType:"ice", unlocked: true },
-      { id:4, name:"Danza", img:"https://s93.erome.com/5472/K3IRZbxx/0VxSvgAl.jpeg?v=1764818017", rarity:"epic", atk:75, def:50, power:"Baile Épico", attackType:"wind", unlocked: false },
-      { id:5, name:"Furia", img:"https://s93.erome.com/5472/K3IRZbxx/LsMURibY.jpeg?v=1764812622", rarity:"legendary", atk:90, def:40, power:"Ira Incontenible", attackType:"fire", unlocked: false },
-      { id:6, name:"Escudera", img:"https://s93.erome.com/5472/K3IRZbxx/9RweIpam.jpeg?v=1764813677", rarity:"common", atk:55, def:65, power:"Protección", attackType:"ice", unlocked: true },
-      { id:7, name:"Asesina", img:"https://s206.erome.com/4699/lpRzYjBO/Z5Tc5k2v.jpeg?v=1745795818", rarity:"legendary", atk:95, def:30, power:"Golpe Letal", attackType:"fire", unlocked: false },
-      { id:8, name:"Guardiana", img:"https://s206.erome.com/4699/lpRzYjBO/P9p2wv5y.jpeg?v=1745795818", rarity:"epic", atk:50, def:80, power:"Escudo Energético", attackType:"ice", unlocked: false },
-      { id:9, name:"IA ÉLITE", img:"https://s206.erome.com/4699/lpRzYjBO/gU2HfmRY.jpeg?v=1745795818", rarity:"legendary", atk:100, def:35, power:"Tirano", attackType:"arcane", unlocked: true },
-      { id:10, name:"Sellamara Gemelas", img:"https://s326.erome.com/5139/YBnb1NTO/R8jmYVqr.jpeg?v=1750357395", rarity:"legendary", atk:120, def:60, power:"Desafío Final", attackType:"arcane", unlocked: false }
-    ];
-
-    const LEAGUES = [
-      { name: "Bronce", min: 0, max: 199, badgeClass: "league-bronze", iaMod: -20 },
-      { name: "Plata", min: 200, max: 399, badgeClass: "league-silver", iaMod: 0 },
-      { name: "Oro", min: 400, max: 599, badgeClass: "league-gold", iaMod: 20 },
-      { name: "Élite", min: 600, max: 799, badgeClass: "league-elite", iaMod: 40 },
-      { name: "Leyenda", min: 800, max: Infinity, badgeClass: "league-legend", iaMod: 60 }
-    ];
-
-    let currentDeck = JSON.parse(localStorage.getItem('currentDeck')) || [0, 3, 6];
-    let playerCards = [];
-    let enemyCard = null;
-    let gameActive = true;
-    let playerTurn = true;
-    let selectedPlayerCard = null;
-    let trophies = parseInt(localStorage.getItem('trophies')) || 0;
-    let diamonds = 100;
-    let currentLeague = LEAGUES[0];
-
-    const today = new Date().toDateString();
-    const lastDiamondClaim = localStorage.getItem('lastDiamondClaim');
-    if (lastDiamondClaim !== today) {
-      localStorage.setItem('diamonds', 100);
-      localStorage.setItem('lastDiamondClaim', today);
-    }
-    diamonds = parseInt(localStorage.getItem('diamonds')) || 100;
-
-    const savedCards = JSON.parse(localStorage.getItem('cards')) || {};
-    CARDS.forEach(card => {
-      if (savedCards[card.id] !== undefined) {
-        card.unlocked = savedCards[card.id];
-      }
-      if (card.id === 10) card.unlocked = false;
-    });
-
-    function saveCollection() {
-      const state = {};
-      CARDS.forEach(card => state[card.id] = card.unlocked);
-      state[10] = false;
-      localStorage.setItem('cards', JSON.stringify(state));
-    }
-
-    function updateUI() {
-      document.getElementById('trophyCount').innerText = trophies;
-      
-      const newLeague = LEAGUES.find(l => trophies >= l.min && trophies <= l.max) || LEAGUES[0];
-      if (newLeague.name !== currentLeague.name) {
-        currentLeague = newLeague;
-        showNotification(`¡Ascendiste a ${newLeague.name}! 🎉`);
-      }
-      document.getElementById('leagueBadge').className = `league-badge ${newLeague.badgeClass}`;
-      document.getElementById('leagueBadge').innerText = newLeague.name;
-      document.getElementById('arenaName').innerText = newLeague.name;
-
-      localStorage.setItem('diamonds', diamonds);
-      document.getElementById('diamondCount').innerText = diamonds;
-    }
-
-    function updateRanking() {
-      const playerName = localStorage.getItem('playerName') || "Jugador";
-      let rankings = JSON.parse(localStorage.getItem('rankings')) || [];
-      
-      const existingIndex = rankings.findIndex(r => r.name === playerName);
-      if (existingIndex >= 0) {
-        rankings[existingIndex].trophies = trophies;
-      } else {
-        rankings.push({ name: playerName, trophies });
+        newParticles.push(
+          <div
+            key={i}
+            className="particle absolute rounded-full"
+            style={{
+              width: `${size}px`,
+              height: `${size}px`,
+              left: `${left}%`,
+              top: `${top}%`,
+              background: color,
+              animation: `float ${duration}s infinite linear`,
+              '--tx': `${tx}px`,
+              '--ty': `${ty}px`,
+            } as React.CSSProperties}
+          />
+        );
       }
       
-      rankings.sort((a, b) => b.trophies - a.trophies);
-      rankings = rankings.slice(0, 10);
-      localStorage.setItem('rankings', JSON.stringify(rankings));
-      
-      const listEl = document.getElementById('rankingList');
-      listEl.innerHTML = '';
-      rankings.forEach((r, i) => {
-        const item = document.createElement('div');
-        item.className = 'ranking-item';
-        item.innerHTML = `<span>${i+1}. ${r.name}</span><span>${r.trophies} 🏆</span>`;
-        listEl.appendChild(item);
-      });
-    }
-
-    function showNotification(msg) {
-      const notif = document.createElement('div');
-      notif.innerText = msg;
-      notif.style.position = 'fixed';
-      notif.style.top = '20%';
-      notif.style.left = '50%';
-      notif.style.transform = 'translateX(-50%)';
-      notif.style.background = 'gold';
-      notif.style.color = '#0a0a1a';
-      notif.style.padding = '10px 20px';
-      notif.style.borderRadius = '10px';
-      notif.style.fontWeight = 'bold';
-      notif.style.zIndex = '1000';
-      notif.style.fontSize = '1.2em';
-      document.body.appendChild(notif);
-      setTimeout(() => document.body.removeChild(notif), 3000);
-    }
-
-    let credits = 100;
-    function buyItem(id, cost) {
-      if (credits >= cost) {
-        credits -= cost;
-        localStorage.setItem(`owned_${id}`, 'true');
-        document.getElementById('storeMessage').innerText = '¡Compra exitosa! 🎉';
-        setTimeout(() => document.getElementById('storeMessage').innerText = '', 3000);
-      } else {
-        document.getElementById('storeMessage').innerText = '❌ Créditos insuficientes.';
-        setTimeout(() => document.getElementById('storeMessage').innerText = '', 3000);
-      }
-    }
-
-    function showView(view) {
-      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
-      
-      document.getElementById('battleView').style.display = view === 'battle' ? 'block' : 'none';
-      document.getElementById('collectionView').style.display = view === 'collection' ? 'block' : 'none';
-      document.getElementById('storeView').style.display = view === 'store' ? 'block' : 'none';
-      document.getElementById('rankingView').style.display = view === 'ranking' ? 'block' : 'none';
-      document.getElementById('battleTable').style.display = 'none';
-    }
-
-    function showCardPreview(card) {
-      document.getElementById('previewImg').src = card.img;
-      document.getElementById('previewName').innerText = card.name;
-      
-      const rarityColors = {
-        common: "rarity-common-tag",
-        rare: "rarity-rare-tag",
-        epic: "rarity-epic-tag",
-        legendary: "rarity-legendary-tag"
-      };
-      const rarityNames = {
-        common: "Común",
-        rare: "Rara",
-        epic: "Épica",
-        legendary: "Legendaria"
-      };
-      
-      const rarityEl = document.getElementById('previewRarity');
-      rarityEl.className = `rarity-tag ${rarityColors[card.rarity]}`;
-      rarityEl.innerText = rarityNames[card.rarity];
-      
-      document.getElementById('previewStats').innerText = `ATK: ${card.atk} | DEF: ${card.def}`;
-      document.getElementById('previewPower').innerText = card.power;
-      
-      const timerEl = document.getElementById('legendaryTimer');
-      if (card.id === 10) {
-        timerEl.style.display = 'block';
-        timerEl.innerText = 'Se desbloqueará mañana a las 15:00';
-      } else {
-        timerEl.style.display = 'none';
-      }
-      
-      document.getElementById('cardPreview').classList.add('show');
-    }
-
-    document.getElementById('cardPreview').onclick = () => {
-      document.getElementById('cardPreview').classList.remove('show');
+      setParticles(newParticles);
     };
 
-    function renderCollection() {
-      const grid = document.getElementById('collectionGrid');
-      grid.innerHTML = '';
-      CARDS.slice(0, -1).forEach(card => {
-        const isLocked = (card.id === 10) ? true : !card.unlocked;
-        const div = document.createElement('div');
-        div.className = `collection-card ${isLocked ? 'locked' : 'unlocked'}`;
-        if (card.id === 10) {
-          const img = document.createElement('img');
-          img.src = card.img;
-          img.alt = card.name;
-          img.style.cursor = 'pointer';
-          div.appendChild(img);
-          div.onclick = () => showCardPreview(card);
-        } else if (!isLocked) {
-          const img = document.createElement('img');
-          img.src = card.img;
-          img.alt = card.name;
-          img.style.cursor = 'pointer';
-          img.onclick = () => showCardPreview(card);
-          div.appendChild(img);
-        } else {
-          const img = document.createElement('img');
-          img.src = card.img;
-          img.alt = card.name;
-          img.style.filter = 'grayscale(100%)';
-          img.style.cursor = 'not-allowed';
-          div.appendChild(img);
-          div.onclick = () => showCardPreview(card);
-        }
-        grid.appendChild(div);
-      });
+    createParticles();
+  }, []);
 
-      const deckEl = document.getElementById('currentDeck');
-      deckEl.innerHTML = '';
-      currentDeck.forEach(id => {
-        const card = CARDS.find(c => c.id === id);
-        if (card) {
-          const cardEl = document.createElement('div');
-          cardEl.style.width = '100px';
-          cardEl.style.margin = '5px';
-          if (card.id === 10) {
-            cardEl.innerHTML = `
-              <img src="${card.img}" style="width:100%; border-radius:8px; filter:grayscale(100%);">
-              <div style="color:#ff6b6b; font-size:0.7em; margin-top:2px; text-align:center;">🔒 Bloqueada</div>
-            `;
-            cardEl.onclick = () => alert('¡Sellamara Gemelas se desbloqueará mañana a las 15:00!');
-          } else if (card.unlocked) {
-            cardEl.innerHTML = `<img src="${card.img}" style="width:100%; border-radius:8px;" onclick="showCardPreview(${JSON.stringify(card).replace(/"/g, '&quot;')})">`;
-          } else {
-            cardEl.innerHTML = `
-              <img src="${card.img}" style="width:100%; border-radius:8px; filter:grayscale(100%);">
-              <div style="color:#ff6b6b; font-size:0.7em; margin-top:2px; text-align:center;">🔒 Bloqueada</div>
-            `;
-            cardEl.onclick = () => alert('¡Esta carta se desbloquea ganando batallas!');
+  // Efecto de fondo animado
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      const x = (e.clientX / window.innerWidth) * 100;
+      const y = (e.clientY / window.innerHeight) * 100;
+      setBackgroundPosition({ x, y });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  // Efectos de batalla
+  useEffect(() => {
+    if (battleEffect) {
+      const timer = setTimeout(() => setBattleEffect(null), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [battleEffect]);
+
+  // Actualizar ranking
+  useEffect(() => {
+    setRanking(updateRanking());
+  }, [player.trophies]);
+
+  // Temporizador de actualización
+  const [updateTime, setUpdateTime] = useState<string>('');
+  useEffect(() => {
+    const updateTimer = () => {
+      const now = new Date();
+      const target = new Date(now);
+      target.setHours(15, 0, 0, 0);
+      if (now >= target) {
+        target.setDate(target.getDate() + 1);
+      }
+      const diff = target - now;
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      setUpdateTime(`${hours}h ${minutes}m`);
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleBuyItem = (itemId: string, cost: number) => {
+    if (buyItem(itemId, cost)) {
+      setStoreMessage('¡Compra exitosa! 🎉');
+      setTimeout(() => setStoreMessage(''), 3000);
+    } else {
+      setStoreMessage('❌ Diamantes insuficientes.');
+      setTimeout(() => setStoreMessage(''), 3000);
+    }
+  };
+
+  const showCardPreview = (card: Card) => {
+    setSelectedCard(card);
+  };
+
+  const closeCardPreview = () => {
+    setSelectedCard(null);
+  };
+
+  const getRarityClass = (rarity: string) => {
+    switch (rarity) {
+      case 'common': return 'common';
+      case 'rare': return 'rare';
+      case 'epic': return 'epic';
+      case 'legendary': return 'legendary';
+      default: return 'common';
+    }
+  };
+
+  const getRarityColor = (rarity: string) => {
+    switch (rarity) {
+      case 'common': return 'text-white';
+      case 'rare': return 'text-orange-500';
+      case 'epic': return 'text-purple-400';
+      case 'legendary': return 'text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500';
+      default: return 'text-white';
+    }
+  };
+
+  const getStoreItemClass = (type: string) => {
+    switch (type) {
+      case 'gold': return 'border-l-yellow-500';
+      case 'purple': return 'border-l-purple-400';
+      case 'orange': return 'border-l-orange-500';
+      default: return 'border-l-gray-500';
+    }
+  };
+
+  return (
+    <div className="min-h-screen relative overflow-hidden" style={{
+      background: `radial-gradient(circle at ${backgroundPosition.x}% ${backgroundPosition.y}%, #1a1a3e 0%, #0a0a1a 50%, #000 100%)`
+    }}>
+      {/* Partículas de fondo */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        {particles}
+      </div>
+
+      {/* Estilos CSS personalizados */}
+      <style jsx>{`
+        @keyframes float {
+          to {
+            transform: translate(var(--tx), var(--ty)) rotate(360deg);
+            opacity: 0;
           }
-          deckEl.appendChild(cardEl);
         }
-      });
-    }
-
-    function addToDeck(cardId) {
-      if (currentDeck.length >= 3) {
-        alert('Tu mazo solo puede tener 3 cartas.');
-        return;
-      }
-      if (!currentDeck.includes(cardId)) {
-        currentDeck.push(cardId);
-        renderCollection();
-      }
-    }
-
-    function saveDeck() {
-      if (currentDeck.length !== 3) {
-        alert('¡Tu mazo debe tener exactamente 3 cartas!');
-        return;
-      }
-      localStorage.setItem('currentDeck', JSON.stringify(currentDeck));
-      showNotification('¡Mazo guardado!');
-    }
-
-    function playAttackEffect(type) {
-      const overlay = document.getElementById('attackOverlay');
-      overlay.className = 'attack-overlay';
-      overlay.classList.add(`${type}-effect`);
-      overlay.style.opacity = '1';
-      
-      const soundMap = {
-        fire: 'fireSound',
-        ice: 'iceSound',
-        wind: 'windSound',
-        arcane: 'arcaneSound'
-      };
-      const sound = document.getElementById(soundMap[type]);
-      if (sound) sound.play().catch(()=>{});
-      
-      setTimeout(() => {
-        overlay.style.opacity = '0';
-      }, 1000);
-    }
-
-    function startBattle() {
-      const savedDeck = JSON.parse(localStorage.getItem('currentDeck')) || [0, 3, 6];
-      currentDeck = savedDeck;
-
-      playerCards = [];
-      currentDeck.forEach(id => {
-        const card = CARDS.find(c => c.id === id && c.unlocked);
-        if (card) {
-          playerCards.push({...card, currentHp: card.def, alive: true});
+        .league-bronze { background: linear-gradient(to right, #cd7f32, #b8860b); }
+        .league-silver { background: linear-gradient(to right, silver, #c0c0c0); color: #333; }
+        .league-gold { background: linear-gradient(to right, gold, #daa520); }
+        .league-elite { background: linear-gradient(to right, #4b0082, #8a2be2); }
+        .league-legend { background: linear-gradient(45deg, red, gold, blue); animation: rainbow 3s linear infinite; }
+        @keyframes rainbow { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
+        .battle-table {
+          background: rgba(5, 5, 15, 0.9);
+          border: 3px solid gold;
+          box-shadow: 0 0 30px rgba(255,215,0,0.5);
         }
-      });
-
-      if (playerCards.length === 0) {
-        alert('¡Tu mazo está vacío! Ve a "Mazo" y arma tu mazo.');
-        return;
-      }
-
-      const iaCard = {...CARDS[9], currentHp: CARDS[9].def, alive: true};
-      enemyCard = iaCard;
-
-      gameActive = true;
-      playerTurn = true;
-      selectedPlayerCard = null;
-
-      document.getElementById('battleView').style.display = 'none';
-      document.getElementById('battleTable').style.display = 'block';
-      
-      updateBattleUI();
-    }
-
-    function updateBattleUI() {
-      document.getElementById('enemyCardImg').src = enemyCard.img;
-      document.getElementById('enemyRarity').innerText = enemyCard.rarity;
-      document.getElementById('enemyRarity').className = `card-rarity ${enemyCard.rarity}`;
-      document.getElementById('enemyHp').innerText = enemyCard.currentHp;
-      document.getElementById('enemyHpBar').style.width = `${(enemyCard.currentHp / enemyCard.def) * 100}%`;
-      
-      if (selectedPlayerCard) {
-        document.getElementById('playerCardImg').src = selectedPlayerCard.img;
-        document.getElementById('playerRarity').innerText = selectedPlayerCard.rarity;
-        document.getElementById('playerRarity').className = `card-rarity ${selectedPlayerCard.rarity}`;
-        document.getElementById('playerHp').innerText = selectedPlayerCard.currentHp;
-        document.getElementById('playerHpBar').style.width = `${(selectedPlayerCard.currentHp / selectedPlayerCard.def) * 100}%`;
-      }
-
-      const handEl = document.getElementById('playerHand');
-      handEl.innerHTML = '';
-      playerCards.forEach(card => {
-        if (card.alive) {
-          const cardEl = document.createElement('div');
-          cardEl.className = 'hand-card';
-          cardEl.innerHTML = `
-            <img src="${card.img}" alt="${card.name}">
-            <div style="font-size:0.9em; margin-top:5px;">${card.name}</div>
-          `;
-          cardEl.onclick = () => {
-            selectedPlayerCard = card;
-            attackWithSelected();
-          };
-          handEl.appendChild(cardEl);
+        .battle-table::after {
+          content: '';
+          position: absolute;
+          top: 0; left: 0; width: 100%; height: 100%;
+          background: radial-gradient(circle, transparent 60%, rgba(0,0,0,0.7) 100%);
+          pointer-events: none;
         }
-      });
-    }
+      `}</style>
 
-    function attackWithSelected() {
-      if (!gameActive || !playerTurn || !selectedPlayerCard) return;
-      
-      const log = document.getElementById('battleLog');
-      log.innerHTML = `¡${selectedPlayerCard.name} usa <strong>${selectedPlayerCard.power}</strong>!`;
+      <div className="relative z-10 container mx-auto px-4 py-8">
+        <div className="flex justify-center mb-8">
+          <img 
+            src="/fortnite-logo.png" 
+            alt="Fortnite Skin Battle Logo" 
+            className="w-64 h-auto"
+          />
+        </div>
 
-      playAttackEffect(selectedPlayerCard.attackType);
+        {/* Barra de jugador */}
+        <div className="bg-gray-800 bg-opacity-70 p-4 rounded-xl mb-6 flex justify-between items-center border-2 border-yellow-500">
+          <div className="flex items-center gap-2">
+            <span>👤</span>
+            <span className="font-bold">{player.name}</span>
+          </div>
+          <div className={`px-4 py-1 rounded-full font-bold text-sm ${player.league.badgeClass}`}>
+            {player.league.name}
+          </div>
+          <div className="flex items-center gap-2">
+            <span>🏆</span>
+            <span className="font-bold">{player.trophies}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span>💎</span>
+            <span className="font-bold">{player.diamonds}</span>
+          </div>
+        </div>
 
-      const damage = Math.max(5, selectedPlayerCard.atk - Math.floor(enemyCard.def * 0.3));
-      setTimeout(() => {
-        enemyCard.currentHp = Math.max(0, enemyCard.currentHp - damage);
-        updateBattleUI();
+        {/* Navegación */}
+        <div className="flex justify-center gap-2 mb-8 flex-wrap">
+          {(['battle', 'collection', 'store', 'ranking', 'tournament'] as GameView[]).map((view) => (
+            <Button
+              key={view}
+              variant={currentView === view ? 'default' : 'outline'}
+              onClick={() => setCurrentView(view)}
+              className={`px-4 py-2 rounded-full font-bold transition-all ${
+                currentView === view 
+                  ? 'bg-cyan-500 text-gray-900' 
+                  : 'bg-cyan-500 bg-opacity-20 text-white border-cyan-500 hover:bg-cyan-500 hover:text-gray-900'
+              }`}
+            >
+              {view === 'battle' && '⚔️ Batalla'}
+              {view === 'collection' && '🃏 Mazo'}
+              {view === 'store' && '🛒 Tienda'}
+              {view === 'ranking' && '📊 Ranking'}
+              {view === 'tournament' && '🏆 Torneo'}
+            </Button>
+          ))}
+        </div>
 
-        if (enemyCard.currentHp <= 0) {
-          log.innerHTML = `¡${selectedPlayerCard.name} derrotó a la IA!`;
-          setTimeout(() => {
-            trophies += 30;
-            localStorage.setItem('trophies', trophies);
-            updateUI();
-            updateRanking();
-            const msg = `¡Ganaste 30 trofeos!<br>Total: ${trophies} trofeos.`;
-            showEndScreen(true, msg);
-          }, 1500);
-        } else {
-          log.innerHTML += `<br>¡Turno de la IA!`;
-          setTimeout(() => iaAttack(), 1500);
-        }
-        playerTurn = false;
-      }, 1000);
-    }
+        {/* Vista de Batalla */}
+        {currentView === 'battle' && !gameActive && (
+          <div className="text-center">
+            <Button 
+              onClick={startBattle}
+              className="bg-red-500 hover:bg-red-600 text-white font-bold text-xl px-8 py-4 rounded-full mb-4 transform transition hover:scale-105"
+            >
+              ⚔️ ¡INICIAR BATALLA CONTRA LA IA!
+            </Button>
+            <p className="text-cyan-400">Usa las cartas de tu mazo para derrotar a la IA.</p>
+          </div>
+        )}
 
-    function iaAttack() {
-      if (!gameActive || !selectedPlayerCard) return;
-      
-      const log = document.getElementById('battleLog');
-      log.innerHTML = `¡La IA ataca a ${selectedPlayerCard.name}!`;
+        {/* Mesa de Batalla */}
+        {gameActive && (
+          <div className="battle-table rounded-2xl p-6 mb-8 relative max-w-4xl mx-auto">
+            <div className="battle-header text-cyan-400 text-xl font-bold mb-6 text-center">
+              BATALLA CONTRA LA IA - Arena: {player.league.name}
+            </div>
 
-      playAttackEffect(enemyCard.attackType);
+            <div className="flex justify-between items-center mb-8">
+              {/* Zona del Enemigo */}
+              <div className="text-center w-5/12">
+                <div className="zone-title text-red-500 font-bold mb-4">IA</div>
+                {enemyCard && (
+                  <div className="relative">
+                    <img 
+                      src={enemyCard.img} 
+                      alt="IA" 
+                      className="w-40 h-56 object-cover rounded-xl border-4 border-gray-700 mx-auto shadow-lg"
+                    />
+                    <div className={`absolute top-2 right-2 px-2 py-1 rounded text-xs font-bold bg-black bg-opacity-60 ${getRarityColor(enemyCard.rarity)}`}>
+                      {enemyCard.rarity}
+                    </div>
+                    <div className="w-full h-3 bg-gray-700 rounded-full mt-2 overflow-hidden">
+                      <div 
+                        className="h-full bg-gradient-to-r from-red-500 to-orange-500 transition-all duration-500"
+                        style={{ width: `${((enemyCard.currentHp || 0) / enemyCard.def) * 100}%` }}
+                      />
+                    </div>
+                    <div className="text-yellow-400 text-sm mt-1">
+                      HP: {enemyCard.currentHp || 0}
+                    </div>
+                  </div>
+                )}
+              </div>
 
-      const baseDamage = Math.max(5, enemyCard.atk - Math.floor(selectedPlayerCard.def * 0.3));
-      const modifier = currentLeague.iaMod / 100;
-      const damage = Math.round(baseDamage * (1 + modifier));
+              {/* Zona del Jugador */}
+              <div className="text-center w-5/12">
+                <div className="zone-title text-cyan-400 font-bold mb-4">TÚ</div>
+                {selectedPlayerCard && (
+                  <div className="relative">
+                    <img 
+                      src={selectedPlayerCard.img} 
+                      alt="Jugador" 
+                      className="w-40 h-56 object-cover rounded-xl border-4 border-gray-700 mx-auto shadow-lg"
+                    />
+                    <div className={`absolute top-2 right-2 px-2 py-1 rounded text-xs font-bold bg-black bg-opacity-60 ${getRarityColor(selectedPlayerCard.rarity)}`}>
+                      {selectedPlayerCard.rarity}
+                    </div>
+                    <div className="w-full h-3 bg-gray-700 rounded-full mt-2 overflow-hidden">
+                      <div 
+                        className="h-full bg-gradient-to-r from-red-500 to-orange-500 transition-all duration-500"
+                        style={{ width: `${((selectedPlayerCard.currentHp || 0) / selectedPlayerCard.def) * 100}%` }}
+                      />
+                    </div>
+                    <div className="text-yellow-400 text-sm mt-1">
+                      HP: {selectedPlayerCard.currentHp || 0}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
 
-      setTimeout(() => {
-        selectedPlayerCard.currentHp = Math.max(0, selectedPlayerCard.currentHp - damage);
-        updateBattleUI();
+            {/* Registro de Batalla */}
+            <div 
+              className="bg-black bg-opacity-60 p-4 rounded-xl mb-6 min-h-20 text-yellow-400 border border-cyan-400"
+              dangerouslySetInnerHTML={{ __html: battleLog }}
+            />
 
-        if (selectedPlayerCard.currentHp <= 0) {
-          selectedPlayerCard.alive = false;
-          log.innerHTML = `¡${selectedPlayerCard.name} fue eliminada!`;
-          
-          const aliveCards = playerCards.filter(c => c.alive);
-          if (aliveCards.length === 0) {
-            trophies = Math.max(0, trophies - 15);
-            localStorage.setItem('trophies', trophies);
-            updateUI();
-            updateRanking();
-            const msg = `Perdiste 15 trofeos.<br>Total: ${trophies} trofeos.`;
-            showEndScreen(false, msg);
-            return;
-          }
-          selectedPlayerCard = aliveCards[0];
-        }
+            {/* Mano del Jugador */}
+            <div className="flex justify-center gap-4 mb-6 flex-wrap">
+              {playerCards.map((card) => (
+                card.alive && (
+                  <div 
+                    key={card.id}
+                    className="bg-gray-800 bg-opacity-90 p-3 rounded-xl cursor-pointer transition-all hover:-translate-y-2 hover:shadow-lg hover:shadow-cyan-500/50 border-2 border-cyan-500 w-28"
+                    onClick={() => {
+                      setSelectedPlayerCard(card);
+                      attackWithSelected();
+                    }}
+                  >
+                    <img 
+                      src={card.img} 
+                      alt={card.name} 
+                      className="w-full h-32 object-cover rounded-lg mb-2"
+                    />
+                    <div className="text-sm font-bold text-center">{card.name}</div>
+                  </div>
+                )
+              ))}
+            </div>
 
-        playerTurn = true;
-        log.innerHTML = `¡Tu turno! Elige una carta para atacar:`;
-      }, 1000);
-    }
+            <Button 
+              onClick={exitBattle}
+              className="bg-red-500 hover:bg-red-600"
+            >
+              🚪 Salir
+            </Button>
+          </div>
+        )}
 
-    function showEndScreen(isWin, message) {
-      gameActive = false;
-      const log = document.getElementById('battleLog');
-      log.innerHTML = `
-        <h3 style="color:${isWin ? 'gold' : '#ff6b6b'};">
-          ${isWin ? '🎉 ¡VICTORIA!' : '💀 DERROTA'}
-        </h3>
-        <p style="margin:15px 0;">${message}</p>
-        <button class="action-btn" onclick="startBattle()" style="margin-top:15px;">🔄 Otra Partida</button>
-      `;
-      document.getElementById(isWin ? 'winSound' : 'loseSound').play();
-    }
+        {/* Vista de Colección/Mazo */}
+        {currentView === 'collection' && (
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-2xl font-bold text-cyan-400 mb-4">Mi Mazo (3 cartas)</h2>
+            <p className="mb-6">Selecciona cartas desbloqueadas para tu mazo. ¡Haz clic para ver detalles!</p>
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
+              {CARDS_FALLBACK.map((card) => {
+                const isInDeck = currentDeck.includes(card.id);
+                
+                return (
+                  <div 
+                    key={card.id}
+                    className={`relative rounded-lg overflow-hidden cursor-pointer transition-all ${
+                      card.id === 10 ? 'opacity-60' : 'hover:scale-105'
+                    } ${isInDeck ? 'ring-2 ring-yellow-500' : ''}`}
+                    onClick={() => showCardPreview(card)}
+                  >
+                    <img 
+                      src={card.img} 
+                      alt={card.name} 
+                      className={`w-full h-32 object-cover ${card.id === 10 ? 'grayscale' : ''} ${card.id === 10 ? 'ring-2 ring-yellow-400' : ''}`}
+                    />
+                    {card.id === 10 && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-70 border-2 border-yellow-400">
+                        <span className="text-4xl">🔒</span>
+                      </div>
+                    )}
+                    {isInDeck && (
+                      <div className="absolute top-1 right-1 bg-yellow-500 text-black text-xs px-2 py-1 rounded">
+                        En mazo
+                      </div>
+                    )}
+                    {/* Debug: mostrar ID de la carta */}
+                    <div className="absolute bottom-0 left-0 bg-red-500 text-white text-xs px-1">
+                      ID: {card.id}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
 
-    function exitBattle() {
-      document.getElementById('battleTable').style.display = 'none';
-      document.getElementById('battleView').style.display = 'block';
-      showNotification(`Trofeos: ${trophies} | Diamantes: ${diamonds}`);
-    }
+            <CardComponent className="bg-gray-800 bg-opacity-60 border border-cyan-400">
+              <CardHeader>
+                <CardTitle>Tu Mazo Actual</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex justify-center flex-wrap gap-4 mb-4">
+                  {currentDeck.map((cardId) => {
+                    const card = CARDS_FALLBACK.find(c => c.id === cardId);
+                    if (!card) return null;
+                    
+                    return (
+                      <div key={cardId} className="relative w-24">
+                        <img 
+                          src={card.img} 
+                          alt={card.name} 
+                          className={`w-full h-32 object-cover rounded-lg ${card.id === 10 ? 'grayscale' : ''}`}
+                          onClick={() => showCardPreview(card)}
+                        />
+                        {card.id === 10 && (
+                          <div className="text-red-500 text-xs mt-1 text-center">🔒 Bloqueada</div>
+                        )}
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          className="mt-2 w-full"
+                          onClick={() => removeFromDeck(cardId)}
+                        >
+                          Quitar
+                        </Button>
+                      </div>
+                    );
+                  })}
+                </div>
+                <Button onClick={saveDeck} className="w-full">
+                  💾 Guardar Mazo
+                </Button>
+              </CardContent>
+            </CardComponent>
+          </div>
+        )}
 
-    function createParticles() {
-      const c = document.getElementById('particles');
-      const n = 15;
-      for (let i = 0; i < n; i++) {
-        const p = document.createElement('div');
-        p.className = 'particle';
-        const s = Math.random() * 4 + 1;
-        p.style.width = p.style.height = `${s}px`;
-        p.style.left = `${Math.random() * 100}%`;
-        p.style.top = `${Math.random() * 100}%`;
-        const cols = ['rgba(255,107,107,0.7)','rgba(78,205,196,0.7)','rgba(254,202,87,0.7)'];
-        p.style.background = cols[Math.floor(Math.random() * cols.length)];
-        p.style.setProperty('--tx', `${(Math.random()-0.5)*200}px`);
-        p.style.setProperty('--ty', `${(Math.random()-0.5)*200}px`);
-        p.style.animationDuration = `${15 + Math.random() * 20}s`;
-        c.appendChild(p);
-      }
-    }
+        {/* Vista de Tienda */}
+        {currentView === 'store' && (
+          <div className="max-w-2xl mx-auto bg-gray-800 bg-opacity-50 p-6 rounded-xl border border-red-500">
+            <h3 className="text-2xl font-bold text-yellow-500 mb-6 font-bebas-neue">🛒 TIENDA DE BATALLA</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className={`bg-gray-900 bg-opacity-80 p-4 rounded-lg border-l-4 ${getStoreItemClass('gold')}`}>
+                <div className="font-bold">Skin Dorada</div>
+                <div className="text-sm">+30 DEF</div>
+                <div className="text-yellow-500 font-bold">50 💎</div>
+                <Button 
+                  size="sm"
+                  className="mt-2 w-full"
+                  onClick={() => handleBuyItem('golden_skin', 50)}
+                >
+                  Comprar
+                </Button>
+              </div>
+              
+              <div className={`bg-gray-900 bg-opacity-80 p-4 rounded-lg border-l-4 ${getStoreItemClass('purple')}`}>
+                <div className="font-bold">Confeti Épico</div>
+                <div className="text-sm">Ataque Sorpresa</div>
+                <div className="text-yellow-500 font-bold">30 💎</div>
+                <Button 
+                  size="sm"
+                  className="mt-2 w-full"
+                  onClick={() => handleBuyItem('epic_confetti', 30)}
+                >
+                  Comprar
+                </Button>
+              </div>
+              
+              <div className={`bg-gray-900 bg-opacity-80 p-4 rounded-lg border-l-4 ${getStoreItemClass('orange')}`}>
+                <div className="font-bold">Doble Voto</div>
+                <div className="text-sm">Doble Ataque</div>
+                <div className="text-yellow-500 font-bold">70 💎</div>
+                <Button 
+                  size="sm"
+                  className="mt-2 w-full"
+                  onClick={() => handleBuyItem('double_vote', 70)}
+                >
+                  Comprar
+                </Button>
+              </div>
+            </div>
+            
+            {storeMessage && (
+              <p className="mt-4 text-cyan-400 italic">{storeMessage}</p>
+            )}
+          </div>
+        )}
 
-    function startUpdateCountdown() {
-      function updateTimer() {
-        const now = new Date();
-        const target = new Date(now);
-        target.setHours(15, 0, 0, 0);
-        if (now >= target) {
-          target.setDate(target.getDate() + 1);
-        }
-        const diff = target - now;
-        const hours = Math.floor(diff / (1000 * 60 * 60));
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 6
+        {/* Vista de Ranking */}
+        {currentView === 'ranking' && (
+          <div className="max-w-2xl mx-auto bg-gray-800 bg-opacity-60 p-6 rounded-xl border border-cyan-400">
+            <h2 className="text-2xl font-bold text-cyan-400 mb-6">📊 RANKING DE JUGADORES</h2>
+            
+            <div className="space-y-2">
+              {ranking.map((player, index) => (
+                <div 
+                  key={index}
+                  className={`flex justify-between items-center p-3 rounded-lg ${
+                    index === 0 ? 'bg-yellow-500 bg-opacity-20 font-bold' : 'bg-gray-700 bg-opacity-30'
+                  } ${index === 0 ? 'text-yellow-400' : ''}`}
+                >
+                  <span>{index + 1}. {player.name}</span>
+                  <span>{player.trophies} 🏆</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Vista de Torneo */}
+        {currentView === 'tournament' && (
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-gradient-to-r from-purple-900 to-blue-900 bg-opacity-80 p-8 rounded-xl border-2 border-yellow-500 mb-8">
+              <h2 className="text-3xl font-bold text-yellow-400 mb-6 text-center">🏆 TORNEO LEGENDARIO 🏆</h2>
+              
+              <div className="bg-black bg-opacity-50 p-6 rounded-lg mb-6">
+                <h3 className="text-xl font-bold text-cyan-400 mb-4">PREMIO</h3>
+                <div className="flex justify-center items-center gap-4">
+                  <div className="text-center">
+                    <div className="text-4xl mb-2">🏆</div>
+                    <div className="text-yellow-400 font-bold">Sellamara Gemelas</div>
+                    <div className="text-sm text-gray-300">Carta Legendaria</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-black bg-opacity-50 p-6 rounded-lg mb-6">
+                <h3 className="text-xl font-bold text-cyan-400 mb-4">REQUISITOS</h3>
+                <ul className="space-y-2 text-white">
+                  <li className="flex items-center gap-2">
+                    <span>✅</span>
+                    <span>Alcanzar la liga ORO (400+ trofeos)</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span>✅</span>
+                    <span>Ganar 10 batallas consecutivas</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span>✅</span>
+                    <span>Tener al menos 5 cartas épicas o legendarias en tu colección</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="text-center">
+                <Button 
+                  className="bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-bold text-lg px-8 py-4 rounded-full mb-4 transform transition hover:scale-105"
+                  onClick={() => {
+                    if (player.trophies < 400) {
+                      alert('¡Necesitas al menos 400 trofeos para participar en el torneo!');
+                    } else {
+                      alert('¡Torneo en desarrollo! Próximamente podrás participar para ganar la carta legendaria.');
+                    }
+                  }}
+                >
+                  🚀 PARTICIPAR EN EL TORNEO
+                </Button>
+                <p className="text-gray-300 text-sm">El torneo estará disponible próximamente</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Próxima Actualización */}
+        <div className="max-w-2xl mx-auto mt-12 bg-black bg-opacity-40 p-6 rounded-xl border-2 border-dashed border-yellow-500 text-center">
+          <h3 className="text-2xl font-bold text-yellow-500 mb-2">🔔 ¡PRÓXIMA ACTUALIZACIÓN! 🔔</h3>
+          <p className="mb-2"><strong>Hoy a las 15:00</strong></p>
+          <p className="mb-4">¡Modo Multijugador + Perfil + Ranking!</p>
+          <div className="text-cyan-400 text-xl font-bold">{updateTime}</div>
+        </div>
+      </div>
+
+      {/* Vista previa de carta */}
+      {selectedCard && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50" onClick={closeCardPreview}>
+          <div className="bg-gray-900 p-6 rounded-xl max-w-sm w-full mx-4 border-3 border-yellow-500 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <img 
+              src={selectedCard.img} 
+              alt={selectedCard.name} 
+              className="w-full h-64 object-cover rounded-lg mb-4"
+            />
+            <h3 className="text-xl font-bold mb-2">{selectedCard.name}</h3>
+            <div className={`inline-block px-3 py-1 rounded-full text-sm font-bold mb-2 ${
+              selectedCard.rarity === 'common' ? 'bg-gray-600 text-white' :
+              selectedCard.rarity === 'rare' ? 'bg-orange-500 bg-opacity-30 text-orange-500' :
+              selectedCard.rarity === 'epic' ? 'bg-purple-500 bg-opacity-30 text-purple-400' :
+              'bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500 text-transparent bg-clip-text'
+            }`}>
+              {selectedCard.rarity === 'common' && 'Común'}
+              {selectedCard.rarity === 'rare' && 'Rara'}
+              {selectedCard.rarity === 'epic' && 'Épica'}
+              {selectedCard.rarity === 'legendary' && 'Legendaria'}
+            </div>
+            <div className="mb-2">ATK: {selectedCard.atk} | DEF: {selectedCard.def}</div>
+            <div className="text-yellow-400 italic mb-2">{selectedCard.power}</div>
+            {selectedCard.id === 10 && (
+              <div className="text-yellow-400 text-sm">
+                ¡Se consigue en un desafío especial!
+              </div>
+            )}
+            {selectedCard.unlocked && !currentDeck.includes(selectedCard.id) && currentDeck.length < 3 && (
+              <Button 
+                className="w-full mt-4"
+                onClick={() => {
+                  addToDeck(selectedCard.id);
+                  closeCardPreview();
+                }}
+              >
+                Añadir al mazo
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default FortniteGame;
