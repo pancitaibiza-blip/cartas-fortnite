@@ -72,8 +72,8 @@
     }
     @keyframes fadeIn { to { opacity: 1; } }
 
-    /* Barra de trofeos y diamantes */
-    .trophy-bar {
+    /* Barra de jugador y trofeos */
+    .player-bar {
       background: rgba(10,10,26,0.7);
       padding: 12px;
       border-radius: 12px;
@@ -84,7 +84,7 @@
       font-size: 1.2em;
       border: 2px solid gold;
     }
-    .trophy-info, .diamonds-info {
+    .player-info, .trophy-info, .diamonds-info {
       display: flex;
       align-items: center;
       gap: 8px;
@@ -394,6 +394,30 @@
       font-family: 'Bebas Neue';
     }
 
+    /* Ranking */
+    .ranking {
+      margin: 20px auto;
+      max-width: 500px;
+      background: rgba(10,10,26,0.6);
+      padding: 15px;
+      border-radius: 15px;
+      border: 1px solid #4ecdc4;
+    }
+    .ranking h2 {
+      color: #4ecdc4;
+      margin-bottom: 15px;
+    }
+    .ranking-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .ranking-item:first-child {
+      color: gold;
+      font-weight: bold;
+    }
+
     /* Vista detallada de carta */
     .card-preview {
       position: fixed;
@@ -464,16 +488,20 @@
   <div class="content" id="mainContent" style="display:none;">
     <h1>FORTNITE SKIN BATTLE: ¡DERROTA A LA IA!</h1>
     
-    <!-- ✅ BARRA DE TROFEOS Y DIAMANTES -->
-    <div class="trophy-bar">
-      <div class="trophy-info">
-        <span class="trophy-icon">🏆</span>
-        <span id="trophyCount">0</span> trofeos
+    <!-- ✅ BARRA DE JUGADOR, TROFEOS Y DIAMANTES -->
+    <div class="player-bar">
+      <div class="player-info">
+        <span>👤</span>
+        <span id="playerName">Cargando...</span>
       </div>
       <div class="league-badge" id="leagueBadge">Bronce</div>
+      <div class="trophy-info">
+        <span class="trophy-icon">🏆</span>
+        <span id="trophyCount">0</span>
+      </div>
       <div class="diamonds-info">
         <span>💎</span>
-        <span id="diamondCount">100</span> diamantes
+        <span id="diamondCount">100</span>
       </div>
     </div>
 
@@ -482,6 +510,7 @@
       <button class="nav-btn active" onclick="showView('battle')">⚔️ Batalla</button>
       <button class="nav-btn" onclick="showView('collection')">🃏 Mazo</button>
       <button class="nav-btn" onclick="showView('store')">🛒 Tienda</button>
+      <button class="nav-btn" onclick="showView('ranking')">📊 Ranking</button>
     </div>
 
     <!-- 💎 TIENDA -->
@@ -530,6 +559,14 @@
       </div>
     </div>
 
+    <!-- 📊 RANKING -->
+    <div class="ranking" id="rankingView" style="display:none;">
+      <h2>📊 RANKING GLOBAL</h2>
+      <div id="rankingList">
+        <!-- Se llena con JS -->
+      </div>
+    </div>
+
     <!-- Mesa de batalla -->
     <div class="battle-table" id="battleTable">
       <div class="battle-header">BATALLA CONTRA LA IA - Arena: <span id="arenaName">Bronce</span></div>
@@ -575,8 +612,9 @@
     <!-- 🔜 Actualización -->
     <div class="coming-soon">
       <h3>🔔 ¡PRÓXIMA ACTUALIZACIÓN! 🔔</h3>
-      <p><strong>Mañana: ¡Modo Multijugador!</strong></p>
-      <p>Juega contra amigos en tiempo real.</p>
+      <p><strong>Mañana a las 15:00</strong></p>
+      <p>¡Modo Multijugador + Perfil + Ranking!</p>
+      <div id="updateTimer" style="font-size:1.3em; color:#4ecdc4; margin:10px 0; font-weight:bold;"></div>
     </div>
   </div>
 
@@ -586,18 +624,29 @@
   </audio>
 
   <script>
-    // ==== PANTALLA DE CARGA ====
-    window.addEventListener('load', function() {
-      setTimeout(() => {
-        document.getElementById('loadingScreen').style.display = 'none';
-        document.getElementById('mainContent').style.display = 'block';
-        createParticles();
-        updateUI();
-        renderCollection();
-      }, 2000); // 2 segundos de carga
+    // ==== PANTALLA DE CARGA + PERFIL ====
+    window.addEventListener('load', async function() {
+      // Pedir nombre si no lo tiene
+      let playerName = localStorage.getItem('playerName');
+      if (!playerName) {
+        playerName = prompt("¿Cómo te llamas, jugador/a?") || "Jugador";
+        localStorage.setItem('playerName', playerName);
+      }
+      document.getElementById('playerName').innerText = playerName;
+
+      // Cargar datos
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      document.getElementById('loadingScreen').style.display = 'none';
+      document.getElementById('mainContent').style.display = 'block';
+      
+      createParticles();
+      updateUI();
+      renderCollection();
+      updateRanking();
+      startUpdateCountdown();
     });
 
-    // ==== CARTAS (ahora sin desbloqueo automático) ====
+    // ==== CARTAS ====
     const CARDS = [
       { id:0, name:"Ramírez", img:"https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", rarity:"common", atk:60, def:50, power:"Paso Firme", attackType:"wind", unlocked: true },
       { id:1, name:"Azulita", img:"https://s93.erome.com/5472/K3IRZbxx/0B8OzReu.jpeg?v=1764815871", rarity:"rare", atk:70, def:55, power:"Confeti Ácido", attackType:"fire", unlocked: true },
@@ -609,7 +658,6 @@
       { id:7, name:"Asesina", img:"https://s206.erome.com/4699/lpRzYjBO/Z5Tc5k2v.jpeg?v=1745795818", rarity:"legendary", atk:95, def:30, power:"Golpe Letal", attackType:"fire", unlocked: false },
       { id:8, name:"Guardiana", img:"https://s206.erome.com/4699/lpRzYjBO/P9p2wv5y.jpeg?v=1745795818", rarity:"epic", atk:50, def:80, power:"Escudo Energético", attackType:"ice", unlocked: false },
       { id:9, name:"IA ÉLITE", img:"https://s206.erome.com/4699/lpRzYjBO/gU2HfmRY.jpeg?v=1745795818", rarity:"legendary", atk:100, def:35, power:"Tirano", attackType:"arcane", unlocked: true },
-      // 🎯 CARTA LEGENDARIA: SOLO SE CONSIGUE EN TORNEO (no se desbloquea solo)
       { id:10, name:"Carta del Desafío", img:"https://rule34.xxx/samples/457/sample_f9bc1e16c821e5923b37a699ea624f9c.jpg?15733609", rarity:"legendary", atk:120, def:60, power:"Desafío Final", attackType:"arcane", unlocked: false }
     ];
 
@@ -640,30 +688,25 @@
     }
     diamonds = parseInt(localStorage.getItem('diamonds')) || 100;
 
-    // Cargar estado de cartas (sin desbloqueos automáticos)
+    // Cargar estado de cartas
     const savedCards = JSON.parse(localStorage.getItem('cards')) || {};
     CARDS.forEach(card => {
       if (savedCards[card.id] !== undefined) {
         card.unlocked = savedCards[card.id];
       }
-      // La carta legendaria NUNCA se desbloquea sola
-      if (card.id === 10) {
-        card.unlocked = false; // Siempre bloqueada
-      }
+      if (card.id === 10) card.unlocked = false; // Siempre bloqueada
     });
 
     function saveCollection() {
       const state = {};
-      CARDS.forEach(card => {
-        state[card.id] = card.unlocked;
-      });
-      // Forzar que la carta legendaria esté bloqueada
-      state[10] = false;
+      CARDS.forEach(card => state[card.id] = card.unlocked);
+      state[10] = false; // Asegurar bloqueo
       localStorage.setItem('cards', JSON.stringify(state));
     }
 
+    // ✅ GUARDAR TROFEOS PERMANENTEMENTE
     function updateUI() {
-      localStorage.setItem('trophies', trophies);
+      // Los trofeos ya se guardan y cargan desde localStorage
       document.getElementById('trophyCount').innerText = trophies;
       
       const newLeague = LEAGUES.find(l => trophies >= l.min && trophies <= l.max) || LEAGUES[0];
@@ -677,6 +720,35 @@
 
       localStorage.setItem('diamonds', diamonds);
       document.getElementById('diamondCount').innerText = diamonds;
+    }
+
+    // ✅ ACTUALIZAR RANKING
+    function updateRanking() {
+      const playerName = localStorage.getItem('playerName') || "Jugador";
+      let rankings = JSON.parse(localStorage.getItem('rankings')) || [];
+      
+      // Actualizar o añadir jugador
+      const existing = rankings.find(r => r.name === playerName);
+      if (existing) {
+        existing.trophies = trophies;
+      } else {
+        rankings.push({ name: playerName, trophies });
+      }
+      
+      // Ordenar por trofeos
+      rankings.sort((a, b) => b.trophies - a.trophies);
+      rankings = rankings.slice(0, 10); // Top 10
+      localStorage.setItem('rankings', JSON.stringify(rankings));
+      
+      // Renderizar
+      const listEl = document.getElementById('rankingList');
+      listEl.innerHTML = '';
+      rankings.forEach((r, i) => {
+        const item = document.createElement('div');
+        item.className = 'ranking-item';
+        item.innerHTML = `<span>${i+1}. ${r.name}</span><span>${r.trophies} 🏆</span>`;
+        listEl.appendChild(item);
+      });
     }
 
     function showNotification(msg) {
@@ -717,6 +789,7 @@
       document.getElementById('battleView').style.display = view === 'battle' ? 'block' : 'none';
       document.getElementById('collectionView').style.display = view === 'collection' ? 'block' : 'none';
       document.getElementById('storeView').style.display = view === 'store' ? 'block' : 'none';
+      document.getElementById('rankingView').style.display = view === 'ranking' ? 'block' : 'none';
       document.getElementById('battleTable').style.display = 'none';
     }
 
@@ -754,11 +827,9 @@
     function renderCollection() {
       const grid = document.getElementById('collectionGrid');
       grid.innerHTML = '';
-      // Excluir la carta de IA (última)
       CARDS.slice(0, -1).forEach(card => {
-        const div = document.createElement('div');
-        // 🔒 La carta legendaria siempre está bloqueada
         const isLocked = (card.id === 10) ? true : !card.unlocked;
+        const div = document.createElement('div');
         div.className = `collection-card ${isLocked ? 'locked' : 'unlocked'}`;
         if (!isLocked) {
           const img = document.createElement('img');
@@ -773,12 +844,13 @@
       const deckEl = document.getElementById('currentDeck');
       deckEl.innerHTML = '';
       currentDeck.forEach(id => {
-        const card = CARDS.find(c => c.id === id && (c.id !== 10) && c.unlocked);
+        if (id === 10) return; // No mostrar legendaria en mazo
+        const card = CARDS.find(c => c.id === id && c.unlocked);
         if (card) {
           const cardEl = document.createElement('div');
           cardEl.style.width = '100px';
           cardEl.style.margin = '5px';
-          cardEl.innerHTML = `<img src="${card.img}" style="width:100%; border-radius:8px;" onclick="showCardPreview(${JSON.stringify(card).replace(/"/g, '&quot;')})">`;
+          cardEl.innerHTML = `<img src="${card.img}" style="width:100%; border-radius:8px;">`;
           deckEl.appendChild(cardEl);
         }
       });
@@ -800,9 +872,7 @@
     }
 
     function saveDeck() {
-      // Asegurar que la carta legendaria no se guarde
       currentDeck = currentDeck.filter(id => id !== 10);
-
       if (currentDeck.length !== 3) {
         alert('¡Tu mazo debe tener exactamente 3 cartas!');
         return;
@@ -833,7 +903,7 @@
 
     function startBattle() {
       const savedDeck = JSON.parse(localStorage.getItem('currentDeck')) || [0, 3, 6];
-      currentDeck = savedDeck.filter(id => id !== 10); // Excluir legendaria
+      currentDeck = savedDeck.filter(id => id !== 10);
 
       playerCards = [];
       currentDeck.forEach(id => {
@@ -911,9 +981,10 @@
         if (enemyCard.currentHp <= 0) {
           log.innerHTML = `¡${selectedPlayerCard.name} derrotó a la IA!`;
           setTimeout(() => {
-            const oldTrophies = trophies;
             trophies += 30;
+            localStorage.setItem('trophies', trophies); // ✅ GUARDADO PERMANENTE
             updateUI();
+            updateRanking(); // ✅ ACTUALIZAR RANKING
             const msg = `¡Ganaste 30 trofeos!<br>Total: ${trophies} trofeos.`;
             showEndScreen(true, msg);
           }, 1500);
@@ -947,9 +1018,10 @@
           
           const aliveCards = playerCards.filter(c => c.alive);
           if (aliveCards.length === 0) {
-            const oldTrophies = trophies;
             trophies = Math.max(0, trophies - 15);
+            localStorage.setItem('trophies', trophies); // ✅ GUARDADO PERMANENTE
             updateUI();
+            updateRanking();
             const msg = `Perdiste 15 trofeos.<br>Total: ${trophies} trofeos.`;
             showEndScreen(false, msg);
             return;
@@ -998,6 +1070,31 @@
         p.style.animationDuration = `${15 + Math.random() * 20}s`;
         c.appendChild(p);
       }
+    }
+
+    // ✅ CONTADOR PARA ACTUALIZACIÓN
+    function startUpdateCountdown() {
+      function updateTimer() {
+        const now = new Date();
+        const target = new Date(now);
+        target.setHours(15, 0, 0, 0);
+        if (now >= target) {
+          target.setDate(target.getDate() + 1);
+        }
+        const diff = target - now;
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        
+        if (diff <= 0) {
+          document.getElementById('updateTimer').innerText = '¡La actualización ya está disponible! 🎁';
+        } else {
+          document.getElementById('updateTimer').innerText = 
+            `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+      }
+      updateTimer();
+      setInterval(updateTimer, 1000);
     }
   </script>
 </body>
