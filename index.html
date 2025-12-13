@@ -62,6 +62,7 @@
       position: relative;
       display: inline-block;
       margin: 4px;
+      cursor: pointer;
     }
     .card-base {
       border-radius: 12px;
@@ -110,80 +111,20 @@
       transform: translateY(-5px);
       box-shadow: 0 0 25px currentColor;
     }
-    .card-battle {
-      width: 160px;
-      height: 240px;
-      background: rgba(10, 30, 10, 0.95);
+    .stats-bar {
+      background: rgba(10, 20, 10, 0.85);
       border-radius: 16px;
-      padding: 10px;
-      text-align: center;
+      padding: 12px;
+      margin: 20px 0;
       display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      box-shadow: 0 0 25px rgba(200, 0, 0, 0.7);
-      transition: all 0.4s;
-      cursor: pointer;
-      position: relative;
+      justify-content: center;
+      gap: 20px;
+      border: 1px solid #d42020;
     }
-    .card-battle::before {
-      content: '';
-      position: absolute;
-      top: -8px; left: -8px; right: -8px; bottom: -8px;
-      border-radius: 24px;
-      z-index: -1;
-      opacity: 0.5;
-      filter: blur(12px);
-    }
-    .attack-animation {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 1500;
-      display: none;
-    }
-    .attacking-card {
-      position: absolute;
-      width: 120px;
-      height: 170px;
-      border-radius: 12px;
-      z-index: 2000;
-      box-shadow: 0 0 30px gold;
-    }
-    .target-card {
-      position: absolute;
-      width: 120px;
-      height: 170px;
-      border: 3px solid red;
-      border-radius: 12px;
-      z-index: 1999;
-    }
-    .hp-bar {
-      height: 8px;
-      background: #333;
-      border-radius: 4px;
-      overflow: hidden;
-      margin-top: 4px;
-    }
-    .hp-fill {
-      height: 100%;
-      background: linear-gradient(to right, #d42020, #ff4545);
-      transition: width 0.5s ease;
-    }
-    .timer-badge {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      background: #d4a017;
-      color: white;
-      font-size: 11px;
-      padding: 2px 8px;
-      border-radius: 12px;
-      font-weight: bold;
-      z-index: 2;
-    }
+    .stat { font-weight: bold; font-size: 18px; }
+    .trophy { color: #FFD700; }
+    .gem { color: #4FC3F7; }
+    .crown { color: #FFAA00; }
     #offerBanner {
       background: linear-gradient(to right, #ff416c, #ff4b2b);
       color: white;
@@ -192,7 +133,7 @@
       font-weight: bold;
       font-size: 18px;
       position: fixed;
-      top: 48px;
+      top: 0;
       left: 0;
       width: 100%;
       z-index: 1000;
@@ -206,63 +147,24 @@
       border-radius: 6px;
       margin-left: 8px;
     }
-    #chestsBanner {
-      background: linear-gradient(to right, #d42020, #228b22);
+    #deck, #shop, #tournament, #cupMode, #ranking { display: none; }
+    #deck.active, #shop.active, #tournament.active, #cupMode.active, #ranking.active { display: block; }
+    .card-grid { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); 
+      gap: 12px; 
+      justify-content: center; 
+      margin-top: 16px; 
+    }
+    .filter-bar { text-align: center; margin-bottom: 16px; }
+    .filter-bar select {
+      background: #333;
       color: white;
-      padding: 10px;
-      text-align: center;
-      font-weight: bold;
-      font-size: 18px;
-      overflow: hidden;
-      white-space: nowrap;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      z-index: 1000;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid #555;
     }
-    #tickerText {
-      display: inline-block;
-      animation: scrollLeft 25s linear infinite;
-    }
-    @keyframes scrollLeft {
-      0% { transform: translateX(100%); }
-      100% { transform: translateX(-100%); }
-    }
-    #countdownTimer {
-      display: inline-block;
-      background: #000;
-      color: #d4a017;
-      padding: 2px 10px;
-      border-radius: 6px;
-      margin: 0 8px;
-      font-weight: bold;
-    }
-    #statsBar {
-      background: rgba(10, 20, 10, 0.85);
-      border-radius: 16px;
-      padding: 12px;
-      margin-bottom: 16px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 16px;
-      border: 1px solid #d42020;
-      box-shadow: 0 0 15px rgba(212, 32, 32, 0.4);
-      margin-top: 120px;
-    }
-    .stat-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-weight: bold;
-      font-size: 18px;
-      text-shadow: 0 0 8px rgba(255,255,255,0.6);
-    }
-    .trophy { color: #d4a017; text-shadow: 0 0 10px #d4a017; }
-    .gem { color: #4FC3F7; text-shadow: 0 0 10px #4fc3f7; }
-    .crown { color: #d4a017; text-shadow: 0 0 10px #d4a017; }
+    /* MODAL DE CARTA */
     #cardModal {
       position: fixed;
       top: 0;
@@ -291,326 +193,367 @@
       border-radius: 12px;
       margin-bottom: 20px;
     }
-    #cardModalRarity {
+    /* RANKING */
+    .ranking-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: rgba(30, 30, 50, 0.7);
+      border-radius: 12px;
+      margin-bottom: 8px;
+    }
+    .ranking-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid gold;
+    }
+    .ranking-info { flex: 1; }
+    .ranking-name { font-weight: bold; font-size: 16px; }
+    .ranking-trophies { color: gold; }
+
+    /* NUEVO DISEÑO DE BATALLA */
+    #battle {
+      display: none;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 16px;
+      margin-top: 20px;
+    }
+    #battle.active {
+      display: block;
+    }
+    .battle-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .battle-ia {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 30px;
+    }
+    .battle-ia-card {
+      background: rgba(0, 0, 0, 0.5);
+      border: 2px solid #d42020;
+      border-radius: 16px;
+      padding: 15px;
+      text-align: center;
+      width: 160px;
+      box-shadow: 0 0 20px rgba(212, 32, 32, 0.5);
+    }
+    .battle-ia-card img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+    .battle-ia-card .name {
       font-weight: bold;
-      font-size: 18px;
       margin: 8px 0;
     }
-    .rarity-tag-common { color: #9e9e9e; }
-    .rarity-tag-rare { color: #4caf50; }
-    .rarity-tag-epic { color: #9c27b0; }
-    .rarity-tag-legendary { color: #d4a017; }
-    .rarity-tag-ultra { color: #00bcd4; }
-    .rarity-tag-exotic { color: #e91e63; }
-    .rarity-tag-idolos { color: #ff9800; }
-    .rarity-tag-tournament { color: #f44336; }
-    #currentDeck {
-      min-height: 140px;
-      background: rgba(0,0,0,0.3);
-      border-radius: 12px;
-      padding: 12px;
-      margin-bottom: 16px;
+    .battle-ia-card .stats {
       display: flex;
-      flex-wrap: wrap;
       justify-content: center;
       gap: 8px;
-    }
-    .remove-btn {
-      position: absolute;
-      top: -6px;
-      right: -6px;
-      background: #ff4444;
-      color: white;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      font-size: 12px;
-      cursor: pointer;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 3;
-    }
-    .overlay-effect {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 2000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      opacity: 0;
-    }
-    .confetti {
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      animation: fall linear forwards;
-    }
-    @keyframes fall {
-      to { transform: translateY(100vh) rotate(360deg); opacity: 0; }
-    }
-    #playerProfile {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-    #profileAvatar {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      border: 2px solid #d42020;
-      object-fit: cover;
-      cursor: pointer;
-      transition: transform 0.3s;
-    }
-    #battleLog {
-      min-height: 100px;
-      background: rgba(0,0,0,0.5);
-      padding: 15px;
-      border-radius: 12px;
-      margin: 20px 0;
-      text-align: left;
-      font-size: 16px;
-      line-height: 1.5;
-      max-height: 150px;
-      overflow-y: auto;
-    }
-    .log-entry {
-      margin: 4px 0;
-      padding: 4px 8px;
-      border-radius: 6px;
       font-size: 14px;
+      margin: 8px 0;
     }
-    .log-player { background: rgba(50, 150, 255, 0.2); }
-    .log-ia { background: rgba(212, 32, 32, 0.2); }
-    .log-system { background: rgba(150, 150, 255, 0.2); }
+    .hp-bar {
+      height: 8px;
+      background: #333;
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 8px 0;
+    }
+    .hp-fill {
+      height: 100%;
+      background: linear-gradient(to right, #d42020, #ff4545);
+      transition: width 0.5s ease;
+    }
+    .hp-text {
+      font-size: 12px;
+      text-align: center;
+      margin-top: 4px;
+    }
+    .battle-player-cards {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .player-card {
+      background: rgba(0, 0, 0, 0.5);
+      border: 2px solid #00bcd4;
+      border-radius: 16px;
+      padding: 15px;
+      text-align: center;
+      width: 160px;
+      box-shadow: 0 0 20px rgba(0, 188, 212, 0.5);
+    }
+    .player-card img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+    .player-card .name {
+      font-weight: bold;
+      margin: 8px 0;
+    }
+    .player-card .stats {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      font-size: 14px;
+      margin: 8px 0;
+    }
+    .attack-button {
+      background: #d42020;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+      box-shadow: 0 4px 10px rgba(212, 32, 32, 0.5);
+      margin: 0 10px;
+    }
+    .attack-button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 15px rgba(255, 200, 200, 0.8);
+    }
+    .defend-button {
+      background: #00bcd4;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+      box-shadow: 0 4px 10px rgba(0, 188, 212, 0.5);
+      margin: 0 10px;
+    }
+    .defend-button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 15px rgba(0, 255, 255, 0.8);
+    }
   </style>
 </head>
 <body>
-  <!-- OFERTA DE GEMAS CON CONTADOR -->
+  <!-- OFERTA DE GEMAS -->
   <div id="offerBanner">
     🎁 ¡OFERTA POR TIEMPO LIMITADO! 💎 ¡1000 GEMAS POR SOLO HOY!
     <span id="gemsCountdown">--h --m --s</span>
   </div>
-  <div id="chestsBanner">
-    <span id="tickerText">
-      🎄 ¡EVENTO NAVIDAD! 🎄 Consigue la carta LEGENDARIA navideña 
-      <span id="countdownTimer">--d --h --m --s</span>
-    </span>
+
+  <div class="container mx-auto px-4 py-6 pt-24">
+    <!-- Perfil y estadísticas -->
+    <div class="text-center mb-6">
+      <img id="profileAvatar" src="https://rule34.xxx//samples/1888/sample_4387d777c732825ae6e377664c2ce885.jpg?15738037" alt="Avatar" class="w-16 h-16 rounded-full mx-auto border-2 border-red-500">
+      <h2 class="text-xl font-bold mt-2" id="playerName">Jugador</h2>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stat"><i class="fas fa-trophy trophy"></i> <span id="trophies">0</span></div>
+      <div class="stat"><i class="fas fa-gem gem"></i> <span id="diamonds">100</span></div>
+      <div class="stat"><i class="fas fa-crown crown"></i> <span id="cups">0</span></div>
+    </div>
+
+    <h1 class="text-3xl font-bold text-center mb-6">🎄 FORTNITE: BATALLA NAVIDEÑA</h1>
+
+    <!-- Batalla -->
+    <div id="battle" class="active">
+      <div class="battle-header">
+        <h2 class="text-2xl font-bold mb-4">⚔️ BATALLA</h2>
+        <p>¡Elige una carta y ataca!</p>
+      </div>
+      <div class="battle-ia">
+        <div class="battle-ia-card">
+          <img src="https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894" alt="IA Básica">
+          <div class="name">IA Básica</div>
+          <div class="stats">
+            <span>⚔️ 65</span>
+            <span>🛡️ 70</span>
+          </div>
+          <div class="hp-bar"><div class="hp-fill" style="width:100%"></div></div>
+          <div class="hp-text">HP: 70/70</div>
+        </div>
+      </div>
+      <div class="battle-player-cards">
+        <div class="player-card">
+          <img src="https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894" alt="Ramírez">
+          <div class="name">Ramírez</div>
+          <div class="stats">
+            <span>⚔️ 60</span>
+            <span>🛡️ 50</span>
+          </div>
+          <div class="hp-bar"><div class="hp-fill" style="width:100%"></div></div>
+          <div class="hp-text">HP: 50/50</div>
+        </div>
+        <div class="player-card">
+          <img src="https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177" alt="Fortaleza">
+          <div class="name">Fortaleza</div>
+          <div class="stats">
+            <span>⚔️ 60</span>
+            <span>🛡️ 70</span>
+          </div>
+          <div class="hp-bar"><div class="hp-fill" style="width:100%"></div></div>
+          <div class="hp-text">HP: 70/70</div>
+        </div>
+        <div class="player-card">
+          <img src="https://s93.erome.com/5472/K3IRZbxx/9RweIpam.jpeg?v=1764813677" alt="Escudera">
+          <div class="name">Escudera</div>
+          <div class="stats">
+            <span>⚔️ 55</span>
+            <span>🛡️ 65</span>
+          </div>
+          <div class="hp-bar"><div class="hp-fill" style="width:100%"></div></div>
+          <div class="hp-text">HP: 65/65</div>
+        </div>
+      </div>
+      <div class="text-center mt-6">
+        <button class="attack-button" onclick="playerAttack()">🔥 ATACAR</button>
+        <button class="defend-button" onclick="playerDefend()">🛡️ DEFENDER</button>
+      </div>
+    </div>
+
+    <!-- Mazo -->
+    <div id="deck">
+      <h2 class="text-2xl font-bold text-center mb-4">🎴 TU MAZO</h2>
+      <div class="filter-bar">
+        <select id="rarityFilter" onchange="renderDeck()">
+          <option value="all">Todas las rarezas</option>
+          <option value="common">Común</option>
+          <option value="rare">Rara</option>
+          <option value="epic">Épica</option>
+          <option value="legendary">Legendaria</option>
+          <option value="ultra">Ultra Raro</option>
+          <option value="exotic">Exótica</option>
+          <option value="idolos">Ídolos</option>
+          <option value="tournament">Torneo</option>
+        </select>
+      </div>
+      <div class="card-grid" id="deckCards"></div>
+      <div class="text-center mt-4">
+        <button class="btn bg-purple-700" onclick="saveDeck()">💾 Guardar Mazo</button>
+      </div>
+    </div>
+
+    <!-- Tienda -->
+    <div id="shop">
+      <h2 class="text-2xl font-bold text-center mb-4">💎 TIENDA NAVIDEÑA</h2>
+      <div id="gemsOffer" class="bg-gradient-to-r from-blue-600 to-purple-600 p-4 rounded-xl text-center mb-6 mx-auto max-w-2xl animate-pulse">
+        <h3 class="text-xl font-bold text-yellow-300">🔥 ¡OFERTA ÚNICA! 🔥</h3>
+        <p class="text-lg">¡1000 GEMAS por tiempo limitado!</p>
+        <p class="text-sm text-yellow-200">Oferta termina en: <span id="shopGemsCountdown">--h --m --s</span></p>
+        <button class="btn bg-yellow-500 text-black mt-2" onclick="buyGemsPackage()">Comprar por $4.99</button>
+      </div>
+      <div class="card-grid" id="shopCards"></div>
+    </div>
+
+    <!-- Torneo -->
+    <div id="tournament">
+      <h2 class="text-3xl font-bold text-center mb-2 text-yellow-400">🏆 TORNEO NAVIDEÑO</h2>
+      <div class="bg-gradient-to-r from-red-900 via-green-800 to-yellow-900 border-2 border-yellow-500 rounded-xl p-4 mb-6 mx-auto max-w-2xl animate-pulse">
+        <div class="flex items-center justify-center gap-3 mb-2">
+          <i class="fas fa-star text-yellow-300 text-xl"></i>
+          <span class="text-xl font-bold text-white">¡REGALO NAVIDEÑO!</span>
+          <i class="fas fa-star text-yellow-300 text-xl"></i>
+        </div>
+        <p class="text-center text-yellow-100 font-semibold">
+          🎁 Consigue la carta <span class="text-yellow-300 font-extrabold">FRANCINE SMITH</span> ganando 5 rondas.
+        </p>
+        <div class="text-center mt-3">
+          <img 
+            src="https://wimg.rule34.xxx//images/1888/0334e8239c387a302348c01810815aef.jpeg?15738062" 
+            alt="Francine Smith - Navidad"
+            class="inline-block w-24 h-24 rounded-lg border-2 border-yellow-400 shadow-lg mx-auto"
+          />
+          <div class="text-yellow-200 text-sm font-bold mt-1">Francine Smith</div>
+        </div>
+      </div>
+      <p class="text-center text-gray-300 mb-4">
+        Necesitas <strong>1 copa</strong> para entrar. ¡Gana 5 rondas y recibe tu regalo!
+      </p>
+      <div class="text-center">
+        <button class="btn bg-gradient-to-r from-red-700 to-green-700" onclick="startTournament()">
+          🎁 ENTRAR AL TORNEO
+        </button>
+      </div>
+    </div>
+
+    <!-- Ranking -->
+    <div id="ranking">
+      <h2 class="text-2xl font-bold text-center mb-4">🏆 RANKING GLOBAL</h2>
+      <div id="rankingList" class="max-h-96 overflow-y-auto"></div>
+    </div>
+
+    <!-- Modo Copas -->
+    <div id="cupMode">
+      <h2 class="text-2xl font-bold text-center mb-4">🏅 CONSEGUIR COPAS</h2>
+      <p class="text-center">¡Gana batallas fáciles para obtener copas!</p>
+      <div class="text-center mt-4">
+        <button class="btn bg-yellow-600">Iniciar Batalla por Copas</button>
+      </div>
+    </div>
   </div>
+
+  <!-- MODAL DE CARTA -->
   <div id="cardModal" onclick="closeCardModal()">
     <div id="cardModalContent" onclick="event.stopPropagation()">
       <img id="cardModalImage" src="" alt="Carta" />
       <h2 id="cardModalName" class="text-2xl font-bold"></h2>
       <div id="cardModalRarity" class="font-bold"></div>
       <div id="cardModalStats" class="text-lg mt-2"></div>
-      <div id="cardModalPower" class="text-yellow-300 mt-2"></div>
-      <div id="cardModalUpgrade" class="mt-2"></div>
-      <button class="btn bg-gray-700 mt-2" onclick="closeCardModal()">Cerrar</button>
+      <button class="btn bg-gray-700 mt-4" onclick="closeCardModal()">Cerrar</button>
     </div>
   </div>
-  <div id="attackAnimation" class="attack-animation">
-    <img id="attackingCardImg" class="attacking-card" src="" />
-    <div id="targetCardIndicator" class="target-card"></div>
+
+  <!-- Navegación inferior -->
+  <div class="fixed bottom-4 left-0 right-0 flex justify-center gap-2 z-10 flex-wrap px-2">
+    <button class="btn bg-gray-800 text-xs" onclick="showView('battle')">Batalla</button>
+    <button class="btn bg-gray-800 text-xs" onclick="showView('deck')">Mazo</button>
+    <button class="btn bg-gray-800 text-xs" onclick="showView('shop')">Tienda</button>
+    <button class="btn bg-gray-800 text-xs" onclick="showView('ranking')">Ranking</button>
+    <button class="btn bg-gray-800 text-xs" onclick="showView('cupMode')">COPAS</button>
+    <button class="btn bg-gray-800 text-xs" onclick="showView('tournament')">Torneo</button>
   </div>
-  <div id="victoryOverlay" class="overlay-effect">
-    <div class="overlay-content">
-      <h2 class="text-4xl font-bold text-yellow-400 mb-4">🎉 ¡HAS GANADO!</h2>
-      <p class="text-xl" id="victoryMessage">+30 trofeos</p>
-    </div>
-  </div>
-  <div id="defeatOverlay" class="overlay-effect">
-    <div class="overlay-content">
-      <h2 class="text-4xl">💀</h2>
-      <p class="text-xl">¡Has perdido 15 trofeos!</p>
-    </div>
-  </div>
-  <div class="container mx-auto px-4 py-6">
-    <div id="playerProfile" class="text-center">
-      <img id="profileAvatar" src="https://rule34.xxx//samples/1888/sample_4387d777c732825ae6e377664c2ce885.jpg?15738037" alt="Avatar Navideño">
-      <div>
-        <div class="font-bold text-xl" id="playerName">Jugador</div>
-        <button class="btn text-xs mt-1 bg-green-700" onclick="changeAvatar()">Cambiar avatar</button>
-      </div>
-    </div>
-    <div id="statsBar" class="text-center">
-      <div class="stat-item">
-        <i class="fas fa-trophy trophy"></i>
-        <span id="trophies">0</span>
-      </div>
-      <div class="stat-item">
-        <i class="fas fa-gem gem"></i>
-        <span id="diamonds">100</span>
-      </div>
-      <div class="stat-item">
-        <i class="fas fa-crown crown"></i>
-        <span id="cups">0</span>
-      </div>
-    </div>
-    <h1 class="text-3xl font-bold text-center mb-4 bg-clip-text text-transparent bg-gradient-to-r from-red-400 via-green-500 to-yellow-400">
-      🎄 FORTNITE: BATALLA NAVIDEÑA
-    </h1>
-    <div id="content" class="mb-24">
-      <!-- Batalla -->
-      <div id="battle" class="view">
-        <div id="battleLog"></div>
-        <div class="text-center mb-6">
-          <h3 class="text-xl font-bold text-red-400">IA</h3>
-          <div id="enemyCard" class="inline-block"></div>
-        </div>
-        <div class="text-center">
-          <h3 class="text-xl font-bold text-green-400">TU MAZO</h3>
-          <div id="playerCards" class="flex flex-wrap justify-center gap-4"></div>
-        </div>
-        <div class="text-center mt-4">
-          <button class="btn bg-red-700" onclick="playerAttack()">🔥 ATACAR</button>
-          <button class="btn bg-green-700" onclick="playerDefend()">🛡️ DEFENDER</button>
-        </div>
-      </div>
-      <!-- Mazo -->
-      <div id="deck" class="view hidden">
-        <h2 class="text-2xl text-center mb-4">🎴 TU MAZO</h2>
-        <!-- ✅ FILTRO POR RAREZA -->
-        <div class="text-center mb-4">
-          <select id="rarityFilter" onchange="filterDeckCards()" class="bg-gray-800 text-white p-2 rounded">
-            <option value="all">Todas las rarezas</option>
-            <option value="common">Común</option>
-            <option value="rare">Rara</option>
-            <option value="epic">Épica</option>
-            <option value="legendary">Legendaria</option>
-            <option value="ultra">Ultra Raro</option>
-            <option value="exotic">Exótica</option>
-            <option value="idolos">Ídolos</option>
-            <option value="tournament">Torneo</option>
-          </select>
-        </div>
-        <div id="currentDeck"></div>
-        <button class="btn bg-purple-700 mb-4" onclick="saveDeck()">💾 Guardar Mazo</button>
-        <h3 class="text-xl mb-3">Todas tus cartas:</h3>
-        <div id="deckCards" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 justify-center"></div>
-      </div>
-      <!-- Tienda -->
-      <div id="shop" class="view hidden">
-        <h2 class="text-2xl text-center mb-4">💎 TIENDA NAVIDEÑA</h2>
-        <div id="gemsOfferContainer"></div>
-        <div id="shopCards" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 justify-center"></div>
-      </div>
-      <!-- TORNEOS MULTIPLES -->
-      <div id="tournaments" class="view hidden">
-        <h2 class="text-3xl font-bold text-center mb-4 text-yellow-400">🏆 TORNEOS ÉPICOS</h2>
 
-        <div class="bg-gradient-to-r from-red-900 via-green-800 to-yellow-900 border-2 border-yellow-500 rounded-xl p-4 mb-4 animate-pulse">
-          <h3 class="text-xl font-bold text-white">🎄 Torneo Navideño</h3>
-          <p>Gana 5 rondas → Recompensa: <strong>Francine Smith</strong></p>
-          <button class="btn bg-red-700 mt-2" onclick="startTournament('navidad')">Entrar (1 copa)</button>
-        </div>
-
-        <div class="bg-gradient-to-r from-purple-800 to-indigo-900 border-2 border-purple-500 rounded-xl p-4 mb-4">
-          <h3 class="text-xl font-bold text-white">⚔️ Torneo Épico</h3>
-          <p>Gana 3 rondas → Recompensa: <strong>Felina</strong></p>
-          <button class="btn bg-purple-700 mt-2" onclick="startTournament('epico')">Entrar (2 copas)</button>
-        </div>
-
-        <div class="bg-gradient-to-r from-orange-600 to-yellow-500 border-2 border-orange-400 rounded-xl p-4 mb-4">
-          <h3 class="text-xl font-bold text-white">🌟 Torneo Ídolos</h3>
-          <p>Gana 4 rondas → Recompensa: <strong>Sabrina Carpenter</strong></p>
-          <button class="btn bg-orange-700 mt-2" onclick="startTournament('idolos')">Entrar (3 copas)</button>
-        </div>
-
-        <div class="bg-gradient-to-r from-blue-800 to-cyan-700 border-2 border-blue-500 rounded-xl p-4 mb-4">
-          <h3 class="text-xl font-bold text-white">🛡️ Torneo Defensores</h3>
-          <p>Gana 3 rondas → Recompensa: <strong>Fortaleza</strong></p>
-          <button class="btn bg-blue-700 mt-2" onclick="startTournament('defensores')">Entrar (1 copa)</button>
-        </div>
-
-        <div class="bg-gradient-to-r from-red-700 to-pink-600 border-2 border-red-500 rounded-xl p-4 mb-4">
-          <h3 class="text-xl font-bold text-white">💥 Torneo Asesinos</h3>
-          <p>Gana 4 rondas → Recompensa: <strong>Asesina</strong></p>
-          <button class="btn bg-pink-700 mt-2" onclick="startTournament('asesinos')">Entrar (2 copas)</button>
-        </div>
-
-        <div class="bg-gradient-to-r from-green-700 to-emerald-600 border-2 border-green-500 rounded-xl p-4 mb-4">
-          <h3 class="text-xl font-bold text-white">🌿 Torneo Básico</h3>
-          <p>Gana 2 rondas → Recompensa: <strong>Ramírez</strong></p>
-          <button class="btn bg-green-700 mt-2" onclick="startTournament('basico')">Entrar (1 copa)</button>
-        </div>
-      </div>
-
-      <!-- Modo Copas -->
-      <div id="cupMode" class="view hidden">
-        <h2 class="text-3xl font-bold text-center mb-4 text-yellow-400">🏆 CONSEGUIR COPAS</h2>
-        <p class="text-center text-lg mb-6">
-          ¡Gana 1 copa por cada victoria! Combate contra una IA más débil.
-        </p>
-        <div class="text-center">
-          <button class="btn bg-gradient-to-r from-yellow-600 to-orange-600 px-6 py-3" onclick="startCupBattle()">
-            ⚔️ INICIAR BATALLA POR COPAS
-          </button>
-        </div>
-        <div class="text-center mt-8 text-gray-300">
-          <i class="fas fa-info-circle"></i> Recompensa: <strong>1 copa</strong> por victoria
-        </div>
-      </div>
-    </div>
-    <div class="fixed bottom-4 left-0 right-0 flex justify-center gap-2 z-10 flex-wrap px-2">
-      <button class="btn bg-gray-800 text-xs" onclick="showView('battle')">Batalla</button>
-      <button class="btn bg-gray-800 text-xs" onclick="showView('deck')">Mazo</button>
-      <button class="btn bg-gray-800 text-xs" onclick="showView('shop')">Tienda</button>
-      <button class="btn bg-gray-800 text-xs" onclick="showView('tournaments')">Torneos</button>
-      <button class="btn bg-gray-800 text-xs" onclick="showView('cupMode')">COPAS</button>
-    </div>
-  </div>
   <script>
-    // ✅ CONFIGURACIÓN DE LA OFERTA DE GEMAS (termina hoy a la 1:00 AM)
+    // ✅ CONFIGURACIÓN DE OFERTA
     function getGemsOfferEndTime() {
       const now = new Date();
       const endTime = new Date(now);
-      endTime.setHours(1, 0, 0, 0); // 1:00 AM
-      if (endTime <= now) {
-        endTime.setDate(endTime.getDate() + 1);
-      }
+      endTime.setHours(1, 0, 0, 0);
+      if (endTime <= now) endTime.setDate(endTime.getDate() + 1);
       return endTime;
     }
     const GEMS_OFFER_END = getGemsOfferEndTime();
-    const GEMS_OFFER_ACTIVE = true;
 
-    // ✅ CARTAS (sin Diosa Cósmica, Rey del Trueno, Aria Ídolo + nuevas épicas)
-const ALL_CARDS = [
-  { id: 0, name: "Ramírez", rarity: "common", baseAtk: 60, baseDef: 50, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", shopPrice: null },
-  { id: 1, name: "Fortaleza", rarity: "rare", baseAtk: 60, baseDef: 70, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177", shopPrice: null },
-  { id: 2, name: "Escudera", rarity: "common", baseAtk: 55, baseDef: 65, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/9RweIpam.jpeg?v=1764813677", shopPrice: null },
-  { id: 3, name: "Azulita", rarity: "rare", baseAtk: 70, baseDef: 55, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/0B8OzReu.jpeg?v=1764815871", shopPrice: 80 },
-  { id: 4, name: "Tormenta", rarity: "epic", baseAtk: 80, baseDef: 45, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/7GmdJa3U.jpeg?v=1764802552", shopPrice: 120 },
-  { id: 5, name: "Furia", rarity: "legendary", baseAtk: 90, baseDef: 40, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/LsMURibY.jpeg?v=1764812622", shopPrice: 200 },
-  { id: 6, name: "Asesina", rarity: "legendary", baseAtk: 95, baseDef: 30, level: 1, img: "https://s206.erome.com/4699/lpRzYjBO/Z5Tc5k2v.jpeg?v=1745795818", shopPrice: 250 },
-  { id: 7, name: "Francine Smith", rarity: "legendary", baseAtk: 110, baseDef: 70, level: 1, img: "https://wimg.rule34.xxx//images/1888/0334e8239c387a302348c01810815aef.jpeg?15738062", shopPrice: null },
-  { id: 11, name: "Campeón Sombra", rarity: "tournament", baseAtk: 140, baseDef: 100, level: 1, img: "https://s100.erome.com/2418/B2TgruwR/61zc8Veb.png?v=1712563892", shopPrice: null },
-  { id: 12, name: "Maestro del Fuego", rarity: "tournament", baseAtk: 150, baseDef: 90, img: "https://s326.erome.com/5139/YBnb1NTO/pN2evqNZ.jpeg?v=1750357395", shopPrice: null },
-  { id: 13, name: "Rey del Hielo", rarity: "tournament", baseAtk: 135, baseDef: 110, level: 1, img: "https://s10.erome.com/6694/EUAdAxk1/1zdVPLQh.jpeg?v=1764732026", shopPrice: null },
-  
-  // ✅ NUEVAS CARTAS ÉPICAS (700 GEMAS CADA UNA)
-  { id: 20, name: "Felina", rarity: "epic", baseAtk: 85, baseDef: 50, level: 1, img: "https://rule34.xxx//samples/2288/sample_ce3c07d28a9fdd2475d6fc67df8ff4e4.jpg?15302020", shopPrice: 700 },
-  { id: 21, name: "Luna Oscura", rarity: "epic", baseAtk: 90, baseDef: 55, level: 1, img: "https://rule34.xxx//samples/3001/sample_59915a49be3c0b2a86030615f562d3c1.jpg?15147757", shopPrice: 700 },
-  { id: 22, name: "Valkiria Nocturna", rarity: "epic", baseAtk: 95, baseDef: 60, level: 1, img: "https://rule34.xxx//samples/714/sample_799c5e73f8d6f088e9a1930fe6d3f791.jpg?15175590", shopPrice: 700 },
-  { id: 23, name: "Nébula Cósmica", rarity: "epic", baseAtk: 100, baseDef: 45, level: 1, img: "https://rule34.xxx//samples/2510/sample_ea2393689e00c9127748cc78a08ef6b5.jpg?15205865", shopPrice: 700 },
-  { id: 24, name: "Sombra Élite", rarity: "epic", baseAtk: 88, baseDef: 52, level: 1, img: "https://rule34.xxx//samples/1506/sample_b060c3279b1a9b0a7da0e19bb15fa2d5.jpg?15273482", shopPrice: 700 },
-  { id: 25, name: "Aurora Sangrienta", rarity: "epic", baseAtk: 92, baseDef: 48, level: 1, img: "https://rule34.xxx//samples/1766/sample_0e848cee467407d1da3fd407bbf6e484.jpg?15276598", shopPrice: 700 }
-];
-
-    const IA_CARDS = [
-      { id: 100, name: "IA Básica", rarity: "common", atk: 65, def: 70, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894" },
-      { id: 101, name: "IA Élite", rarity: "legendary", atk: 95, def: 60, img: "https://s206.erome.com/4699/lpRzYjBO/gU2HfmRY.jpeg?v=1745795818" },
-      { id: 102, name: "IA Débil", rarity: "common", atk: 40, def: 50, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894" },
-      { id: 103, name: "Campeón Sombra", rarity: "tournament", atk: 140, def: 100, img: "https://s100.erome.com/2418/B2TgruwR/61zc8Veb.png?v=1712563892" },
-      { id: 104, name: "Maestro del Fuego", rarity: "tournament", atk: 150, def: 90, img: "https://s326.erome.com/5139/YBnb1NTO/pN2evqNZ.jpeg?v=1750357395" },
-      { id: 105, name: "Rey del Hielo", rarity: "tournament", atk: 135, def: 110, img: "https://s10.erome.com/6694/EUAdAxk1/1zdVPLQh.jpeg?v=1764732026" }
+    // ✅ CARTAS (con nivel de mejora)
+    const ALL_CARDS = [
+      { id: 0, name: "Ramírez", rarity: "common", baseAtk: 60, baseDef: 50, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", shopPrice: null },
+      { id: 1, name: "Fortaleza", rarity: "rare", baseAtk: 60, baseDef: 70, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177", shopPrice: null },
+      { id: 2, name: "Escudera", rarity: "common", baseAtk: 55, baseDef: 65, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/9RweIpam.jpeg?v=1764813677", shopPrice: null },
+      { id: 3, name: "Azulita", rarity: "rare", baseAtk: 70, baseDef: 55, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/0B8OzReu.jpeg?v=1764815871", shopPrice: 80 },
+      { id: 4, name: "Tormenta", rarity: "epic", baseAtk: 80, baseDef: 45, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/7GmdJa3U.jpeg?v=1764802552", shopPrice: 120 },
+      { id: 5, name: "Furia", rarity: "legendary", baseAtk: 90, baseDef: 40, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/LsMURibY.jpeg?v=1764812622", shopPrice: 200 },
+      { id: 6, name: "Asesina", rarity: "legendary", baseAtk: 95, baseDef: 30, level: 1, img: "https://s206.erome.com/4699/lpRzYjBO/Z5Tc5k2v.jpeg?v=1745795818", shopPrice: 250 },
+      { id: 7, name: "Francine Smith", rarity: "legendary", baseAtk: 110, baseDef: 70, level: 1, img: "https://wimg.rule34.xxx//images/1888/0334e8239c387a302348c01810815aef.jpeg?15738062", shopPrice: null },
+      { id: 8, name: "Rey del Trueno", rarity: "ultra", baseAtk: 130, baseDef: 80, level: 1, img: "https://via.placeholder.com/150/00bcd4/ffffff?text=Ultra", shopPrice: 300 },
+      { id: 9, name: "Diosa Cósmica", rarity: "exotic", baseAtk: 150, baseDef: 90, level: 1, img: "https://via.placeholder.com/150/e91e63/ffffff?text=Exótica", shopPrice: 500 },
+      { id: 10, name: "Aria Ídolo", rarity: "idolos", baseAtk: 140, baseDef: 85, level: 1, img: "https://via.placeholder.com/150/ff9800/ffffff?text=Ídolos", shopPrice: 400 },
+      { id: 11, name: "Campeón Sombra", rarity: "tournament", baseAtk: 140, baseDef: 100, level: 1, img: "https://s100.erome.com/2418/B2TgruwR/61zc8Veb.png?v=1712563892", shopPrice: null },
+      { id: 12, name: "Maestro del Fuego", rarity: "tournament", baseAtk: 150, baseDef: 90, img: "https://s326.erome.com/5139/YBnb1NTO/pN2evqNZ.jpeg?v=1750357395", shopPrice: null },
+      { id: 13, name: "Rey del Hielo", rarity: "tournament", baseAtk: 135, baseDef: 110, level: 1, img: "https://s10.erome.com/6694/EUAdAxk1/1zdVPLQh.jpeg?v=1764732026", shopPrice: null },
+      // ✅ NUEVA CARTA: FELINA
+      { id: 14, name: "Felina", rarity: "epic", baseAtk: 85, baseDef: 50, level: 1, img: "https://rule34.xxx//samples/2288/sample_ce3c07d28a9fdd2475d6fc67df8ff4e4.jpg?15302020", shopPrice: 300 }
     ];
 
     let gameState = {
@@ -621,8 +564,7 @@ const ALL_CARDS = [
       avatar: localStorage.getItem('playerAvatar') || 'https://rule34.xxx//samples/1888/sample_4387d777c732825ae6e377664c2ce885.jpg?15738037',
       ownedCardIds: JSON.parse(localStorage.getItem('ownedCardIds') || '[0,1,2]'),
       cardUpgrades: JSON.parse(localStorage.getItem('cardUpgrades') || '{}'),
-      currentDeck: JSON.parse(localStorage.getItem('currentDeck') || '[0,1,2]'),
-      activeTournament: null
+      currentDeck: JSON.parse(localStorage.getItem('currentDeck') || '[0,1,2]')
     };
 
     // Aplicar mejoras
@@ -642,6 +584,7 @@ const ALL_CARDS = [
       document.getElementById('trophies').textContent = gameState.trophies;
       document.getElementById('diamonds').textContent = gameState.diamonds;
       document.getElementById('cups').textContent = gameState.cups;
+      updateRanking(); // ✅ Actualizar ranking al cambiar algo
     }
 
     // ✅ CONTADOR DE OFERTA
@@ -650,17 +593,20 @@ const ALL_CARDS = [
       const diff = GEMS_OFFER_END - now;
       if (diff <= 0) {
         document.getElementById('offerBanner').style.display = 'none';
+        document.getElementById('gemsOffer').style.display = 'none';
         return;
       }
       const h = Math.floor(diff / 3600000);
       const m = Math.floor((diff % 3600000) / 60000);
       const s = Math.floor((diff % 60000) / 1000);
-      document.getElementById('gemsCountdown').textContent = 
-        `${h.toString().padStart(2,'0')}h ${m.toString().padStart(2,'0')}m ${s.toString().padStart(2,'0')}s`;
+      const timeStr = `${h.toString().padStart(2,'0')}h ${m.toString().padStart(2,'0')}m ${s.toString().padStart(2,'0')}s`;
+      document.getElementById('gemsCountdown').textContent = timeStr;
+      document.getElementById('shopGemsCountdown').textContent = timeStr;
     }
     setInterval(updateGemsCountdown, 1000);
     updateGemsCountdown();
 
+    // ✅ COMPRA DE GEMAS
     function buyGemsPackage() {
       if (new Date() >= GEMS_OFFER_END) {
         alert("¡La oferta ha terminado!");
@@ -674,82 +620,7 @@ const ALL_CARDS = [
       }
     }
 
-    // ✅ NUEVOS TORNEOS
-    const TOURNAMENTS = {
-      navidad: { name: "Navideño", rounds: 5, cost: 1, reward: [7] },
-      epico: { name: "Épico", rounds: 3, cost: 2, reward: [4] }, // Felina no está, así que Tormenta
-      idolos: { name: "Ídolos", rounds: 4, cost: 3, reward: [14] },
-      defensores: { name: "Defensores", rounds: 3, cost: 1, reward: [1] },
-      asesinos: { name: "Asesinos", rounds: 4, cost: 2, reward: [6] },
-      basico: { name: "Básico", rounds: 2, cost: 1, reward: [0] }
-    };
-
-    function startTournament(type) {
-      const config = TOURNAMENTS[type];
-      if (!config) return;
-
-      if (gameState.cups < config.cost) {
-        alert(`¡Necesitas ${config.cost} copa(s) para entrar!`);
-        return;
-      }
-
-      if (gameState.currentDeck.length === 0) {
-        alert("¡Tu mazo está vacío! Añade cartas en el Mazo.");
-        showView('deck');
-        return;
-      }
-
-      gameState.activeTournament = { type, ...config, wins: 0 };
-      alert(`¡Has entrado al Torneo ${config.name}! Gana ${config.rounds} rondas.`);
-      startTournamentRound();
-    }
-
-    function startTournamentRound() {
-      const t = gameState.activeTournament;
-      if (!t) return;
-
-      // Simular victoria por simplicidad
-      setTimeout(() => {
-        t.wins++;
-        if (t.wins >= t.rounds) {
-          // Recompensa
-          t.reward.forEach(id => {
-            if (!gameState.ownedCardIds.includes(id)) {
-              gameState.ownedCardIds.push(id);
-            }
-          });
-          gameState.cups -= t.cost;
-          gameState.trophies += t.rounds * 50;
-          saveGame();
-          updateUI();
-          alert(`¡FELICIDADES! Has ganado el Torneo ${TOURNAMENTS[t.type].name} y desbloqueado cartas.`);
-          gameState.activeTournament = null;
-          renderDeck();
-          renderShop();
-        } else {
-          alert(`¡Ronda ${t.wins} ganada! Sigue así.`);
-          startTournamentRound();
-        }
-      }, 800);
-    }
-
-    // ✅ COMPRA DE CARTAS
-    function buyCard(cardId) {
-      const card = ALL_CARDS.find(c => c.id === cardId);
-      if (card && gameState.diamonds >= card.shopPrice) {
-        gameState.diamonds -= card.shopPrice;
-        gameState.ownedCardIds.push(cardId);
-        saveGame();
-        updateUI();
-        renderShop();
-        renderDeck();
-        addToLog(`🎉 Has comprado <strong>${card.name}</strong>!`, 'system');
-      } else {
-        addToLog("💎 ¡No tienes suficientes gemas!", 'system');
-      }
-    }
-
-    // ✅ MAZO ILIMITADO
+    // ✅ SIN LÍMITE DE 3 CARTAS
     function addToDeck(cardId) {
       if (!gameState.currentDeck.includes(cardId)) {
         gameState.currentDeck.push(cardId);
@@ -778,7 +649,9 @@ const ALL_CARDS = [
         ultra: "Ultra Raro", exotic: "Exótica", idolos: "Ídolos", tournament: "Torneo"
       };
       const rarityText = rarityLabels[card.rarity] || card.rarity;
+      const rarityClass = `rarity-tag-${card.rarity}`;
       document.getElementById('cardModalRarity').textContent = rarityText;
+      document.getElementById('cardModalRarity').className = `font-bold ${rarityClass}`;
       document.getElementById('cardModalStats').textContent = `⚔️ ${card.atk}  🛡️ ${card.def}`;
       document.getElementById('cardModal').style.display = 'flex';
     }
@@ -787,7 +660,34 @@ const ALL_CARDS = [
       document.getElementById('cardModal').style.display = 'none';
     }
 
+    // ✅ RENDER CON FILTRO
     function renderDeck() {
+      const container = document.getElementById('deckCards');
+      container.innerHTML = '';
+      const rarityFilter = document.getElementById('rarityFilter').value;
+      let cardsToShow = ALL_CARDS.filter(c => gameState.ownedCardIds.includes(c.id));
+      if (rarityFilter !== 'all') {
+        cardsToShow = cardsToShow.filter(c => c.rarity === rarityFilter);
+      }
+      cardsToShow.forEach(card => {
+        const cardEl = document.createElement('div');
+        cardEl.className = `card-container ${card.rarity}`;
+        cardEl.innerHTML = `
+          <div class="card-base">
+            <div class="card-glow"></div>
+            <div class="card-content">
+              <img src="${card.img}" onerror="this.src='https://via.placeholder.com/150/555/fff?text=${card.name}'" style="width:100%; height:130px; object-fit:cover; border-radius:6px;">
+              <div class="font-bold text-xs mt-1 truncate">${card.name}</div>
+              <div class="text-[10px]">⚔️${card.atk} 🛡️${card.def}</div>
+            </div>
+          </div>
+        `;
+        cardEl.onclick = () => showCardModal(card);
+        container.appendChild(cardEl);
+      });
+    }
+
+    function renderShop() {
       const currentDeckEl = document.getElementById('currentDeck');
       currentDeckEl.innerHTML = '';
       gameState.currentDeck.forEach(id => {
@@ -832,28 +732,6 @@ const ALL_CARDS = [
       `).join('');
     }
 
-    function renderShop() {
-      const container = document.getElementById('shopCards');
-      container.innerHTML = '';
-      ALL_CARDS.filter(c => c.shopPrice && !gameState.ownedCardIds.includes(c.id)).forEach(card => {
-        const cardEl = document.createElement('div');
-        cardEl.className = `card-container ${card.rarity}`;
-        cardEl.innerHTML = `
-          <div class="card-base">
-            <div class="card-glow"></div>
-            <div class="card-content">
-              <img src="${card.img}" style="width:100%; height:130px; object-fit:cover; border-radius:6px;">
-              <div class="font-bold text-xs mt-1 truncate">${card.name}</div>
-              <div class="text-yellow-400 text-[11px]">💎${card.shopPrice}</div>
-            </div>
-          </div>
-          <button class="btn w-full mt-1 py-1 text-[10px]" onclick="event.stopPropagation(); buyCard(${card.id})">Comprar</button>
-        `;
-        cardEl.onclick = () => showCardModal(card);
-        container.appendChild(cardEl);
-      });
-    }
-
     function saveGame() {
       localStorage.setItem('trophies', gameState.trophies);
       localStorage.setItem('diamonds', gameState.diamonds);
@@ -861,31 +739,73 @@ const ALL_CARDS = [
       localStorage.setItem('ownedCardIds', JSON.stringify(gameState.ownedCardIds));
       localStorage.setItem('cardUpgrades', JSON.stringify(gameState.cardUpgrades));
       localStorage.setItem('currentDeck', JSON.stringify(gameState.currentDeck));
+      
+      // ✅ Guardar en ranking
+      let rankings = JSON.parse(localStorage.getItem('rankings') || '[]');
+      const existingIndex = rankings.findIndex(r => r.name === gameState.playerName);
+      const playerData = {
+        name: gameState.playerName,
+        trophies: gameState.trophies,
+        avatar: gameState.avatar
+      };
+      if (existingIndex >= 0) {
+        rankings[existingIndex] = playerData;
+      } else {
+        rankings.push(playerData);
+      }
+      // Ordenar por trofeos
+      rankings.sort((a, b) => b.trophies - a.trophies);
+      rankings = rankings.slice(0, 10); // Top 10
+      localStorage.setItem('rankings', JSON.stringify(rankings));
     }
 
-    function startCupBattle() {
-      alert("¡Has ganado 1 copa!");
-      gameState.cups += 1;
+    // ✅ RANKING EN TIEMPO REAL
+    function updateRanking() {
+      const rankings = JSON.parse(localStorage.getItem('rankings') || '[]');
+      const container = document.getElementById('rankingList');
+      container.innerHTML = '';
+      rankings.forEach((player, i) => {
+        const item = document.createElement('div');
+        item.className = 'ranking-item';
+        item.innerHTML = `
+          <div class="ranking-avatar" style="background-image: url('${player.avatar}'); background-size: cover;"></div>
+          <div class="ranking-info">
+            <div class="ranking-name">${player.name}</div>
+            <div class="ranking-trophies">🪙 ${player.trophies} trofeos</div>
+          </div>
+          <div class="ranking-pos text-2xl font-bold">${i + 1}</div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function startTournament() {
+      if (gameState.cups < 1) {
+        alert("¡Necesitas 1 copa para el evento navideño! 🎄");
+        return;
+      }
+      // Simular victoria
+      alert("¡FELICIDADES! 🎄 Has ganado el torneo.");
+      [7, 11, 12, 13].forEach(id => {
+        if (!gameState.ownedCardIds.includes(id)) {
+          gameState.ownedCardIds.push(id);
+        }
+      });
+      gameState.cups -= 1;
+      gameState.trophies += 500;
       saveGame();
       updateUI();
+      renderDeck();
     }
 
     function showView(view) {
-      ['battle', 'deck', 'shop', 'tournaments', 'cupMode'].forEach(id => {
-        document.getElementById(id).classList.add('hidden');
+      ['battle', 'deck', 'shop', 'tournament', 'cupMode', 'ranking'].forEach(id => {
+        document.getElementById(id).classList.remove('active');
       });
-      document.getElementById(view).classList.remove('hidden');
+      document.getElementById(view).classList.add('active');
       if (view === 'deck') renderDeck();
       if (view === 'shop') renderShop();
-    }
-
-    function addToLog(msg, type='system') {
-      const log = document.getElementById('battleLog');
-      const entry = document.createElement('div');
-      entry.className = `log-entry log-${type}`;
-      entry.innerHTML = msg;
-      log.appendChild(entry);
-      log.scrollTop = log.scrollHeight;
+      if (view === 'ranking') updateRanking();
     }
 
     updateUI();
