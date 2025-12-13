@@ -136,12 +136,32 @@
     .rarity-idolos .card-battle::before { background: #ff9800; }
     .rarity-tournament .card-battle::before { background: #f44336; }
 
-    .card-battle.attacking {
-      animation: attackPulse 0.8s 1;
+    /* ✅ ANIMACIÓN DE ATAQUE ÉPICO */
+    .attack-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1500;
+      display: none;
     }
-    @keyframes attackPulse {
-      0%, 100% { transform: scale(1); filter: brightness(1); }
-      50% { transform: scale(1.1); filter: brightness(1.5); box-shadow: 0 0 40px #ff4545; }
+    .attacking-card {
+      position: absolute;
+      width: 120px;
+      height: 170px;
+      border-radius: 12px;
+      z-index: 2000;
+      box-shadow: 0 0 30px gold;
+    }
+    .target-card {
+      position: absolute;
+      width: 120px;
+      height: 170px;
+      border: 3px solid red;
+      border-radius: 12px;
+      z-index: 1999;
     }
 
     .hp-bar {
@@ -168,6 +188,22 @@
       border-radius: 12px;
       font-weight: bold;
       z-index: 2;
+    }
+
+    /* BANNER DE OFERTA */
+    #offerBanner {
+      background: linear-gradient(to right, #ff416c, #ff4b2b);
+      color: white;
+      padding: 10px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 18px;
+      position: fixed;
+      top: 48px;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
     }
 
     #chestsBanner {
@@ -215,6 +251,7 @@
       gap: 16px;
       border: 1px solid #d42020;
       box-shadow: 0 0 15px rgba(212, 32, 32, 0.4);
+      margin-top: 120px;
     }
     .stat-item {
       display: flex;
@@ -361,6 +398,19 @@
   </style>
 </head>
 <body>
+  <!-- OFERTA DE GEMAS -->
+  <div id="offerBanner">
+    🎁 ¡OFERTA POR TIEMPO LIMITADO! 💎 ¡1000 GEMAS POR SOLO HOY! 🎁
+  </div>
+
+  <!-- BANNER DE COFRES -->
+  <div id="chestsBanner">
+    <span id="tickerText">
+      🎄 ¡EVENTO NAVIDAD! 🎄 Consigue la carta LEGENDARIA navideña 
+      <span id="countdownTimer">--d --h --m --s</span>
+    </span>
+  </div>
+
   <!-- MODAL DE CARTA -->
   <div id="cardModal" onclick="closeCardModal()">
     <div id="cardModalContent" onclick="event.stopPropagation()">
@@ -373,11 +423,10 @@
     </div>
   </div>
 
-  <div id="chestsBanner">
-    <span id="tickerText">
-      🎄 ¡EVENTO NAVIDAD! 🎄 Consigue la carta LEGENDARIA navideña 
-      <span id="countdownTimer">--d --h --m --s</span>
-    </span>
+  <!-- ANIMACIÓN DE ATAQUE -->
+  <div id="attackAnimation" class="attack-animation">
+    <img id="attackingCardImg" class="attacking-card" src="" />
+    <div id="targetCardIndicator" class="target-card"></div>
   </div>
 
   <div id="victoryOverlay" class="overlay-effect">
@@ -394,7 +443,7 @@
     </div>
   </div>
 
-  <div class="container mx-auto px-4 py-6 pt-20">
+  <div class="container mx-auto px-4 py-6">
     <div id="playerProfile" class="text-center">
       <img id="profileAvatar" src="https://rule34.xxx//samples/1888/sample_4387d777c732825ae6e377664c2ce885.jpg?15738037" alt="Avatar Navideño">
       <div>
@@ -452,6 +501,12 @@
       <!-- Tienda -->
       <div id="shop" class="view hidden">
         <h2 class="text-2xl text-center mb-4">💎 TIENDA NAVIDEÑA</h2>
+        <!-- ✅ OFERTA DE GEMAS -->
+        <div class="bg-gradient-to-r from-blue-600 to-purple-600 p-4 rounded-xl text-center mb-6 animate-pulse">
+          <h3 class="text-xl font-bold text-yellow-300">🔥 ¡OFERTA ÚNICA! 🔥</h3>
+          <p class="text-lg">¡1000 GEMAS por tiempo limitado!</p>
+          <button class="btn bg-yellow-500 text-black mt-2" onclick="buyGemsPackage()">Comprar por $4.99</button>
+        </div>
         <div id="shopCards" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 justify-center"></div>
       </div>
 
@@ -514,7 +569,7 @@
   </div>
 
   <script>
-    // ✅ CARTAS CON IMÁGENES DE RESPALDO (onerror)
+    // ✅ CARTAS
     const ALL_CARDS = [
       { id: 0, name: "Ramírez", rarity: "common", atk: 60, def: 50, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", shopPrice: null },
       { id: 1, name: "Fortaleza", rarity: "rare", atk: 60, def: 70, img: "https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177", shopPrice: null },
@@ -527,7 +582,6 @@
       { id: 8, name: "Rey del Trueno", rarity: "ultra", atk: 130, def: 80, img: "https://via.placeholder.com/150/00bcd4/ffffff?text=Ultra", shopPrice: 300 },
       { id: 9, name: "Diosa Cósmica", rarity: "exotic", atk: 150, def: 90, img: "https://via.placeholder.com/150/e91e63/ffffff?text=Exótica", shopPrice: 500 },
       { id: 10, name: "Aria Ídolo", rarity: "idolos", atk: 140, def: 85, img: "https://via.placeholder.com/150/ff9800/ffffff?text=Ídolos", shopPrice: 400 },
-      // ✅ CARTAS DE TORNEO
       { id: 11, name: "Campeón Sombra", rarity: "tournament", atk: 140, def: 100, img: "https://s100.erome.com/2418/B2TgruwR/61zc8Veb.png?v=1712563892", shopPrice: null },
       { id: 12, name: "Maestro del Fuego", rarity: "tournament", atk: 150, def: 90, img: "https://s326.erome.com/5139/YBnb1NTO/pN2evqNZ.jpeg?v=1750357395", shopPrice: null },
       { id: 13, name: "Rey del Hielo", rarity: "tournament", atk: 135, def: 110, img: "https://s10.erome.com/6694/EUAdAxk1/1zdVPLQh.jpeg?v=1764732026", shopPrice: null }
@@ -561,13 +615,48 @@
       document.getElementById('cups').textContent = gameState.cups;
     }
 
-    function changeAvatar() {
-      const url = prompt("Pega URL de tu avatar navideño:", gameState.avatar);
-      if (url && url.trim()) {
-        gameState.avatar = url;
-        localStorage.setItem('playerAvatar', url);
+    // ✅ COMPRA DE GEMAS
+    function buyGemsPackage() {
+      if (confirm("¿Comprar 1000 gemas por $4.99?")) {
+        gameState.diamonds += 1000;
+        saveGame();
         updateUI();
+        alert("¡Compra exitosa! Has recibido 1000 gemas 💎");
       }
+    }
+
+    // ✅ ANIMACIÓN DE ATAQUE ÉPICO
+    function playAttackAnimation(playerCard, enemyCard) {
+      const anim = document.getElementById('attackAnimation');
+      const attackingImg = document.getElementById('attackingCardImg');
+      const targetIndicator = document.getElementById('targetCardIndicator');
+      
+      attackingImg.src = playerCard.img;
+      anim.style.display = 'block';
+      
+      // Posición inicial (carta del jugador)
+      const playerRect = document.querySelector('#playerCards .card-battle').getBoundingClientRect();
+      // Posición final (carta enemiga)
+      const enemyRect = document.getElementById('enemyCard').getBoundingClientRect();
+      
+      attackingImg.style.left = playerRect.left + 'px';
+      attackingImg.style.top = playerRect.top + 'px';
+      attackingImg.style.display = 'block';
+      
+      targetIndicator.style.left = enemyRect.left + 'px';
+      targetIndicator.style.top = enemyRect.top + 'px';
+      targetIndicator.style.display = 'block';
+      
+      // Animar
+      attackingImg.style.transition = 'all 0.6s cubic-bezier(0.2, 0.8, 0.3, 1)';
+      attackingImg.style.left = enemyRect.left + 'px';
+      attackingImg.style.top = enemyRect.top + 'px';
+      
+      setTimeout(() => {
+        anim.style.display = 'none';
+        attackingImg.style.display = 'none';
+        targetIndicator.style.display = 'none';
+      }, 700);
     }
 
     function showCardModal(card) {
@@ -590,7 +679,6 @@
       document.getElementById('cardModal').style.display = 'none';
     }
 
-    // ✅ CORREGIDO: renderDeck muestra siempre tu mazo actual
     function renderDeck() {
       const currentDeckEl = document.getElementById('currentDeck');
       currentDeckEl.innerHTML = '';
@@ -654,7 +742,6 @@
       alert("¡Mazo guardado!");
     }
 
-    // ✅ Tienda con imágenes seguras
     function renderShop() {
       const time = calculateTimeLeft();
       const container = document.getElementById('shopCards');
@@ -674,7 +761,6 @@
       `).join('');
     }
 
-    // === BATALLA ===
     let battleState = {
       playerCards: [],
       enemyCard: null,
@@ -711,7 +797,6 @@
       }).join('');
     }
 
-    // === UTILIDADES ===
     let lastShopUpdate = localStorage.getItem('lastShopUpdate') || new Date().toISOString();
     localStorage.setItem('lastShopUpdate', lastShopUpdate);
     function calculateTimeLeft() {
@@ -757,7 +842,6 @@
       localStorage.setItem('currentDeck', JSON.stringify(gameState.currentDeck));
     }
 
-    // === LÓGICA DE JUEGO ===
     let selectedPlayerIndex = 0;
     function selectPlayerCard(index) {
       if (!battleState.playerCards[index].alive || !battleState.playerTurn) return;
@@ -814,12 +898,14 @@
         addToLog("❌ ¡Esta carta está fuera de combate!", 'system');
         return;
       }
+
+      // ✅ REPRODUCIR ANIMACIÓN ÉPICA
+      playAttackAnimation(playerCard, enemy);
+
       const damage = Math.max(5, playerCard.atk - Math.floor(enemy.def * 0.3));
       enemy.currentHp = Math.max(0, enemy.currentHp - damage);
       addToLog(`⚔️ <strong>${playerCard.name}</strong> ataca a ${enemy.name} por <strong>${damage} daño</strong>!`, 'player');
-      const enemyEl = document.getElementById('enemyCard').querySelector('.card-battle');
-      enemyEl.style.animation = 'attackPulse 0.8s 1';
-      setTimeout(() => enemyEl.style.animation = '', 800);
+
       setTimeout(() => {
         renderBattle();
         if (enemy.currentHp <= 0 && enemy.alive) {
@@ -863,7 +949,7 @@
           return;
         }
         battleState.playerTurn = false;
-        setTimeout(executeIATurn, 1500);
+        setTimeout(executeIATurn, 1200);
       }, 800);
     }
 
@@ -876,7 +962,7 @@
       }
       addToLog(`🛡️ <strong>${playerCard.name}</strong> se prepara para defender!`, 'player');
       battleState.playerTurn = false;
-      setTimeout(executeIATurn, 1500);
+      setTimeout(executeIATurn, 1200);
     }
 
     function executeIATurn() {
@@ -942,13 +1028,12 @@
       startBattle(true);
     }
 
-    // ✅ CORREGIDO: NO MUESTRA MENSAJE AL ENTRAR AL MAZO
     function showView(view) {
       document.querySelectorAll('.view').forEach(el => el.classList.add('hidden'));
       document.getElementById(view).classList.remove('hidden');
       if (view === 'deck') {
         renderDeck();
-        document.getElementById('battleLog').innerHTML = ''; // ✅ Limpia el log
+        document.getElementById('battleLog').innerHTML = '';
       } else if (view === 'shop') {
         renderShop();
       } else if (view === 'battle') {
