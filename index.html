@@ -503,7 +503,7 @@
     <!-- 🃏 MAZO -->
     <div class="collection" id="collectionView" style="display:none;">
       <h2 style="color: #4ecdc4;">Mi Mazo (3 cartas)</h2>
-      <p>Selecciona cartas desbloqueadas para tu mazo. ¡Haz clic para ver detalles!</p>
+      <p>Selecciona cartas desbloqueadas para tu mazo. ¡Haz clic para añadir!</p>
       <div class="collection-grid" id="collectionGrid">
       </div>
       
@@ -622,13 +622,13 @@
     const CARDS = [
       { id:0, name:"Ramírez", img:"https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", rarity:"common", atk:60, def:50, power:"Paso Firme", attackType:"wind", unlocked: true },
       { id:1, name:"Azulita", img:"https://s93.erome.com/5472/K3IRZbxx/0B8OzReu.jpeg?v=1764815871", rarity:"rare", atk:70, def:55, power:"Confeti Ácido", attackType:"fire", unlocked: true },
-      { id:2, name:"Tormenta", img:"https://s93.erome.com/5472/K3IRZbxx/7GmdJa3U.jpeg?v=1764802552", rarity:"epic", atk:80, def:45, power:"Torbellino", attackType:"wind", unlocked: false },
+      { id:2, name:"Tormenta", img:"https://s93.erome.com/5472/K3IRZbxx/7GmdJa3U.jpeg?v=1764802552", rarity:"epic", atk:80, def:45, power:"Torbellino", attackType:"wind", unlocked: true },
       { id:3, name:"Fortaleza", img:"https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177", rarity:"rare", atk:60, def:70, power:"Muralla", attackType:"ice", unlocked: true },
-      { id:4, name:"Danza", img:"https://s93.erome.com/5472/K3IRZbxx/0VxSvgAl.jpeg?v=1764818017", rarity:"epic", atk:75, def:50, power:"Baile Épico", attackType:"wind", unlocked: false },
-      { id:5, name:"Furia", img:"https://s93.erome.com/5472/K3IRZbxx/LsMURibY.jpeg?v=1764812622", rarity:"legendary", atk:90, def:40, power:"Ira Incontenible", attackType:"fire", unlocked: false },
+      { id:4, name:"Danza", img:"https://s93.erome.com/5472/K3IRZbxx/0VxSvgAl.jpeg?v=1764818017", rarity:"epic", atk:75, def:50, power:"Baile Épico", attackType:"wind", unlocked: true },
+      { id:5, name:"Furia", img:"https://s93.erome.com/5472/K3IRZbxx/LsMURibY.jpeg?v=1764812622", rarity:"legendary", atk:90, def:40, power:"Ira Incontenible", attackType:"fire", unlocked: true },
       { id:6, name:"Escudera", img:"https://s93.erome.com/5472/K3IRZbxx/9RweIpam.jpeg?v=1764813677", rarity:"common", atk:55, def:65, power:"Protección", attackType:"ice", unlocked: true },
-      { id:7, name:"Asesina", img:"https://s206.erome.com/4699/lpRzYjBO/Z5Tc5k2v.jpeg?v=1745795818", rarity:"legendary", atk:95, def:30, power:"Golpe Letal", attackType:"fire", unlocked: false },
-      { id:8, name:"Guardiana", img:"https://s206.erome.com/4699/lpRzYjBO/P9p2wv5y.jpeg?v=1745795818", rarity:"epic", atk:50, def:80, power:"Escudo Energético", attackType:"ice", unlocked: false },
+      { id:7, name:"Asesina", img:"https://s206.erome.com/4699/lpRzYjBO/Z5Tc5k2v.jpeg?v=1745795818", rarity:"legendary", atk:95, def:30, power:"Golpe Letal", attackType:"fire", unlocked: true },
+      { id:8, name:"Guardiana", img:"https://s206.erome.com/4699/lpRzYjBO/P9p2wv5y.jpeg?v=1745795818", rarity:"epic", atk:50, def:80, power:"Escudo Energético", attackType:"ice", unlocked: true },
       { id:9, name:"IA ÉLITE", img:"https://s206.erome.com/4699/lpRzYjBO/gU2HfmRY.jpeg?v=1745795818", rarity:"legendary", atk:100, def:35, power:"Tirano", attackType:"arcane", unlocked: true },
       { id:10, name:"Sellamara Gemelas", img:"https://s326.erome.com/5139/YBnb1NTO/R8jmYVqr.jpeg?v=1750357395", rarity:"legendary", atk:120, def:60, power:"Desafío Final", attackType:"arcane", unlocked: false }
     ];
@@ -747,14 +747,33 @@
     }
 
     function showView(view) {
-      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+      // Quitar clase 'active' de todos los botones
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      // Añadir clase 'active' al botón actual
       event.target.classList.add('active');
       
-      document.getElementById('battleView').style.display = view === 'battle' ? 'block' : 'none';
-      document.getElementById('collectionView').style.display = view === 'collection' ? 'block' : 'none';
-      document.getElementById('storeView').style.display = view === 'store' ? 'block' : 'none';
-      document.getElementById('rankingView').style.display = view === 'ranking' ? 'block' : 'none';
+      // Ocultar todas las vistas
+      document.getElementById('battleView').style.display = 'none';
+      document.getElementById('collectionView').style.display = 'none';
+      document.getElementById('storeView').style.display = 'none';
+      document.getElementById('rankingView').style.display = 'none';
       document.getElementById('battleTable').style.display = 'none';
+      
+      // Mostrar la vista seleccionada
+      if (view === 'battle') {
+        document.getElementById('battleView').style.display = 'block';
+      } else if (view === 'collection') {
+        document.getElementById('collectionView').style.display = 'block';
+        renderCollection(); // Actualizar mazo al entrar
+      } else if (view === 'store') {
+        document.getElementById('storeView').style.display = 'block';
+      } else if (view === 'ranking') {
+        document.getElementById('rankingView').style.display = 'block';
+        updateRanking(); // Actualizar ranking al entrar
+      }
     }
 
     function showCardPreview(card) {
@@ -796,79 +815,80 @@
       document.getElementById('cardPreview').classList.remove('show');
     };
 
-    function function renderCollection() {
-  const grid = document.getElementById('collectionGrid');
-  grid.innerHTML = '';
-  
-  // Mostrar cartas del jugador (0-8) + Sellamara (10)
-  const playerCardsToShow = [...CARDS.slice(0, 9), CARDS[10]];
-  playerCardsToShow.forEach(card => {
-    const isLocked = (card.id === 10) ? true : !card.unlocked;
-    const div = document.createElement('div');
-    div.className = `collection-card ${isLocked ? 'locked' : 'unlocked'}`;
-    if (card.id === 10) {
-      const img = document.createElement('img');
-      img.src = card.img;
-      img.alt = card.name;
-      img.style.cursor = 'pointer';
-      div.appendChild(img);
-      div.onclick = () => showCardPreview(card);
-    } else if (!isLocked) {
-      const img = document.createElement('img');
-      img.src = card.img;
-      img.alt = card.name;
-      img.style.cursor = 'pointer';
-      img.onclick = () => showCardPreview(card);
-      div.appendChild(img);
-    } else {
-      const img = document.createElement('img');
-      img.src = card.img;
-      img.alt = card.name;
-      img.style.filter = 'grayscale(100%)';
-      img.style.cursor = 'not-allowed';
-      div.appendChild(img);
-      div.onclick = () => showCardPreview(card);
-    }
-    grid.appendChild(div);
-  });
+    function renderCollection() {
+      const grid = document.getElementById('collectionGrid');
+      grid.innerHTML = '';
+      
+      // Mostrar cartas del jugador (0-8) + Sellamara (10)
+      const playerCardsToShow = [...CARDS.slice(0, 9), CARDS[10]];
+      playerCardsToShow.forEach(card => {
+        const isLocked = (card.id === 10) ? true : !card.unlocked;
+        const div = document.createElement('div');
+        div.className = `collection-card ${isLocked ? 'locked' : 'unlocked'}`;
+        
+        const img = document.createElement('img');
+        img.src = card.img;
+        img.alt = card.name;
+        
+        if (isLocked) {
+          img.style.filter = 'grayscale(100%)';
+          img.style.cursor = 'not-allowed';
+          div.innerHTML = '<div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:2em; color:#ff6b6b;">🔒</div>';
+        } else {
+          img.style.cursor = 'pointer';
+          img.onclick = () => addToDeck(card.id);
+        }
+        
+        div.appendChild(img);
+        grid.appendChild(div);
+      });
 
-  const deckEl = document.getElementById('currentDeck');
-  deckEl.innerHTML = '';
-  currentDeck.forEach(id => {
-    const card = CARDS.find(c => c.id === id);
-    if (card) {
-      const cardEl = document.createElement('div');
-      cardEl.style.width = '100px';
-      cardEl.style.margin = '5px';
-      if (card.id === 10) {
-        cardEl.innerHTML = `
-          <img src="${card.img}" style="width:100%; border-radius:8px; filter:grayscale(100%);">
-          <div style="color:#ff6b6b; font-size:0.7em; margin-top:2px; text-align:center;">🔒 Bloqueada</div>
-        `;
-        cardEl.onclick = () => alert('¡Sellamara Gemelas se desbloqueará mañana a las 15:00!');
-      } else if (card.unlocked) {
-        cardEl.innerHTML = `<img src="${card.img}" style="width:100%; border-radius:8px;" onclick="showCardPreview(${JSON.stringify(card).replace(/"/g, '&quot;')})">`;
-      } else {
-        cardEl.innerHTML = `
-          <img src="${card.img}" style="width:100%; border-radius:8px; filter:grayscale(100%);">
-          <div style="color:#ff6b6b; font-size:0.7em; margin-top:2px; text-align:center;">🔒 Bloqueada</div>
-        `;
-        cardEl.onclick = () => alert('¡Esta carta se desbloquea ganando batallas!');
-      }
-      deckEl.appendChild(cardEl);
+      // Renderizar mazo actual
+      const deckEl = document.getElementById('currentDeck');
+      deckEl.innerHTML = '';
+      currentDeck.forEach(id => {
+        const card = CARDS.find(c => c.id === id);
+        if (card) {
+          const cardEl = document.createElement('div');
+          cardEl.style.width = '100px';
+          cardEl.style.margin = '5px';
+          
+          if (card.id === 10) {
+            // Carta legendaria bloqueada
+            cardEl.innerHTML = `
+              <img src="${card.img}" style="width:100%; border-radius:8px; filter:grayscale(100%);">
+              <div style="color:#ff6b6b; font-size:0.7em; margin-top:2px; text-align:center;">🔒 Bloqueada</div>
+            `;
+          } else if (card.unlocked) {
+            cardEl.innerHTML = `<img src="${card.img}" style="width:100%; border-radius:8px;">`;
+          } else {
+            cardEl.innerHTML = `
+              <img src="${card.img}" style="width:100%; border-radius:8px; filter:grayscale(100%);">
+              <div style="color:#ff6b6b; font-size:0.7em; margin-top:2px; text-align:center;">🔒 Bloqueada</div>
+            `;
+          }
+          deckEl.appendChild(cardEl);
+        }
+      });
     }
-  });
-}
 
     function addToDeck(cardId) {
+      // No permitir añadir más de 3 cartas
       if (currentDeck.length >= 3) {
         alert('Tu mazo solo puede tener 3 cartas.');
         return;
       }
-      if (!currentDeck.includes(cardId)) {
-        currentDeck.push(cardId);
-        renderCollection();
+      
+      // No permitir duplicados
+      if (currentDeck.includes(cardId)) {
+        alert('¡Esta carta ya está en tu mazo!');
+        return;
       }
+      
+      // Añadir carta al mazo
+      currentDeck.push(cardId);
+      renderCollection();
+      showNotification(`¡${CARDS.find(c => c.id === cardId).name} añadida al mazo!`);
     }
 
     function saveDeck() {
@@ -1071,14 +1091,4 @@
       }
     }
 
-    function startUpdateCountdown() {
-      function updateTimer() {
-        const now = new Date();
-        const target = new Date(now);
-        target.setHours(15, 0, 0, 0);
-        if (now >= target) {
-          target.setDate(target.getDate() + 1);
-        }
-        const diff = target - now;
-        const hours = Math.floor(diff / (1000 * 60 * 60));
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 6
+    function start
