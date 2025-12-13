@@ -464,7 +464,7 @@
       <h2 class="text-2xl font-bold text-center mb-4">🏅 CONSEGUIR COPAS</h2>
       <p class="text-center">¡Gana batallas fáciles para obtener copas!</p>
       <div class="text-center mt-4">
-        <button class="btn bg-yellow-600">Iniciar Batalla por Copas</button>
+        <button class="btn bg-yellow-600" onclick="startCupBattle()">Iniciar Batalla por Copas</button>
       </div>
     </div>
   </div>
@@ -845,6 +845,7 @@
       saveGame();
       updateUI();
       isTournament = true;
+      isCupBattle = false;
       currentTournamentId = tournamentId;
       iaAtk = 60 + ((tournament.id - 1) * 10);
       iaDef = 40 + ((tournament.id - 1) * 10);
@@ -853,6 +854,26 @@
       document.querySelector('.battle-ia-card .name').textContent = `IA ${tournament.name}`;
       document.querySelector('.battle-ia-card .stats span:nth-child(1)').textContent = `⚔️ ${iaAtk}`;
       document.querySelector('.battle-ia-card .stats span:nth-child(2)').textContent = `🛡️ ${iaDef}`;
+      document.querySelector('.battle-ia-card .hp-text').textContent = `HP: ${iaHp}/${iaMaxHp}`;
+      renderBattleCards();
+      playerCards.forEach(card => {
+        card.hp = card.maxHp;
+      });
+      updateHpBars();
+      showView('battle');
+    }
+    // ✅ INICIAR BATALLA POR COPAS
+    function startCupBattle() {
+      isCupBattle = true;
+      isTournament = false;
+      iaAtk = 60;
+      iaDef = 40;
+      iaHp = 100;
+      iaMaxHp = 100;
+      document.querySelector('.battle-ia-card .name').textContent = 'IA Fácil';
+      document.querySelector('.battle-ia-card .stats span:nth-child(1)').textContent = `⚔️ ${iaAtk}`;
+      document.querySelector('.battle-ia-card .stats span:nth-child(2)').textContent = `🛡️ ${iaDef}`;
+      document.querySelector('.battle-ia-card .hp-text').textContent = `HP: ${iaHp}/${iaMaxHp}`;
       renderBattleCards();
       playerCards.forEach(card => {
         card.hp = card.maxHp;
@@ -878,6 +899,7 @@
     let iaDef = 40;
     let selectedPlayerCard = null;
     let isTournament = false;
+    let isCupBattle = false;
     let currentTournamentId = null;
     let playerCards = [];
     function renderBattleCards() {
@@ -897,7 +919,7 @@
             <span>🛡️ ${card.def}</span>
           </div>
           <div class="hp-bar"><div class="hp-fill" style="width:100%"></div></div>
-          <div class="hp-text">HP: 100/100</div>
+          <div class="hp-text">HP: ${card.def}/${card.def}</div>
         `;
         cardEl.onclick = () => {
           selectedPlayerCard = playerCards[index];
@@ -909,8 +931,8 @@
           name: card.name,
           atk: card.atk,
           def: card.def,
-          hp: 100,
-          maxHp: 100,
+          hp: card.def,
+          maxHp: card.def,
           element: cardEl
         });
       });
@@ -955,7 +977,22 @@
           renderDeck();
           renderTournaments();
           isTournament = false;
+          isCupBattle = false;
           currentTournamentId = null;
+          iaAtk = 60;
+          iaDef = 40;
+          iaHp = 100;
+          iaMaxHp = 100;
+          document.querySelector('.battle-ia-card .name').textContent = 'IA Básica';
+          document.querySelector('.battle-ia-card .stats span:nth-child(1)').textContent = `⚔️ 60`;
+          document.querySelector('.battle-ia-card .stats span:nth-child(2)').textContent = `🛡️ 40`;
+        } else if (isCupBattle) {
+          alert("¡Ganaste la batalla por copas!");
+          gameState.cups += 1;
+          saveGame();
+          updateUI();
+          isCupBattle = false;
+          isTournament = false;
           iaAtk = 60;
           iaDef = 40;
           iaHp = 100;
@@ -992,6 +1029,9 @@
           document.querySelector('.battle-ia-card .name').textContent = 'IA Básica';
           document.querySelector('.battle-ia-card .stats span:nth-child(1)').textContent = `⚔️ 60`;
           document.querySelector('.battle-ia-card .stats span:nth-child(2)').textContent = `🛡️ 40`;
+        } else if (isCupBattle) {
+          alert("Perdiste la batalla por copas.");
+          isCupBattle = false;
         }
       }
     }
