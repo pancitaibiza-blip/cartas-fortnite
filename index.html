@@ -10,7 +10,7 @@
         body {
             background: linear-gradient(135deg, #b22222, #228b22, #ffd700, #ffffff);
             background-size: 400% 400%;
-            animation: gradientBG 20s ease infinite;
+            animation: gradientBG 30s ease infinite; /* Aumentado de 20s a 30s para menos CPU */
             color: white;
             min-height: 100vh;
             margin: 0;
@@ -55,21 +55,9 @@
                 top: -10vh;
                 transform: translateX(0) rotate(0deg);
             }
-            20% {
-                transform: translateX(-20px) rotate(72deg);
-            }
-            40% {
-                transform: translateX(20px) rotate(144deg);
-            }
-            60% {
-                transform: translateX(-20px) rotate(216deg);
-            }
-            80% {
-                transform: translateX(20px) rotate(288deg);
-            }
             100% {
                 top: 110vh;
-                transform: translateX(0) rotate(360deg);
+                transform: translateX(0) rotate(360deg); /* Simplificado para menos complejidad */
             }
         }
         .hidden { display: none !important; }
@@ -95,6 +83,7 @@
             margin: 4px;
             cursor: pointer;
             transition: transform 0.3s ease;
+            will-change: transform; /* Optimización para hovers */
         }
         .card-container:hover {
             transform: translateY(-5px);
@@ -132,14 +121,16 @@
         .rarity-legendary .card-glow { background: #d4a017; }
         .rarity-ultra .card-glow { background: #00bcd4; }
         .rarity-exotic .card-glow { background: #e91e63; }
-        .rarity-idolos .card-glow { background: linear-gradient(45deg, #ff9800, #ff4081, #ffc107); opacity: 0.8; filter: blur(15px); animation: glowPulse 1.5s infinite alternate; }
+        .rarity-idolos .card-glow { background: linear-gradient(45deg, #ff9800, #ff4081, #ffc107); opacity: 0.8; filter: blur(15px); animation: glowPulse 2s infinite alternate; /* Aumentado a 2s */
+        }
         @keyframes glowPulse {
             0% { transform: scale(1); opacity: 0.6; }
             100% { transform: scale(1.1); opacity: 1; }
         }
         .rarity-idolos .card-base { box-shadow: 0 0 20px #ff9800, 0 0 30px #ff4081; }
         .rarity-tournament .card-glow { background: #f44336; }
-        .rarity-paises .card-glow { background: linear-gradient(45deg, #ff0000, #ffffff, #0000ff); opacity: 0.8; filter: blur(15px); animation: glowPulse 1.5s infinite alternate; }
+        .rarity-paises .card-glow { background: linear-gradient(45deg, #ff0000, #ffffff, #0000ff); opacity: 0.8; filter: blur(15px); animation: glowPulse 2s infinite alternate; /* Aumentado a 2s */
+        }
         .rarity-paises .card-base { box-shadow: 0 0 20px #ff0000, 0 0 30px #0000ff; }
         .card-content {
             padding: 8px;
@@ -1470,7 +1461,7 @@
         }
         // Función para iniciar fuegos artificiales
         function startFireworks() {
-            for (let i = 0; i < 20; i++) {
+            for (let i = 0; i < 10; i++) { /* Reducido de 20 a 10 */
                 const fw = document.createElement('div');
                 fw.className = 'firework';
                 fw.style.left = `${Math.random() * 100}%`;
@@ -1482,7 +1473,7 @@
         }
         // Función para crear copos de nieve
         function createSnowflakes() {
-            for (let i = 0; i < 100; i++) {
+            for (let i = 0; i < 30; i++) { /* Reducido de 100 a 30 para menos lag */
                 const snowflake = document.createElement('div');
                 snowflake.className = 'snowflake';
                 snowflake.style.left = `${Math.random() * 100}vw`;
@@ -1502,7 +1493,7 @@
             setTimeout(() => targetEl.classList.remove('attacked'), 500);
             
             // Partículas de ataque
-            for (let i = 0; i < 5; i++) {
+            for (let i = 0; i < 3; i++) { /* Reducido de 5 a 3 */
                 const particle = document.createElement('div');
                 particle.className = 'attack-particle';
                 particle.style.left = `${Math.random() * 100}%`;
