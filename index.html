@@ -271,10 +271,12 @@
         .ranking-info { flex: 1; }
         .ranking-name { font-weight: bold; font-size: 18px; }
         .ranking-trophies { color: gold; }
-        /* NUEVO DISEÑO DE BATALLA */
+
+        /* NUEVO DISEÑO DE BATALLA - ARREGLO DEL PROBLEMA DE SOLAPAMIENTO */
         #battle {
             display: none;
             padding: 24px;
+            padding-bottom: 150px; /* **CORRECCIÓN:** Añadimos padding inferior para evitar solapamiento con la barra fija */
             background: rgba(0, 0, 0, 0.4);
             border-radius: 20px;
             margin-top: 24px;
@@ -556,20 +558,34 @@
             z-index: 1000;
             box-shadow: 0 4px 12px rgba(0,0,0,0.4);
         }
+        /* Estilo para los botones de la barra de navegación para mejorar la legibilidad */
+        .nav-btn {
+            background: rgba(100, 100, 100, 0.7); /* Gris oscuro semi-transparente */
+            color: white;
+            border: 2px solid #555;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border-radius: 12px; /* Añadido para consistencia */
+            padding: 10px 20px; /* Añadido para consistencia */
+            margin: 4px; /* Añadido para consistencia */
+        }
+        .nav-btn:hover {
+            background: rgba(200, 200, 200, 0.9);
+            color: black;
+            border-color: #fff;
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body>
-    <!-- OFERTA DE GEMAS -->
     <div id="offerBanner">
         🎁 ¡OFERTA POR TIEMPO LIMITADO! 💎 ¡1000 GEMAS POR SOLO HOY!
         <span id="gemsCountdown">--h --m --s</span>
     </div>
-    <!-- Announcement Banner -->
     <div id="announcementBanner">
         LA PROXIMA ACTUALIZACION SERA EL DIA 15 DE NOVIEMBRE DE 2025 ALAS 11:00 DE LA MAÑANA AGREGAREMOS LOS COFRES.
     </div>
     <div class="container mx-auto px-4 py-6 pt-24">
-        <!-- Perfil y estadísticas -->
         <div class="text-center mb-6">
             <img id="profileAvatar" src="https://rule34.xxx//samples/1888/sample_4387d777c732825ae6e377664c2ce885.jpg?15738037" alt="Avatar" class="w-20 h-20 rounded-full mx-auto border-4 border-red-500 shadow-lg">
             <h2 class="text-2xl font-bold mt-3" id="playerName">Jugador</h2>
@@ -580,7 +596,6 @@
             <div class="stat"><i class="fas fa-crown crown"></i> <span id="cups">0</span></div>
         </div>
         <h1 class="text-4xl font-bold text-center mb-8 text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-green-500">🎄 FORTNITE: BATALLA NAVIDEÑA</h1>
-        <!-- Batalla -->
         <div id="battle" class="active section-container">
             <div class="battle-header">
                 <h2 class="text-3xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-600">⚔️ BATALLA</h2>
@@ -588,12 +603,10 @@
             </div>
             <div class="battle-ia-cards" id="battleIaCards"></div>
             <div class="battle-player-cards" id="battlePlayerCards"></div>
-            <div class="text-center mt-4">  <!-- Cambiado de mt-8 a mt-4 para mover arriba -->
-                <button class="attack-button" onclick="playerAttack()">🔥 ATACAR</button>
+            <div class="text-center mt-4">  <button class="attack-button" onclick="playerAttack()">🔥 ATACAR</button>
                 <button class="defend-button" onclick="playerDefend()">🛡️ DEFENDER</button>
             </div>
         </div>
-        <!-- Mazo -->
         <div id="deck" class="section-container">
             <h2 class="text-3xl font-bold text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-purple-600">🎴 TU MAZO</h2>
             <div class="filter-bar">
@@ -615,7 +628,6 @@
                 <button class="btn bg-purple-700" onclick="saveDeck()">💾 Guardar Mazo</button>
             </div>
         </div>
-        <!-- Tienda -->
         <div id="shop" class="section-container">
             <h2 class="text-3xl font-bold text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">💎 TIENDA NAVIDEÑA</h2>
             <div id="gemsOffer" class="bg-gradient-to-r from-blue-600 to-purple-600 p-6 rounded-2xl text-center mb-8 mx-auto max-w-3xl animate-pulse shadow-xl">
@@ -633,17 +645,14 @@
                 <p class="text-lg text-yellow-200">La tienda se actualiza automáticamente a las 1:00 AM: <span id="shopUpdateCountdown">--h --m --s</span></p>
             </div>
         </div>
-        <!-- Torneo -->
         <div id="tournament" class="section-container">
             <h2 class="text-3xl font-bold text-center mb-6 text-yellow-400">🏆 TORNEOS DISPONIBLES</h2>
             <div id="tournamentsList" class="flex flex-col gap-8 mx-auto max-w-3xl"></div>
         </div>
-        <!-- Ranking -->
         <div id="ranking" class="section-container">
             <h2 class="text-3xl font-bold text-center mb-6">🏆 RANKING GLOBAL</h2>
             <div id="rankingList" class="max-h-96 overflow-y-auto"></div>
         </div>
-        <!-- Modo Copas -->
         <div id="cupMode" class="section-container">
             <h2 class="text-3xl font-bold text-center mb-6 text-yellow-500">🏅 CONSEGUIR COPAS</h2>
             <p class="text-center text-lg mb-6">¡Gana batallas fáciles para obtener copas y desbloquear torneos!</p>
@@ -651,13 +660,11 @@
                 <button class="btn bg-yellow-600 text-lg px-8 py-4" onclick="startCupBattle()">Iniciar Batalla por Copas</button>
             </div>
         </div>
-        <!-- Logros -->
         <div id="achievements" class="section-container">
             <h2 class="text-3xl font-bold text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-600">🏅 LOGROS</h2>
             <div id="achievementsList" class="max-h-96 overflow-y-auto"></div>
         </div>
     </div>
-    <!-- MODAL DE CARTA -->
     <div id="cardModal" onclick="closeCardModal()">
         <div id="cardModalContent" onclick="event.stopPropagation()">
             <img id="cardModalImage" src="" alt="Carta" />
@@ -668,21 +675,19 @@
             <button class="btn bg-gray-700 mt-6" onclick="closeCardModal()">Cerrar</button>
         </div>
     </div>
-    <!-- Mensaje de Batalla -->
     <div id="battleMessage">
         <h2 id="messageText"></h2>
         <button class="btn bg-green-600" onclick="rematch()">REVANCHA</button>
         <button class="btn bg-blue-600" onclick="closeBattleMessage()">Cerrar</button>
     </div>
-    <!-- Navegación inferior -->
     <div class="fixed bottom-0 left-0 right-0 flex justify-center gap-3 z-10 flex-wrap px-4 py-4 bg-black/50 backdrop-blur-md rounded-t-2xl shadow-lg">
-        <button class="btn bg-gray-800 text-sm px-6 py-3" onclick="showView('battle')">Batalla</button>
-        <button class="btn bg-gray-800 text-sm px-6 py-3" onclick="showView('deck')">Mazo</button>
-        <button class="btn bg-gray-800 text-sm px-6 py-3" onclick="showView('shop')">Tienda</button>
-        <button class="btn bg-gray-800 text-sm px-6 py-3" onclick="showView('ranking')">Ranking</button>
-        <button class="btn bg-gray-800 text-sm px-6 py-3" onclick="showView('cupMode')">COPAS</button>
-        <button class="btn bg-gray-800 text-sm px-6 py-3" onclick="showView('tournament')">Torneo</button>
-        <button class="btn bg-gray-800 text-sm px-6 py-3" onclick="showView('achievements')">Logros</button>
+        <button class="nav-btn text-sm px-6 py-3" onclick="showView('battle')">Batalla</button>
+        <button class="nav-btn text-sm px-6 py-3" onclick="showView('deck')">Mazo</button>
+        <button class="nav-btn text-sm px-6 py-3" onclick="showView('shop')">Tienda</button>
+        <button class="nav-btn text-sm px-6 py-3" onclick="showView('ranking')">Ranking</button>
+        <button class="nav-btn text-sm px-6 py-3" onclick="showView('cupMode')">COPAS</button>
+        <button class="nav-btn text-sm px-6 py-3" onclick="showView('tournament')">Torneo</button>
+        <button class="nav-btn text-sm px-6 py-3" onclick="showView('achievements')">Logros</button>
     </div>
     <script>
         // ✅ CONFIGURACIÓN DE OFERTA
@@ -1207,6 +1212,11 @@
                 document.getElementById(id).classList.remove('active');
             });
             document.getElementById(view).classList.add('active');
+            // Quitar clase 'active' de todos los botones
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            // Añadir clase 'active' al botón de la vista actual
+            document.querySelector(`.nav-btn[onclick*="showView('${view}')"]`).classList.add('active');
+
             if (view === 'deck') renderDeck();
             if (view === 'shop') renderShop();
             if (view === 'ranking') updateRanking();
