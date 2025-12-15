@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8" />
@@ -175,7 +175,7 @@
             font-weight: bold;
             font-size: 20px;
             position: fixed;
-            top: 0;
+            top: 70px;
             left: 0;
             width: 100%;
             z-index: 1000;
@@ -188,6 +188,49 @@
             padding: 4px 10px;
             border-radius: 8px;
             margin-left: 10px;
+        }
+        #exclusiveBanner {
+            background: linear-gradient(to right, #ff0066, #ff00ff, #ff66cc);
+            color: white;
+            padding: 16px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 22px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1001;
+            box-shadow: 0 4px 20px rgba(255,0,255,0.8);
+            animation: pulseGlow 2s infinite;
+        }
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 20px rgba(255,0,255,0.8); }
+            50% { box-shadow: 0 0 40px rgba(255,0,255,1); }
+            100% { box-shadow: 0 0 20px rgba(255,0,255,0.8); }
+        }
+        #exclusiveCountdown {
+            display: inline-block;
+            background: rgba(0,0,0,0.8);
+            color: #ff00ff;
+            padding: 6px 12px;
+            border-radius: 10px;
+            margin-left: 12px;
+            font-size: 20px;
+        }
+        #announcementBanner {
+            background: linear-gradient(to right, #ffd700, #ff8c00);
+            color: #333;
+            padding: 12px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+            position: fixed;
+            top: 130px;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
         }
         #deck, #shop, #tournament, #cupMode, #ranking, #achievements { display: none; }
         #deck.active, #shop.active, #tournament.active, #cupMode.active, #ranking.active, #achievements.active { display: block; }
@@ -336,20 +379,6 @@
             z-index: 2000;
             box-shadow: 0 0 50px rgba(255, 255, 255, 0.5);
         }
-        #announcementBanner {
-            background: linear-gradient(to right, #ffd700, #ff8c00);
-            color: #333;
-            padding: 12px;
-            text-align: center;
-            font-weight: bold;
-            font-size: 18px;
-            position: fixed;
-            top: 50px;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-        }
         .nav-btn {
             background: rgba(100, 100, 100, 0.7);
             color: white;
@@ -410,9 +439,18 @@
             flex-wrap: wrap;
             margin: 40px 0;
         }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .blink { animation: blink 1s infinite; }
     </style>
 </head>
 <body>
+    <div id="exclusiveBanner">
+        🔥 ¡CARTA EXCLUSIVA POR 24 HORAS! 🔥 BUSTING THE FUCK OUT - LA MÁS PODEROSA JAMÁS VISTA
+        <span id="exclusiveCountdown">--h --m --s</span>
+    </div>
     <div id="offerBanner">
         🎁 ¡OFERTA POR TIEMPO LIMITADO! 💎 ¡1000 GEMAS POR SOLO HOY!
         <span id="gemsCountdown">--h --m --s</span>
@@ -420,7 +458,7 @@
     <div id="announcementBanner">
         ¡NUEVA ACTUALIZACIÓN! YA ESTÁN DISPONIBLES LOS COFRES EN LA TIENDA 🎁
     </div>
-    <div class="container mx-auto px-4 py-6 pt-24">
+    <div class="container mx-auto px-4 py-6 pt-32">
         <div class="text-center mb-6">
             <img id="profileAvatar" src="https://rule34.xxx//samples/1888/sample_4387d777c732825ae6e377664c2ce885.jpg?15738037" alt="Avatar" class="w-20 h-20 rounded-full mx-auto border-4 border-red-500 shadow-lg">
             <h2 class="text-2xl font-bold mt-3" id="playerName">Jugador</h2>
@@ -445,7 +483,7 @@
         </div>
         <div id="deck" class="section-container">
             <h2 class="text-3xl font-bold text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-purple-600">🎴 TU MAZO</h2>
-            <div id="collectionCounter">Cartas coleccionadas: <span id="collectedCount">0</span> / 50</div>
+            <div id="collectionCounter">Cartas coleccionadas: <span id="collectedCount">0</span> / 51</div>
             <div class="filter-bar">
                 <select id="rarityFilter" onchange="renderDeck()">
                     <option value="all">Todas las rarezas</option>
@@ -552,6 +590,7 @@
             if (endTime <= now) endTime.setDate(endTime.getDate() + 1);
             return endTime;
         })();
+        const EXCLUSIVE_END = new Date('2025-12-16T01:00:00');
         const SABRINA_START = new Date('2025-12-14T15:00:00');
         const CARMELA_AVAILABLE = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 1, 1, 0, 0);
         const DECK_MAX_SIZE = 3;
@@ -600,11 +639,11 @@
             { id: 43, name: "Belle Beast Ride", rarity: "animated", baseAtk: 150, baseDef: 90, level: 1, img: "https://cdn2.hentaigifz.com/116588/belle-from-beauty-and-the-beast-scaled.webp", shopPrice: null },
             { id: 44, name: "Emo Bad Belle", rarity: "animated", baseAtk: 140, baseDef: 95, level: 1, img: "https://cdn2.hentaigifz.com/116536/emo-scaled.webp", shopPrice: null },
             { id: 45, name: "Betty Boop Tease", rarity: "animated", baseAtk: 145, baseDef: 85, level: 1, img: "https://cdn2.hentaigifz.com/116498/betty-boop-scaled.webp", shopPrice: null },
-            // NUEVAS CARTAS SUPER PODEROSAS
             { id: 46, name: "Dexter's Mom Beach", rarity: "animated", baseAtk: 1200, baseDef: 1000, level: 1, img: "https://cdn2.hentaigifz.com/116308/dm-scaled.webp", shopPrice: 2500 },
             { id: 47, name: "Keqing Thicc Ride", rarity: "animated", baseAtk: 1200, baseDef: 1000, level: 1, img: "https://cdn2.hentaigifz.com/116288/hentai-scaled.webp", shopPrice: 2500 },
             { id: 48, name: "Leona Gym Thrust", rarity: "animated", baseAtk: 1200, baseDef: 1000, level: 1, img: "https://cdn2.hentaigifz.com/116388/tmr-scaled.webp", shopPrice: 2500 },
-            { id: 49, name: "Strange Hero Facesit", rarity: "animated", baseAtk: 1200, baseDef: 1000, level: 1, img: "https://cdn2.hentaigifz.com/116364/strangeh-scaled.webp", shopPrice: 2500 }
+            { id: 49, name: "Strange Hero Facesit", rarity: "animated", baseAtk: 1200, baseDef: 1000, level: 1, img: "https://cdn2.hentaigifz.com/116364/strangeh-scaled.webp", shopPrice: 2500 },
+            { id: 50, name: "Busting The Fuck Out", rarity: "animated", baseAtk: 5000, baseDef: 2500, level: 1, img: "https://cdn2.hentaigifz.com/115480/busting-the-fuck-out-scaled.webp", shopPrice: 5000 }
         ];
         const TOURNAMENTS = [
             { id: 1, name: "Torneo Navideño", cost: 1, trophies: 500, diamonds: 200, cards: [7, 11, 12, 13], description: "¡Regalo navideño! Gana Francine Smith y cartas de torneo.", image: "https://wimg.rule34.xxx//images/1888/0334e8239c387a302348c01810815aef.jpeg?15738062", iaDeck: [0,1,2] },
@@ -668,6 +707,7 @@
         function updateCountdowns() {
             const now = new Date();
             const gemsDiff = GEMS_OFFER_END - now;
+            const exclusiveDiff = EXCLUSIVE_END - now;
             if (gemsDiff <= 0) {
                 document.getElementById('offerBanner').style.display = 'none';
                 document.getElementById('gemsOffer').style.display = 'none';
@@ -677,6 +717,14 @@
                 const s = Math.floor((gemsDiff % 60000) / 1000).toString().padStart(2,'0');
                 const timeStr = `${h}h ${m}m ${s}s`;
                 document.querySelectorAll('#gemsCountdown, #shopGemsCountdown').forEach(el => el.textContent = timeStr);
+            }
+            if (exclusiveDiff <= 0) {
+                document.getElementById('exclusiveBanner').style.display = 'none';
+            } else {
+                const h = Math.floor(exclusiveDiff / 3600000).toString().padStart(2,'0');
+                const m = Math.floor((exclusiveDiff % 3600000) / 60000).toString().padStart(2,'0');
+                const s = Math.floor((exclusiveDiff % 60000) / 1000).toString().padStart(2,'0');
+                document.getElementById('exclusiveCountdown').textContent = `${h}h ${m}m ${s}s`;
             }
         }
         setInterval(updateCountdowns, 1000);
@@ -850,7 +898,7 @@
             const container = document.getElementById('shopCards');
             container.innerHTML = '';
             const now = new Date();
-            const buyable = ALL_CARDS.filter(c => c.shopPrice !== null && !gameState.ownedCardIds.includes(c.id));
+            const buyable = ALL_CARDS.filter(c => c.shopPrice !== null && !gameState.ownedCardIds.includes(c.id) && (c.id !== 50 || now < EXCLUSIVE_END));
             buyable.forEach(card => {
                 const el = document.createElement('div');
                 el.className = `card-container rarity-${card.rarity}`;
@@ -864,6 +912,9 @@
                 }
                 if (card.id === 42) {
                     extra = `<div class="text-xs text-pink-300 mt-1 font-bold">¡NUEVA OTAKU GIRL ANIMADA HA LLEGADO!</div>`;
+                }
+                if (card.id === 50) {
+                    extra = `<div class="text-xs text-pink-300 mt-1 font-bold blink">¡SOLO 24 HORAS!</div><div class="text-xs text-white">La carta más poderosa del juego</div>`;
                 }
                 el.innerHTML = `
                     <div class="card-base">
@@ -1145,7 +1196,7 @@
             startFireworks();
         }
         function startFireworks() {
-            for (let i = 0; i < 10; i++) {
+            for (let i = 0; i = 10; i++) {
                 const fw = document.createElement('div');
                 fw.className = 'firework';
                 fw.style.left = Math.random() * 100 + '%';
@@ -1205,4 +1256,4 @@
         checkAchievements();
     </script>
 </body>
-</html>      
+</html>
