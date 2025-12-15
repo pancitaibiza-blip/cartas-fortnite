@@ -444,6 +444,22 @@
             50% { opacity: 0.5; }
         }
         .blink { animation: blink 1s infinite; }
+        .attacked {
+            animation: hit 0.5s ease;
+        }
+        @keyframes hit {
+            0%, 100% { transform: translate(0); }
+            25% { transform: translate(-10px); }
+            75% { transform: translate(10px); }
+        }
+        .defended {
+            animation: shield 1s ease;
+        }
+        @keyframes shield {
+            0% { box-shadow: 0 0 25px rgba(0, 188, 212, 0.6); }
+            50% { box-shadow: 0 0 50px rgba(0, 188, 212, 1); }
+            100% { box-shadow: 0 0 25px rgba(0, 188, 212, 0.6); }
+        }
     </style>
 </head>
 <body>
@@ -1016,7 +1032,7 @@
             updateUI();
             isTournament = true; isCupBattle = false; currentTournamentId = id;
             iaDeckIds = t.iaDeck;
-            iaLevelMultiplier = t.iaMultiplier || id;
+            iaLevelMultiplier = t.iaMultiplier || 1;
             renderIaCards();
             renderBattleCards();
             resetBattle();
@@ -1110,6 +1126,7 @@
             });
         }
         function playerAttack() {
+            if (battleEnded) return;
             if (!selectedPlayerCard || !selectedTargetCard) {
                 alert("¡Selecciona tu carta y el objetivo enemigo!");
                 return;
@@ -1119,12 +1136,21 @@
             animateAttack(selectedPlayerCard.element, selectedTargetCard.element);
             updateHpBars();
             checkBattleEnd();
-            if (!battleEnded) setTimeout(iaAttack, 1000);
+            if (!battleEnded) {
+                setTimeout(iaAttack, 1000);
+            }
         }
         function iaAttack() {
+            if (battleEnded) return;
+
             const aliveIa = iaCards.filter(c => c.hp > 0);
             const alivePlayer = playerCards.filter(c => c.hp > 0);
-            if (aliveIa.length === 0 || alivePlayer.length === 0) return;
+            
+            if (aliveIa.length === 0 || alivePlayer.length === 0) {
+                checkBattleEnd();
+                return;
+            }
+            
             const attacker = aliveIa[Math.floor(Math.random() * aliveIa.length)];
             const target = alivePlayer[Math.floor(Math.random() * alivePlayer.length)];
             const effectiveDamage = Math.max(0, attacker.atk - Math.round(target.def * 0.3));
@@ -1134,6 +1160,7 @@
             checkBattleEnd();
         }
         function playerDefend() {
+            if (battleEnded) return;
             if (!selectedPlayerCard) {
                 alert("¡Selecciona tu carta para defender!");
                 return;
@@ -1142,14 +1169,19 @@
             selectedPlayerCard.def *= 2;
             animateDefend(selectedPlayerCard.element);
             setTimeout(() => {
-                iaAttack();
+                if (!battleEnded) {
+                    iaAttack();
+                }
                 selectedPlayerCard.def = origDef;
                 updateHpBars();
                 checkBattleEnd();
             }, 1000);
         }
         function checkBattleEnd() {
+            if (battleEnded) return;
+
             if (iaCards.every(c => c.hp <= 0)) {
+                battleEnded = true;
                 showBattleMessage("¡FELICIDADES! HAS GANADO 🎄");
                 if (isTournament) {
                     const t = TOURNAMENTS.find(x => x.id === currentTournamentId);
@@ -1172,10 +1204,9 @@
                 saveGame();
                 renderDeck();
                 renderTournaments();
-                battleEnded = true;
             } else if (playerCards.every(c => c.hp <= 0)) {
-                showBattleMessage("HAS PERDIDO...");
                 battleEnded = true;
+                showBattleMessage("HAS PERDIDO...");
             }
         }
         function showBattleMessage(msg) {
@@ -1196,7 +1227,7 @@
             startFireworks();
         }
         function startFireworks() {
-            for (let i = 0; i = 10; i++) {
+            for (let i = 0; i < 10; i++) {
                 const fw = document.createElement('div');
                 fw.className = 'firework';
                 fw.style.left = Math.random() * 100 + '%';
