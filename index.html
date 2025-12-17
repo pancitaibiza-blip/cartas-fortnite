@@ -433,8 +433,8 @@
         }
         
         /* Secciones 3D */
-        #deck, #shop, #tournament, #cupMode, #ranking, #achievements { display: none; }
-        #deck.active, #shop.active, #tournament.active, #cupMode.active, #ranking.active, #achievements.active { 
+        #deck, #shop, #tournament, #cupMode, #ranking, #achievements, #skinsDuel { display: none; }
+        #deck.active, #shop.active, #tournament.active, #cupMode.active, #ranking.active, #achievements.active, #skinsDuel.active { 
             display: block; 
             animation: fadeIn3D 0.5s ease forwards;
         }
@@ -1027,6 +1027,209 @@
                 opacity: 0;
             }
         }
+        
+        /* Modo Duelo de Skins */
+        #skinsDuel {
+            padding: 20px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, rgba(30, 0, 50, 0.7) 0%, rgba(50, 0, 80, 0.7) 100%);
+            box-shadow: 
+                0 15px 30px rgba(0,0,0,0.4),
+                0 8px 16px rgba(0,0,0,0.3),
+                0 4px 8px rgba(0,0,0,0.2) inset,
+                0 -4px 8px rgba(255,255,255,0.1) inset;
+            transform-style: preserve-3d;
+            transform: translateZ(10px);
+        }
+        
+        .duel-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .duel-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        
+        .duel-stat {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, rgba(30, 30, 30, 0.6) 100%);
+            border-radius: 15px;
+            width: 45%;
+            box-shadow: 
+                0 8px 16px rgba(0,0,0,0.3),
+                0 4px 8px rgba(0,0,0,0.2),
+                0 2px 4px rgba(0,0,0,0.1) inset,
+                0 -2px 4px rgba(255,255,255,0.1) inset;
+            transform-style: preserve-3d;
+            transform: translateZ(10px);
+        }
+        
+        .boss-health {
+            background: linear-gradient(90deg, #8b0000 0%, #ff0000 100%);
+        }
+        
+        .player-health {
+            background: linear-gradient(90deg, #0066cc 0%, #00ccff 100%);
+        }
+        
+        .health-bar {
+            height: 20px;
+            border-radius: 10px;
+            margin-top: 10px;
+            overflow: hidden;
+            box-shadow: 
+                0 2px 4px rgba(0,0,0,0.3) inset,
+                0 -1px 2px rgba(255,255,255,0.1) inset;
+        }
+        
+        .health-fill {
+            height: 100%;
+            width: 100%;
+            transition: width 0.5s ease;
+        }
+        
+        .cards-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .skin-card {
+            background: linear-gradient(135deg, rgba(20, 20, 40, 0.9) 0%, rgba(40, 40, 60, 0.9) 100%);
+            border-radius: 12px;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 8px 16px rgba(0,0,0,0.3),
+                0 4px 8px rgba(0,0,0,0.2),
+                0 2px 4px rgba(0,0,0,0.1) inset,
+                0 -2px 4px rgba(255,255,255,0.1) inset;
+            transform-style: preserve-3d;
+            transform: translateZ(0);
+            position: relative;
+        }
+        
+        .skin-card:hover {
+            transform: translateY(-5px) translateZ(15px) rotateY(5deg);
+            box-shadow: 
+                0 12px 24px rgba(0,0,0,0.4),
+                0 6px 12px rgba(0,0,0,0.3),
+                0 3px 6px rgba(0,0,0,0.2) inset,
+                0 -3px 6px rgba(255,255,255,0.15) inset;
+        }
+        
+        .skin-card.attack-type {
+            border: 2px solid #ff3333;
+        }
+        
+        .skin-card.defense-type {
+            border: 2px solid #3366ff;
+        }
+        
+        .skin-card.matched {
+            animation: matchedPulse 0.6s ease;
+            border-color: #ffff00;
+            box-shadow: 
+                0 0 20px rgba(255, 255, 0, 0.8),
+                0 12px 24px rgba(0,0,0,0.4),
+                0 6px 12px rgba(0,0,0,0.3),
+                0 3px 6px rgba(0,0,0,0.2) inset,
+                0 -3px 6px rgba(255,255,255,0.15) inset;
+        }
+        
+        @keyframes matchedPulse {
+            0% { transform: scale(1) translateZ(0); }
+            50% { transform: scale(1.1) translateZ(20px); }
+            100% { transform: scale(1) translateZ(0); }
+        }
+        
+        .skin-card img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .skin-card-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .skin-card-type {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+        
+        .attack-badge {
+            background: linear-gradient(135deg, #ff3333 0%, #ff6666 100%);
+            color: white;
+        }
+        
+        .defense-badge {
+            background: linear-gradient(135deg, #3366ff 0%, #6699ff 100%);
+            color: white;
+        }
+        
+        .skin-card-value {
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .duel-controls {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .duel-message {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 15px 0;
+            min-height: 25px;
+            color: #ffff00;
+            text-shadow: 0 0 10px rgba(255, 255, 0, 0.5);
+        }
+        
+        .duel-boss {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .boss-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            border: 4px solid #ff3333;
+            box-shadow: 
+                0 0 20px rgba(255, 51, 51, 0.6),
+                0 10px 20px rgba(0,0,0,0.4),
+                0 5px 10px rgba(0,0,0,0.3);
+            transform-style: preserve-3d;
+            transform: translateZ(10px);
+            transition: transform 0.5s ease;
+        }
+        
+        .boss-image.attacking {
+            animation: bossAttack 0.8s ease;
+        }
+        
+        @keyframes bossAttack {
+            0%, 100% { transform: translateZ(10px) scale(1); }
+            50% { transform: translateZ(30px) scale(1.1); }
+        }
     </style>
 </head>
 <body>
@@ -1052,6 +1255,7 @@
             <div class="stat"><i class="fas fa-crown crown"></i> <span id="cups">0</span></div>
         </div>
         <h1 class="text-4xl font-bold text-center mb-8 text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-green-500">🎄 FORTNITE: BATALLA NAVIDEÑA</h1>
+        
         <div id="battle" class="active section-container">
             <div class="battle-header">
                 <h2 class="text-3xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-600">⚔️ BATALLA</h2>
@@ -1064,6 +1268,48 @@
                 <button class="defend-button" onclick="playerDefend()">🛡️ DEFENDER</button>
             </div>
         </div>
+        
+        <div id="skinsDuel" class="section-container">
+            <div class="duel-header">
+                <h2 class="text-3xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">⚔️ DUELO DE SKINS</h2>
+                <p class="text-lg">¡Encuentra parejas de Skins de Ataque para dañar al jefe o parejas de Escudos para recuperar vida!</p>
+            </div>
+            
+            <div class="duel-stats">
+                <div class="duel-stat">
+                    <h3 class="text-xl font-bold text-red-400">JEFE FINAL</h3>
+                    <div class="health-bar">
+                        <div id="bossHealthBar" class="health-fill boss-health"></div>
+                    </div>
+                    <div id="bossHealthText">100 / 100</div>
+                </div>
+                
+                <div class="duel-stat">
+                    <h3 class="text-xl font-bold text-blue-400">TU VIDA</h3>
+                    <div class="health-bar">
+                        <div id="playerHealthBar" class="health-fill player-health"></div>
+                    </div>
+                    <div id="playerHealthText">100 / 100</div>
+                </div>
+            </div>
+            
+            <div class="duel-boss">
+                <div id="bossImage" class="boss-image">
+                    <img src="https://s93.erome.com/5472/K3IRZbxx/LsMURibY.jpeg?v=1764812622" alt="Jefe" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+                </div>
+                <h3 class="text-2xl font-bold text-red-500">Furia</h3>
+            </div>
+            
+            <div class="duel-message" id="duelMessage">¡Encuentra parejas para comenzar el duelo!</div>
+            
+            <div class="cards-board" id="skinsBoard"></div>
+            
+            <div class="duel-controls">
+                <button class="btn bg-purple-700 text-lg px-8 py-3" onclick="startSkinsDuel()">INICIAR DUELO</button>
+                <button class="btn bg-red-700 text-lg px-8 py-3" onclick="resetSkinsDuel()">REINICIAR</button>
+            </div>
+        </div>
+        
         <div id="deck" class="section-container">
             <h2 class="text-3xl font-bold text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-purple-600">🎴 TU MAZO</h2>
             <div id="collectionCounter">Cartas coleccionadas: <span id="collectedCount">0</span> / 62</div>
@@ -1158,6 +1404,7 @@
     </div>
     <div class="fixed bottom-0 left-0 right-0 flex justify-center gap-3 z-10 flex-wrap px-4 py-4 bg-black/50 backdrop-blur-md rounded-t-2xl shadow-lg">
         <button class="nav-btn text-sm px-6 py-3" onclick="showView('battle')">Batalla</button>
+        <button class="nav-btn text-sm px-6 py-3" onclick="showView('skinsDuel')">Duelo de Skins</button>
         <button class="nav-btn text-sm px-6 py-3" onclick="showView('deck')">Mazo</button>
         <button class="nav-btn text-sm px-6 py-3" onclick="showView('shop')">Tienda</button>
         <button class="nav-btn text-sm px-6 py-3" onclick="showView('ranking')">Ranking</button>
@@ -1293,75 +1540,29 @@
             { id: 12, name: "Torneo Exclusivo", cost: 15, trophies: 2500, diamonds: 1000, cards: [50,55,60], description: "¡Evento especial por tiempo limitado!", image: "https://cdn2.hentaigifz.com/115480/busting-the-fuck-out-scaled.webp", iaDeck: [50,51,52,53,54,55], iaMultiplier: 10 }
         ];
         const ACHIEVEMENTS = [
-            { id: 0, name: "Ramírez", rarity: "common", baseAtk: 60, baseDef: 50, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg?v=1764825894", shopPrice: null },
-            { id: 1, name: "Fortaleza", rarity: "rare", baseAtk: 60, baseDef: 70, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png?v=1764809177", shopPrice: null },
-            { id: 2, name: "Escudera", rarity: "common", baseAtk: 55, baseDef: 65, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/9RweIpam.jpeg?v=1764813677", shopPrice: null },
-            { id: 3, name: "Azulita", rarity: "rare", baseAtk: 70, baseDef: 55, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/0B8OzReu.jpeg?v=1764815871", shopPrice: 80 },
-            { id: 4, name: "Tormenta", rarity: "epic", baseAtk: 80, baseDef: 45, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/7GmdJa3U.jpeg?v=1764802552", shopPrice: 120 },
-            { id: 5, name: "Furia", rarity: "legendary", baseAtk: 90, baseDef: 40, level: 1, img: "https://s93.erome.com/5472/K3IRZbxx/LsMURibY.jpeg?v=1764812622", shopPrice: 200 },
-            { id: 6, name: "Asesina", rarity: "legendary", baseAtk: 95, baseDef: 30, level: 1, img: "https://s206.erome.com/4699/lpRzYjBO/Z5Tc5k2v.jpeg?v=1745795818", shopPrice: 250 },
-            { id: 7, name: "Francine Smith", rarity: "legendary", baseAtk: 110, baseDef: 70, level: 1, img: "https://wimg.rule34.xxx//images/1888/0334e8239c387a302348c01810815aef.jpeg?15738062", shopPrice: null },
-            { id: 11, name: "Campeón Sombra", rarity: "tournament", baseAtk: 140, baseDef: 100, level: 1, img: "https://s100.erome.com/2418/B2TgruwR/61zc8Veb.png?v=1712563892", shopPrice: null },
-            { id: 12, name: "Maestro del Fuego", rarity: "tournament", baseAtk: 150, baseDef: 90, level: 1, img: "https://s326.erome.com/5139/YBnb1NTO/pN2evqNZ.jpeg?v=1750357395", shopPrice: null },
-            { id: 13, name: "Rey del Hielo", rarity: "tournament", baseAtk: 135, baseDef: 110, level: 1, img: "https://s10.erome.com/6694/EUAdAxk1/1zdVPLQh.jpeg?v=1764732026", shopPrice: null },
-            { id: 14, name: "Felina", rarity: "epic", baseAtk: 85, baseDef: 50, level: 1, img: "https://rule34.xxx//samples/2288/sample_ce3c07d28a9fdd2475d6fc67df8ff4e4.jpg?15302020", shopPrice: 300 },
-            { id: 16, name: "Serenade", rarity: "epic", baseAtk: 85, baseDef: 50, level: 1, img: "https://rule34.xxx//samples/3001/sample_59915a49be3c0b2a86030615f562d3c1.jpg?15147757", shopPrice: 700 },
-            { id: 17, name: "Cammy and Chun-Li", rarity: "epic", baseAtk: 85, baseDef: 50, level: 1, img: "https://rule34.xxx//samples/714/sample_799c5e73f8d6f088e9a1930fe6d3f791.jpg?15175590", shopPrice: 700 },
-            { id: 18, name: "Briar", rarity: "epic", baseAtk: 85, baseDef: 50, level: 1, img: "https://rule34.xxx//samples/2510/sample_ea2393689e00c9127748cc78a08ef6b5.jpg?15205865", shopPrice: 700 },
-            { id: 19, name: "Torrenta", rarity: "epic", baseAtk: 85, baseDef: 50, level: 1, img: "https://rule34.xxx//samples/1506/sample_b060c3279b1a9b0a7da0e19bb15fa2d5.jpg?15273482", shopPrice: 700 },
-            { id: 20, name: "Siren", rarity: "epic", baseAtk: 85, baseDef: 50, level: 1, img: "https://rule34.xxx//samples/1766/sample_0e848cee467407d1da3fd407bbf6e484.jpg?15276598", shopPrice: 700 },
-            { id: 21, name: "Sabrina Carpente La Diva", rarity: "idolos", baseAtk: 120, baseDef: 80, level: 1, img: "https://i.pinimg.com/736x/4d/c9/b3/4dc9b3acdf2ab04c3c783d3fb2730a0c.jpg", shopPrice: null },
-            { id: 22, name: "Carmela", rarity: "paises", baseAtk: 100, baseDef: 60, level: 1, img: "https://i.pinimg.com/736x/e1/e6/d2/e1e6d2425088933b0ee2751dd578a3c2.jpg", shopPrice: 500 },
-            { id: 23, name: "Amy Wong Thicc", rarity: "epic", baseAtk: 88, baseDef: 55, level: 1, img: "https://rule34.xxx//samples/2701/sample_eae1882d43a188cdcbb129ca7ad3e12e.jpg?14901475", shopPrice: 400 },
-            { id: 24, name: "Neon Strike", rarity: "epic", baseAtk: 90, baseDef: 50, level: 1, img: "https://rule34.xxx//samples/902/sample_2e1d3d88982219e96d1bb68453e57b27.jpg?14884672", shopPrice: 450 },
-            { id: 25, name: "Beach Rebel", rarity: "epic", baseAtk: 85, baseDef: 60, level: 1, img: "https://rule34.xxx//samples/2019/sample_fd1e4fb4f37cab745ed074ee637ee911.jpg?14877326", shopPrice: 500 },
-            { id: 26, name: "Panda Girl", rarity: "epic", baseAtk: 82, baseDef: 58, level: 1, img: "https://rule34.xxx//samples/1674/sample_9c2a1dc61194fef31518afef6288438d.jpg?14876583", shopPrice: 550 },
-            { id: 27, name: "Beach Blonde", rarity: "epic", baseAtk: 92, baseDef: 48, level: 1, img: "https://rule34.xxx//samples/890/sample_ce7401fb27ce9a94e218feb294e9d107.jpg?14851213", shopPrice: 600 },
-            { id: 28, name: "Wonder Slut", rarity: "epic", baseAtk: 95, baseDef: 45, level: 1, img: "https://rule34.xxx//samples/890/sample_5007ec807529d5075eebb9fc67df9f09.jpg?14851228", shopPrice: 650 },
-            { id: 29, name: "Samurai Blue", rarity: "epic", baseAtk: 87, baseDef: 62, level: 1, img: "https://wimg.rule34.xxx//images/2149/86cb609ba898ff4285cfe105c5237f1a.png?14777959", shopPrice: 700 },
-            { id: 30, name: "Pink Facesit", rarity: "epic", baseAtk: 80, baseDef: 65, level: 1, img: "https://rule34.xxx//samples/1545/sample_6ebdf1e38f29cb2e1d1cda76622fea1c.jpg?14763252", shopPrice: 750 },
-            { id: 31, name: "D.Va & Uraraka", rarity: "epic", baseAtk: 93, baseDef: 52, level: 1, img: "https://rule34.xxx//samples/2122/sample_cadb0b375ac7de3414d0db39d552e7d4.jpg?14666699", shopPrice: 800 },
-            { id: 32, name: "Laguna", rarity: "epic", baseAtk: 89, baseDef: 55, level: 1, img: "https://rule34.xxx//samples/842/sample_727d3f80cc43d197f3977fb5c9dfdc22.jpg?14662037", shopPrice: 850 },
-            { id: 33, name: "Facesit Dominatrix", rarity: "epic", baseAtk: 94, baseDef: 50, level: 1, img: "https://rule34.xxx//samples/2314/sample_6bdcff4bfa032aed2751a5370a24cf05.jpg?14637455", shopPrice: 900 },
-            { id: 34, name: "LolaLolita", rarity: "idolos", baseAtk: 140, baseDef: 90, level: 1, img: "https://s204.erome.com/2280/sMLLJHdM/kYJtDcuQ.jpeg?v=1709700685", shopPrice: null },
-            { id: 35, name: "DemonMika", rarity: "idolos", baseAtk: 145, baseDef: 85, level: 1, img: "https://s206.erome.com/3439/knzX8RV6/qi2fnmtw.jpeg?v=1730822823", shopPrice: null },
-            { id: 36, name: "Alejandra", rarity: "idolos", baseAtk: 150, baseDef: 100, level: 1, img: "https://i.pinimg.com/736x/e1/e6/d2/e1e6d2425088933b0ee2751dd578a3c2.jpg", shopPrice: null },
-            { id: 37, name: "Muñeca Simpsons", rarity: "legendary", baseAtk: 115, baseDef: 75, level: 1, img: "https://wimg.rule34.xxx/images/1370/e31706328b6ffa7e207dbb2df991f116.gif", shopPrice: 1500 },
-            { id: 38, name: "Princesa Peach", rarity: "legendary", baseAtk: 130, baseDef: 85, level: 1, img: "https://files.catbox.moe/0k9j2p.gif", shopPrice: 2000 },
-            { id: 39, name: "Braixen Thicc Rider", rarity: "animated", baseAtk: 140, baseDef: 90, level: 1, img: "https://wimg.rule34.xxx/images/1620/752edf7523feb1cfac185fd1cf2a0785.gif", shopPrice: null },
-            { id: 40, name: "Espeon Gym Thrust", rarity: "animated", baseAtk: 145, baseDef: 85, level: 1, img: "https://wimg.rule34.xxx/images/617/c15df1e76636ca51743b135ad3817685.gif", shopPrice: null },
-            { id: 41, name: "Sylveon Forest Bounce", rarity: "animated", baseAtk: 135, baseDef: 95, level: 1, img: "https://wimg.rule34.xxx/images/701/e6fb4ba874eced64a960455ed6c03770.gif", shopPrice: null },
-            { id: 42, name: "Otaku Girl", rarity: "animated", baseAtk: 500, baseDef: 120, level: 1, img: "https://wimg.rule34.xxx/images/3636/2238fbcefc001a701fe5e1f8c5236fe5.gif", shopPrice: 1800 },
-            { id: 43, name: "Belle Beast Ride", rarity: "animated", baseAtk: 150, baseDef: 90, level: 1, img: "https://cdn2.hentaigifz.com/116588/belle-from-beauty-and-the-beast-scaled.webp", shopPrice: null },
-            { id: 44, name: "Emo Bad Belle", rarity: "animated", baseAtk: 140, baseDef: 95, level: 1, img: "https://cdn2.hentaigifz.com/116536/emo-scaled.webp", shopPrice: null },
-            { id: 45, name: "Betty Boop Tease", rarity: "animated", baseAtk: 145, baseDef: 85, level: 1, img: "https://cdn2.hentaigifz.com/116498/betty-boop-scaled.webp", shopPrice: null },
-            { id: 46, name: "Dexter's Mom Beach", rarity: "animated", baseAtk: 1200, baseDef: 1000, level: 1, img: "https://cdn2.hentaigifz.com/116308/dm-scaled.webp", shopPrice: 2500 },
-            { id: 47, name: "Keqing Thicc Ride", rarity: "animated", baseAtk: 1200, baseDef: 1000, level: 1, img: "https://cdn2.hentaigifz.com/116288/hentai-scaled.webp", shopPrice: 2500 },
-            { id: 48, name: "Leona Gym Thrust", rarity: "animated", baseAtk: 1200, baseDef: 1000, level: 1, img: "https://cdn2.hentaigifz.com/116388/tmr-scaled.webp", shopPrice: 2500 },
-            { id: 49, name: "Strange Hero Facesit", rarity: "animated", baseAtk: 1200, baseDef: 1000, level: 1, img: "https://cdn2.hentaigifz.com/116364/strangeh-scaled.webp", shopPrice: 2500 },
-            { id: 50, name: "Busting The Fuck Out", rarity: "animated", baseAtk: 5000, baseDef: 2500, level: 1, img: "https://cdn2.hentaigifz.com/115480/busting-the-fuck-out-scaled.webp", shopPrice: 5000 },
-            { id: 51, name: "Motoko Kusanagi Ride", rarity: "animated", baseAtk: 1600, baseDef: 1100, level: 1, img: "https://cdn2.hentaigifz.com/114768/fantasy-fuck-scaled.webp", shopPrice: 2800 },
-            { id: 52, name: "Nezuko Asshole Fuck", rarity: "animated", baseAtk: 1700, baseDef: 1050, level: 1, img: "https://cdn2.hentaigifz.com/114338/id-fuck-the-hell-out-of-nezukos-asshole-scaled.webp", shopPrice: 2900 },
-            { id: 53, name: "Eirin Yagokoro Dildo", rarity: "animated", baseAtk: 1550, baseDef: 1150, level: 1, img: "https://cdn2.hentaigifz.com/115486/bucketheadero-eirin-yagokoro-touhou-scaled.webp", shopPrice: 2700 },
-            { id: 54, name: "Jessie Ass Throw", rarity: "animated", baseAtk: 1650, baseDef: 1200, level: 1, img: "https://cdn2.hentaigifz.com/115328/jessie-throwing-that-ass-way-out-scaled.webp", shopPrice: 2850 },
-            { id: 55, name: "Raven Big Ass", rarity: "animated", baseAtk: 1800, baseDef: 1000, level: 1, img: "https://cdn2.hentaigifz.com/115298/raven-big-ass-scaled.webp", shopPrice: 3000 },
-            { id: 56, name: "Strapon Futa", rarity: "animated", baseAtk: 1750, baseDef: 1080, level: 1, img: "https://cdn2.hentaigifz.com/115150/strapon-scaled.webp", shopPrice: 2950 },
-            { id: 57, name: "Bubblegum Tit Shake", rarity: "animated", baseAtk: 1500, baseDef: 1300, level: 1, img: "https://cdn2.hentaigifz.com/115728/by-dabbledraws-bubblegum-shakes-her-huge-tits-scaled.webp", shopPrice: 2600 },
-            { id: 58, name: "Vinyl Luna Smirk", rarity: "animated", baseAtk: 1680, baseDef: 1120, level: 1, img: "https://cdn2.hentaigifz.com/115614/smirk-scaled.webp", shopPrice: 2880 },
-            { id: 59, name: "Best Nelson Ride", rarity: "animated", baseAtk: 1900, baseDef: 950, level: 1, img: "https://cdn2.hentaigifz.com/115978/best-nelson-scaled.webp", shopPrice: 3100 },
-            { id: 60, name: "Dragon Momma Slut", rarity: "animated", baseAtk: 2000, baseDef: 900, level: 1, img: "https://cdn2.hentaigifz.com/116346/dragon-momma-slut-chelodoy-scaled.webp", shopPrice: 3200 },
-            { id: 61, name: "Samantha Bounce", rarity: "animated", baseAtk: 10000, baseDef: 5000, level: 1, img: "https://cdn2.hentaigifz.com/113850/gif-samantha-1-scaled.webp", shopPrice: null },
-            { id: 62, name: "Tracer Riding", rarity: "animated", baseAtk: 10000, baseDef: 5000, level: 1, img: "https://cdn2.hentaigifz.com/113896/tracer-ridingirastris-ii-scaled.webp", shopPrice: null },
-            { id: 63, name: "Jane Jetson MILF", rarity: "animated", baseAtk: 10000, baseDef: 5000, level: 1, img: "https://cdn2.hentaigifz.com/114176/milf-scaled.webp", shopPrice: null },
-            { id: 64, name: "Blonde Ahegao", rarity: "animated", baseAtk: 10000, baseDef: 5000, level: 1, img: "https://cdn2.hentaigifz.com/114102/blonde-scaled.webp", shopPrice: null },
-            { id: 65, name: "Mommy's Milk", rarity: "animated", baseAtk: 10000, baseDef: 5000, level: 1, img: "https://cdn2.hentaigifz.com/114104/mommys-milk-scaled.webp", shopPrice: null },
-            { id: 66, name: "Modeus Tight Fuck", rarity: "animated", baseAtk: 10000, baseDef: 5000, level: 1, img: "https://cdn2.hentaigifz.com/114096/hentai-fuck-tight-pussy-with-big-tits-scaled.webp", shopPrice: null },
-            { id: 67, name: "Family Guy XXXmas", rarity: "animated", baseAtk: 10000, baseDef: 5000, level: 1, img: "https://cdn2.hentaigifz.com/114026/holy-crap-xxxmas-scaled.webp", shopPrice: null },
-            { id: 68, name: "Harness Pussy Fuck", rarity: "animated", baseAtk: 10000, baseDef: 5000, level: 1, img: "https://cdn2.hentaigifz.com/114034/pussy-hentai-fuck-scaled.webp", shopPrice: 4000 },
-            { id: 69, name: "Lisa Footjob", rarity: "legendary", baseAtk: 105, baseDef: 60, level: 1, img: "https://cdn.truyen-hentai.com/lisa-genshin-impact?interlace=1&quality=90&type=jpeg&url=https%3A%2F%2Fi.redd.it%2F2rhrtyfu486g1.jpeg&width=920&sign=fT55BfklnZBR2KbkAiywdF3fKOyO99UCruuDvfceJcs", shopPrice: 500 },
-            { id: 70, name: "Chica Fortnite Hot Rod", rarity: "animated", baseAtk: 1600, baseDef: 1000, level: 1, img: "https://img0.fapreactor.com/pics/post/full/Fortnite-%D0%98%D0%B3%D1%80%D1%8B-Fortnite-Porn-r34-6938024.gif", shopPrice: 3000 },
-            { id: 71, name: "Susan Long MILF", rarity: "animated", baseAtk: 1600, baseDef: 1000, level: 1, img: "https://cdn2.hentaigifz.com/116566/hentai-milf-susan-long-american-dragon-jake-long-scaled.webp", shopPrice: 3000 },
-            { id: 72, name: "TMR Thicc", rarity: "animated", baseAtk: 1600, baseDef: 1000, level: 1, img: "https://cdn2.hentaigifz.com/116442/tmr-scaled.webp", shopPrice: 3000 }
+            { id: 0, name: "Primera Victoria", description: "Gana tu primera batalla", icon: "🏆" },
+            { id: 1, name: "Coleccionista", description: "Obtén 5 cartas diferentes", icon: "📚" },
+            { id: 2, name: "Mejorador", description: "Sube una carta al nivel 5", icon: "⬆️" },
+            { id: 3, name: "Torneo Iniciado", description: "Participa en tu primer torneo", icon: "🎯" },
+            { id: 4, name: "Campeón de Torneo", description: "Gana un torneo", icon: "👑" },
+            { id: 5, name: "Gastador", description: "Gasta 500 gemas", icon: "💸" },
+            { id: 6, name: "Invicto", description: "Consigue una racha de 10 victorias", icon: "🔥" },
+            { id: 7, name: "Duelo de Skins", description: "Juega tu primera partida de Duelo de Skins", icon: "⚔️" },
+            { id: 8, name: "Gran Gastador", description: "Gasta 5000 gemas", icon: "💰" },
+            { id: 9, name: "Maestro de Mejoras", description: "Sube una carta al nivel 20", icon: "🔧" },
+            { id: 10, name: "Cazador de Cofres", description: "Abre 20 cofres", icon: "📦" },
+            { id: 11, name: "Maestro de Mejoras Extremo", description: "Sube una carta al nivel 50", icon: "⚡" },
+            { id: 12, name: "Exclusivo", description: "Obtén la carta Busting The Fuck Out", icon: "🌟" },
+            { id: 13, name: "Inversor", description: "Gasta 10000 gemas en packs especiales", icon: "💎" },
+            { id: 14, name: "Coleccionista Completo", description: "Obtén todas las cartas del juego", icon: "🎴" },
+            { id: 15, name: "Thicc Invicto", description: "Consigue una racha de 5 victorias con mazo thicc", icon: "🍑" },
+            { id: 16, name: "Asesino", description: "Derrota a 50 enemigos", icon: "⚰️" },
+            { id: 17, name: "Coleccionista de Packs", description: "Compra 2 packs especiales", icon: "🎁" },
+            { id: 18, name: "Millonario", description: "Gasta 20000 gemas", icon: "🤑" },
+            { id: 19, name: "Explorador", description: "Usa todas las cartas al menos una vez", icon: "🔍" },
+            { id: 20, name: "Maestro Absoluto", description: "Completa todos los torneos y obtén todas las cartas", icon: "👨‍🎓" },
+            { id: 21, name: "Domina el Duelo", description: "Gana 5 partidas de Duelo de Skins", icon: "🎮" },
+            { id: 22, name: "Cazador de Jefes", description: "Derrota al jefe en Duelo de Skins sin perder vida", icon: "👹" }
         ];
         let gameState = {
             playerName: localStorage.getItem('playerName') || 'Jugador',
@@ -1381,8 +1582,25 @@
             packsBoughtCount: parseInt(localStorage.getItem('packsBoughtCount') || '0'),
             allCardsUsed: new Set(JSON.parse(localStorage.getItem('allCardsUsed') || '[]')),
             specialSpend: parseInt(localStorage.getItem('specialSpend') || '0'),
-            winStreakThicc: parseInt(localStorage.getItem('winStreakThicc') || '0')
+            winStreakThicc: parseInt(localStorage.getItem('winStreakThicc') || '0'),
+            skinsDuelWins: parseInt(localStorage.getItem('skinsDuelWins') || '0'),
+            skinsDuelPerfectWins: parseInt(localStorage.getItem('skinsDuelPerfectWins') || '0')
         };
+        
+        // Variables para el modo Duelo de Skins
+        let skinsDuelState = {
+            active: false,
+            playerHealth: 100,
+            bossHealth: 100,
+            maxPlayerHealth: 100,
+            maxBossHealth: 100,
+            cards: [],
+            selectedCard: null,
+            matchedPairs: 0,
+            bossAttackInterval: null,
+            boardSize: 12
+        };
+        
         function applyCardUpgrades() {
             ALL_CARDS.forEach(card => {
                 const level = gameState.cardUpgrades[card.id] || 1;
@@ -1683,6 +1901,8 @@
             localStorage.setItem('allCardsUsed', JSON.stringify([...gameState.allCardsUsed]));
             localStorage.setItem('specialSpend', gameState.specialSpend);
             localStorage.setItem('winStreakThicc', gameState.winStreakThicc);
+            localStorage.setItem('skinsDuelWins', gameState.skinsDuelWins);
+            localStorage.setItem('skinsDuelPerfectWins', gameState.skinsDuelPerfectWins);
             let rankings = JSON.parse(localStorage.getItem('rankings') || '[]');
             const index = rankings.findIndex(r => r.name === gameState.playerName);
             const data = { name: gameState.playerName, trophies: gameState.trophies, avatar: gameState.avatar };
@@ -1753,7 +1973,7 @@
             showView('battle');
         }
         function showView(view) {
-            ['battle', 'deck', 'shop', 'tournament', 'cupMode', 'ranking', 'achievements'].forEach(id => {
+            ['battle', 'deck', 'shop', 'tournament', 'cupMode', 'ranking', 'achievements', 'skinsDuel'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.classList.remove('active');
             });
@@ -1768,6 +1988,7 @@
             if (view === 'ranking') updateRanking();
             if (view === 'battle') { renderIaCards(); renderBattleCards(); }
             if (view === 'achievements') renderAchievements();
+            if (view === 'skinsDuel') initSkinsDuel();
         }
         let iaCards = [], playerCards = [], selectedPlayerCard = null, selectedTargetCard = null;
         let isTournament = false, isCupBattle = false, currentTournamentId = null, iaDeckIds = [], iaLevelMultiplier = 1;
@@ -1979,27 +2200,32 @@
             if (!gameState.achievements.includes(id)) {
                 gameState.achievements.push(id);
                 saveGame();
-                alert(`¡Logro desbloqueado: ${ACHIEVEMENTS.find(a => a.id === id).name}!`);
+                const achievement = ACHIEVEMENTS.find(a => a.id === id);
+                if (achievement) {
+                    alert(`¡Logro desbloqueado: ${achievement.name}! ${achievement.icon}`);
+                }
             }
         }
         function checkAchievements() {
-            if (gameState.ownedCardIds.length >= 5) unlockAchievement(2);
-            if (Object.values(gameState.cardUpgrades).some(l => l >= 5)) unlockAchievement(3);
+            if (gameState.ownedCardIds.length >= 5) unlockAchievement(1);
+            if (Object.values(gameState.cardUpgrades).some(l => l >= 5)) unlockAchievement(2);
             if (gameState.spentDiamonds >= 500) unlockAchievement(5);
             if (gameState.winStreak >= 10) unlockAchievement(6);
             if (gameState.spentDiamonds >= 5000) unlockAchievement(8);
             if (Math.max(...Object.values(gameState.cardUpgrades), 0) >= 20) unlockAchievement(9);
-            if (gameState.totalChestsOpened >= 20) unlockAchievement(12);
-            if (Math.max(...Object.values(gameState.cardUpgrades), 0) >= 50) unlockAchievement(13);
-            if (gameState.ownedCardIds.includes(50)) unlockAchievement(14);
-            if (gameState.specialSpend >= 10000) unlockAchievement(16);
-            if (gameState.ownedCardIds.length === ALL_CARDS.length) unlockAchievement(17);
-            if (gameState.winStreakThicc >= 5) unlockAchievement(18);
-            if (gameState.totalEnemyKills >= 50) unlockAchievement(22);
-            if (gameState.packsBoughtCount >= 2) unlockAchievement(25);
-            if (gameState.spentDiamonds >= 20000) unlockAchievement(26);
-            if (gameState.allCardsUsed.size >= ALL_CARDS.length) unlockAchievement(28);
-            if (gameState.ownedCardIds.length === ALL_CARDS.length && gameState.completedTournaments.length === TOURNAMENTS.length) unlockAchievement(32);
+            if (gameState.totalChestsOpened >= 20) unlockAchievement(10);
+            if (Math.max(...Object.values(gameState.cardUpgrades), 0) >= 50) unlockAchievement(11);
+            if (gameState.ownedCardIds.includes(50)) unlockAchievement(12);
+            if (gameState.specialSpend >= 10000) unlockAchievement(13);
+            if (gameState.ownedCardIds.length === ALL_CARDS.length) unlockAchievement(14);
+            if (gameState.winStreakThicc >= 5) unlockAchievement(15);
+            if (gameState.totalEnemyKills >= 50) unlockAchievement(16);
+            if (gameState.packsBoughtCount >= 2) unlockAchievement(17);
+            if (gameState.spentDiamonds >= 20000) unlockAchievement(18);
+            if (gameState.allCardsUsed.size >= ALL_CARDS.length) unlockAchievement(19);
+            if (gameState.ownedCardIds.length === ALL_CARDS.length && gameState.completedTournaments.length === TOURNAMENTS.length) unlockAchievement(20);
+            if (gameState.skinsDuelWins >= 5) unlockAchievement(21);
+            if (gameState.skinsDuelPerfectWins >= 1) unlockAchievement(22);
         }
         function renderAchievements() {
             const container = document.getElementById('achievementsList');
@@ -2010,9 +2236,10 @@
                 item.className = `ranking-item p-4 rounded-xl ${unlocked ? 'bg-gradient-to-r from-pink-600 to-purple-700 animate-pulse shadow-2xl' : 'bg-gray-800 opacity-70'}`;
                 let progress = '';
                 if (a.id === 6) progress = `Racha: ${gameState.winStreak}/10 🔥`;
-                if (a.id === 12) progress = `Cofres: ${gameState.totalChestsOpened}/20 📦`;
-                if (a.id === 18) progress = `Racha Thicc: ${gameState.winStreakThicc}/5 🍑`;
-                if (a.id === 22) progress = `Muertes: ${gameState.totalEnemyKills}/50 🔨`;
+                if (a.id === 10) progress = `Cofres: ${gameState.totalChestsOpened}/20 📦`;
+                if (a.id === 15) progress = `Racha Thicc: ${gameState.winStreakThicc}/5 🍑`;
+                if (a.id === 16) progress = `Muertes: ${gameState.totalEnemyKills}/50 🔨`;
+                if (a.id === 21) progress = `Victorias: ${gameState.skinsDuelWins}/5 🎮`;
                 item.innerHTML = `
                     <div class="text-4xl">${a.icon}</div>
                     <div class="flex-1">
@@ -2025,6 +2252,287 @@
                 container.appendChild(item);
             });
         }
+        
+        // Funciones para el modo Duelo de Skins
+        function initSkinsDuel() {
+            if (!skinsDuelState.active) {
+                resetSkinsDuel();
+            }
+            renderSkinsBoard();
+            updateHealthBars();
+        }
+        
+        function startSkinsDuel() {
+            if (skinsDuelState.active) {
+                if (!confirm("¿Reiniciar el duelo actual?")) return;
+            }
+            
+            resetSkinsDuel();
+            skinsDuelState.active = true;
+            
+            // Iniciar ataques del jefe cada 5 segundos
+            skinsDuelState.bossAttackInterval = setInterval(() => {
+                if (skinsDuelState.active && skinsDuelState.playerHealth > 0) {
+                    bossAttack();
+                }
+            }, 5000);
+            
+            document.getElementById('duelMessage').textContent = "¡Encuentra parejas para atacar al jefe o defenderte!";
+            renderSkinsBoard();
+            updateHealthBars();
+            unlockAchievement(7); // Logro por jugar la primera partida de Duelo de Skins
+        }
+        
+        function resetSkinsDuel() {
+            // Limpiar intervalo de ataque del jefe si existe
+            if (skinsDuelState.bossAttackInterval) {
+                clearInterval(skinsDuelState.bossAttackInterval);
+                skinsDuelState.bossAttackInterval = null;
+            }
+            
+            // Reiniciar estado del juego
+            skinsDuelState = {
+                active: false,
+                playerHealth: 100,
+                bossHealth: 100,
+                maxPlayerHealth: 100,
+                maxBossHealth: 100,
+                cards: [],
+                selectedCard: null,
+                matchedPairs: 0,
+                bossAttackInterval: null,
+                boardSize: 12
+            };
+            
+            document.getElementById('duelMessage').textContent = "¡Encuentra parejas para comenzar el duelo!";
+            renderSkinsBoard();
+            updateHealthBars();
+        }
+        
+        function renderSkinsBoard() {
+            const board = document.getElementById('skinsBoard');
+            board.innerHTML = '';
+            
+            // Si el juego no está activo, mostrar un mensaje
+            if (!skinsDuelState.active) {
+                board.innerHTML = '<div class="col-span-full text-center text-xl text-yellow-300">Presiona "INICIAR DUELO" para comenzar</div>';
+                return;
+            }
+            
+            // Generar cartas para el tablero si no existen
+            if (skinsDuelState.cards.length === 0) {
+                generateSkinsCards();
+            }
+            
+            // Renderizar cada carta en el tablero
+            skinsDuelState.cards.forEach((card, index) => {
+                const cardElement = document.createElement('div');
+                cardElement.className = `skin-card ${card.type}-type ${card.matched ? 'matched' : ''}`;
+                cardElement.dataset.index = index;
+                
+                if (!card.matched) {
+                    cardElement.onclick = () => selectCard(index);
+                }
+                
+                cardElement.innerHTML = `
+                    <img src="${card.img}" alt="${card.name}">
+                    <div class="skin-card-name">${card.name}</div>
+                    <div class="skin-card-type ${card.type === 'attack' ? 'attack-badge' : 'defense-badge'}">${card.type === 'attack' ? 'Ataque' : 'Escudo'}</div>
+                    <div class="skin-card-value">${card.value}</div>
+                `;
+                
+                board.appendChild(cardElement);
+            });
+        }
+        
+        function generateSkinsCards() {
+            const cards = [];
+            const availableCards = ALL_CARDS.filter(card => gameState.ownedCardIds.includes(card.id));
+            
+            // Mezclar las cartas disponibles
+            const shuffled = [...availableCards].sort(() => 0.5 - Math.random());
+            
+            // Tomar la mitad del tamaño del tablero para crear pares
+            const pairCount = skinsDuelState.boardSize / 2;
+            const selectedCards = shuffled.slice(0, pairCount);
+            
+            // Crear pares de cartas (ataque y defensa)
+            selectedCards.forEach(card => {
+                // Primera carta del par (ataque)
+                cards.push({
+                    id: card.id,
+                    name: card.name,
+                    img: card.img,
+                    type: 'attack',
+                    value: card.atk,
+                    matched: false,
+                    pairId: card.id
+                });
+                
+                // Segunda carta del par (defensa)
+                cards.push({
+                    id: card.id,
+                    name: card.name,
+                    img: card.img,
+                    type: 'defense',
+                    value: card.def,
+                    matched: false,
+                    pairId: card.id
+                });
+            });
+            
+            // Mezclar las cartas del tablero
+            skinsDuelState.cards = cards.sort(() => 0.5 - Math.random());
+        }
+        
+        function selectCard(index) {
+            // Si el juego no está activo o la carta ya está emparejada, no hacer nada
+            if (!skinsDuelState.active || skinsDuelState.cards[index].matched) {
+                return;
+            }
+            
+            // Si no hay carta seleccionada, seleccionar esta
+            if (skinsDuelState.selectedCard === null) {
+                skinsDuelState.selectedCard = index;
+                document.querySelectorAll('.skin-card')[index].style.transform = 'translateY(-10px) translateZ(20px)';
+                return;
+            }
+            
+            // Si se selecciona la misma carta, deseleccionarla
+            if (skinsDuelState.selectedCard === index) {
+                document.querySelectorAll('.skin-card')[index].style.transform = '';
+                skinsDuelState.selectedCard = null;
+                return;
+            }
+            
+            // Obtener las cartas seleccionadas
+            const card1 = skinsDuelState.cards[skinsDuelState.selectedCard];
+            const card2 = skinsDuelState.cards[index];
+            
+            // Verificar si forman un par (mismo ID)
+            if (card1.pairId === card2.pairId) {
+                // Marcar como emparejadas
+                card1.matched = true;
+                card2.matched = true;
+                skinsDuelState.matchedPairs++;
+                
+                // Aplicar efecto según el tipo de par
+                if (card1.type === 'attack' && card2.type === 'attack') {
+                    // Par de ataque: dañar al jefe
+                    const damage = card1.value + card2.value;
+                    skinsDuelState.bossHealth = Math.max(0, skinsDuelState.bossHealth - damage);
+                    document.getElementById('duelMessage').textContent = `¡Par de ataque encontrado! Has causado ${damage} de daño al jefe.`;
+                    
+                    // Comprobar si el jefe ha sido derrotado
+                    if (skinsDuelState.bossHealth <= 0) {
+                        endSkinsDuel(true);
+                    }
+                } else if (card1.type === 'defense' && card2.type === 'defense') {
+                    // Par de defensa: recuperar vida del jugador
+                    const heal = card1.value + card2.value;
+                    skinsDuelState.playerHealth = Math.min(skinsDuelState.maxPlayerHealth, skinsDuelState.playerHealth + heal);
+                    document.getElementById('duelMessage').textContent = `¡Par de escudos encontrado! Has recuperado ${heal} puntos de vida.`;
+                }
+                
+                // Actualizar las barras de vida
+                updateHealthBars();
+                
+                // Comprobar si se han encontrado todos los pares
+                if (skinsDuelState.matchedPairs === skinsDuelState.boardSize / 2) {
+                    endSkinsDuel(true);
+                }
+            } else {
+                // No es un par válido, mostrar mensaje
+                document.getElementById('duelMessage').textContent = "¡No es un par válido! Sigue buscando.";
+            }
+            
+            // Reiniciar la selección
+            document.querySelectorAll('.skin-card')[skinsDuelState.selectedCard].style.transform = '';
+            skinsDuelState.selectedCard = null;
+            
+            // Actualizar el tablero
+            renderSkinsBoard();
+        }
+        
+        function bossAttack() {
+            // El jefe ataca al jugador
+            const damage = Math.floor(Math.random() * 15) + 10; // Daño entre 10 y 25
+            skinsDuelState.playerHealth = Math.max(0, skinsDuelState.playerHealth - damage);
+            
+            // Mostrar animación de ataque
+            const bossImage = document.getElementById('bossImage');
+            bossImage.classList.add('attacking');
+            setTimeout(() => bossImage.classList.remove('attacking'), 800);
+            
+            // Actualizar mensaje y barras de vida
+            document.getElementById('duelMessage').textContent = `¡El jefe te ha atacado! Has recibido ${damage} de daño.`;
+            updateHealthBars();
+            
+            // Comprobar si el jugador ha sido derrotado
+            if (skinsDuelState.playerHealth <= 0) {
+                endSkinsDuel(false);
+            }
+        }
+        
+        function updateHealthBars() {
+            // Actualizar barra de vida del jefe
+            const bossHealthPercent = (skinsDuelState.bossHealth / skinsDuelState.maxBossHealth) * 100;
+            document.getElementById('bossHealthBar').style.width = `${bossHealthPercent}%`;
+            document.getElementById('bossHealthText').textContent = `${Math.ceil(skinsDuelState.bossHealth)} / ${skinsDuelState.maxBossHealth}`;
+            
+            // Actualizar barra de vida del jugador
+            const playerHealthPercent = (skinsDuelState.playerHealth / skinsDuelState.maxPlayerHealth) * 100;
+            document.getElementById('playerHealthBar').style.width = `${playerHealthPercent}%`;
+            document.getElementById('playerHealthText').textContent = `${Math.ceil(skinsDuelState.playerHealth)} / ${skinsDuelState.maxPlayerHealth}`;
+        }
+        
+        function endSkinsDuel(playerWon) {
+            // Detener los ataques del jefe
+            if (skinsDuelState.bossAttackInterval) {
+                clearInterval(skinsDuelState.bossAttackInterval);
+                skinsDuelState.bossAttackInterval = null;
+            }
+            
+            skinsDuelState.active = false;
+            
+            if (playerWon) {
+                // Victoria del jugador
+                gameState.skinsDuelWins++;
+                
+                // Comprobar si fue una victoria perfecta (sin perder vida)
+                if (skinsDuelState.playerHealth === skinsDuelState.maxPlayerHealth) {
+                    gameState.skinsDuelPerfectWins++;
+                    document.getElementById('duelMessage').textContent = "¡VICTORIA PERFECTA! Has derrotado al jefe sin perder vida.";
+                    unlockAchievement(22); // Logro por victoria perfecta
+                } else {
+                    document.getElementById('duelMessage').textContent = "¡FELICIDADES! Has derrotado al jefe.";
+                }
+                
+                // Recompensas
+                gameState.trophies += 50;
+                gameState.diamonds += 25;
+                
+                // Comprobar logros
+                if (gameState.skinsDuelWins >= 5) {
+                    unlockAchievement(21); // Logro por ganar 5 partidas de Duelo de Skins
+                }
+                
+                // Mostrar fuegos artificiales
+                startFireworks();
+            } else {
+                // Derrota del jugador
+                document.getElementById('duelMessage').textContent = "HAS SIDO DERROTADO... El jefe ha ganado el duelo.";
+            }
+            
+            // Guardar el estado del juego
+            saveGame();
+            updateUI();
+            checkAchievements();
+            
+            // Actualizar el tablero
+            renderSkinsBoard();
+        }
+        
         updateUI();
         showView('battle');
         createSnowflakes();
