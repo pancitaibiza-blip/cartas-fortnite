@@ -621,6 +621,9 @@
             transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             transform-style: preserve-3d;
             transform: translateZ(0);
+            /* Asegurar que las cartas de la IA sean visibles */
+            opacity: 1 !important;
+            visibility: visible !important;
         }
         
         .player-card { 
@@ -672,6 +675,9 @@
                 0 -2px 4px rgba(255,255,255,0.1) inset;
             transform-style: preserve-3d;
             transition: transform 0.5s ease;
+            /* Asegurar que las imágenes de las cartas de la IA sean visibles */
+            opacity: 1 !important;
+            visibility: visible !important;
         }
         
         .ia-card:hover img, .player-card:hover img {
@@ -1497,7 +1503,7 @@
             { id: 72, name: "TMR Thicc", rarity: "animated", baseAtk: 1600, baseDef: 1000, level: 1, img: "https://cdn2.hentaigifz.com/116442/tmr-scaled.webp", shopPrice: 3000 },
             { id: 73, name: "Jinx League of Legends", rarity: "legendary", baseAtk: 110, baseDef: 70, level: 1, img: "https://rule34.xxx//samples/3971/sample_2da1c8ff33fe588f243910961ed11a06.jpg?13091729", shopPrice: 1200 },
             { id: 74, name: "Ahri Fox Legend", rarity: "legendary", baseAtk: 110, baseDef: 70, level: 1, img: "https://rule34.xxx//samples/2954/sample_2386105dbcb97ac0248cc3ea8500b84a.jpg?13155724", shopPrice: 1200 },
-            { id: 75, name: "Seraphine Popstar", rarity: "legendary", baseAtk: 110, baseDef: 70, level: 1, img: "https://rule34.xxx//samples/4746/sample_37fa548a5434c08a3a4bf02284abedb6.jpg?13157246", shopPrice: 1200 },
+            { id: 75, name: "Seraphine Popstar", rarity: "legendary", baseAtk: 110, baseDef: 70, level: 1, img: "https://rule34.xxx//samples/4746/sample_37fa548a5434c088e9a1930fe6d3f791.jpg?13157246", shopPrice: 1200 },
             { id: 76, name: "Sonia Pokemon Thicc", rarity: "legendary", baseAtk: 110, baseDef: 70, level: 1, img: "https://rule34.xxx//samples/3480/sample_bcffd58f4d3323097bff61a131fefcf7.jpg?13212611", shopPrice: 1200 },
             { id: 77, name: "Eula Genshin Impact", rarity: "legendary", baseAtk: 110, baseDef: 70, level: 1, img: "https://wimg.rule34.xxx//images/1177/99745673e25c63e0080cf6ddcf048f56.png?13214170", shopPrice: 1200 },
             { id: 78, name: "Noelle Genshin Thicc", rarity: "legendary", baseAtk: 110, baseDef: 70, level: 1, img: "https://rule34.xxx//samples/1177/sample_07014603b1bc2a1ee520415c2ce8bd60.jpg?13214737", shopPrice: 1200 },
@@ -1553,7 +1559,7 @@
             { id: 10, name: "Cazador de Cofres", description: "Abre 20 cofres", icon: "📦" },
             { id: 11, name: "Maestro de Mejoras Extremo", description: "Sube una carta al nivel 50", icon: "⚡" },
             { id: 12, name: "Exclusivo", description: "Obtén la carta Busting The Fuck Out", icon: "🌟" },
-            { id: 13, name: "Inversor", description: "Gasta 10000 gemas en packs especiales", icon: "💎" },
+            { id: 13, name: "Inversor", description: "Gasta 10000 gemas", icon: "💎" },
             { id: 14, name: "Coleccionista Completo", description: "Obtén todas las cartas del juego", icon: "🎴" },
             { id: 15, name: "Thicc Invicto", description: "Consigue una racha de 5 victorias con mazo thicc", icon: "🍑" },
             { id: 16, name: "Asesino", description: "Derrota a 50 enemigos", icon: "⚰️" },
