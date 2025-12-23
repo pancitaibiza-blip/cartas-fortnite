@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>🎄 Fortnite Cartas CLOUD - Batalla Corregida</title>
+    <title>🎄 Fortnite Cartas CLOUD - FIX TOTAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
@@ -46,7 +46,6 @@
 
         .chat-container::-webkit-scrollbar { width: 4px; }
         .chat-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
-
         .clan-tag { font-family: monospace; font-weight: 900; color: #fbbf24; }
         
         .profile-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9000; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
@@ -54,22 +53,6 @@
 
         .animate-scroll { animation: scroll 40s linear infinite; }
         @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-        
-        .card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
-        .revealed .card-inner { transform: rotateY(180deg); }
-        .card-front, .card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 0.75rem; }
-        .card-back { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 900; color: rgba(255,255,255,0.1); }
-        .card-front { transform: rotateY(180deg); }
-
-        .challenge-msg {
-            background: linear-gradient(135deg, rgba(220, 38, 38, 0.2) 0%, rgba(0, 0, 0, 0.4) 100%);
-            border: 2px solid rgba(220, 38, 38, 0.5);
-            animation: pulse-glow 2s infinite;
-        }
-        @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 0 10px rgba(220, 38, 38, 0.2); }
-            50% { box-shadow: 0 0 20px rgba(220, 38, 38, 0.4); }
-        }
         
         .battle-card-item { transition: all 0.3s; cursor: pointer; }
         .battle-card-item:hover { transform: translateY(-5px); filter: brightness(1.2); }
@@ -89,14 +72,14 @@
     <!-- PANTALLA DE CARGA -->
     <div id="loading-screen">
         <div class="spinner mb-6"></div>
-        <h2 class="text-xl font-black uppercase italic tracking-widest animate-pulse">Sincronizando...</h2>
-        <p class="text-white/20 text-[10px] mt-2 uppercase font-bold" id="loading-status">Conectando a la red</p>
+        <h2 class="text-xl font-black uppercase italic tracking-widest animate-pulse">Iniciando Arena...</h2>
+        <p class="text-white/20 text-[10px] mt-2 uppercase font-bold" id="loading-status">Sincronizando mazo</p>
     </div>
 
     <!-- MARQUESINA -->
     <div class="fixed top-0 inset-x-0 h-10 bg-gradient-to-r from-red-900 to-indigo-900 z-[60] flex items-center overflow-hidden border-b border-white/20 shadow-lg">
         <div class="animate-scroll flex gap-12 font-black text-[10px] uppercase tracking-widest px-4 text-white">
-            <span>🛡️ CARGA FORZADA ACTIVA: TUS CARTAS SE VERÁN SÍ O SÍ EN EL DUELO</span>
+            <span>🛡️ RENDERIZADO FORZADO ACTIVO - TUS CARTAS SE VERÁN SÍ O SÍ</span>
             <span>⚔️ RETOS AMISTOSOS EN EL CLAN - ¡PRACTICA SIN PERDER TROFEOS!</span>
             <span>🎁 RECLAMA TU MILLÓN DE GEMAS EN LA TIENDA</span>
             <span>🌐 PERSISTENCIA TOTAL: TU PROGRESO ESTÁ EN LA NUBE</span>
@@ -112,7 +95,7 @@
             </div>
             <div class="flex items-center gap-2 mt-4">
                 <span id="u-clan" class="clan-tag text-lg hidden"></span>
-                <h2 id="u-name" class="text-3xl font-black italic uppercase tracking-tighter drop-shadow-lg">Jugador</h2>
+                <h2 id="u-name" class="text-3xl font-black italic uppercase tracking-tighter drop-shadow-lg text-white">Jugador</h2>
             </div>
             
             <div class="grid grid-cols-3 gap-2 w-full max-w-md mt-6">
@@ -127,7 +110,7 @@
             <div class="glass-panel p-10 text-center border-4 border-cyan-500/30 mb-8 relative overflow-hidden">
                 <div class="absolute top-0 right-0 p-4 opacity-10 text-9xl rotate-12">⚔️</div>
                 <h2 class="text-4xl font-black italic uppercase mb-2 text-cyan-400">MODO BATALLA</h2>
-                <p id="welcome-msg" class="text-white/60 mb-8 font-bold italic">¡Tus cartas se cargarán automáticamente al pelear!</p>
+                <p id="welcome-msg" class="text-white/60 mb-8 font-bold italic">¡Entra al duelo y destruye a tu oponente!</p>
                 <div class="flex flex-col sm:flex-row justify-center gap-4">
                     <button onclick="router.navigate('clans')" class="px-8 py-4 bg-yellow-500 text-black font-black rounded-2xl uppercase italic shadow-xl">Sección Clan 🛡️</button>
                     <button onclick="router.navigate('battle')" class="px-8 py-4 bg-cyan-500 text-white font-black rounded-2xl uppercase italic shadow-xl">Duelo Ranked 🌐</button>
@@ -144,17 +127,14 @@
                     <button onclick="clans.showCreate()" class="w-full mt-4 py-3 bg-white/5 border border-white/10 rounded-xl font-black uppercase text-[10px] hover:bg-cyan-500/20">Crear Clan 🛡️</button>
                 </div>
 
-                <div class="glass-panel p-6 lg:col-span-2 flex flex-col h-[650px] border-cyan-500/10">
+                <div class="glass-panel p-6 lg:col-span-2 flex flex-col h-[600px] border-cyan-500/10">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-[10px] font-black uppercase tracking-widest text-white/40 italic">Chat Clan: <span id="current-clan-name" class="text-cyan-400">...</span></h3>
-                        <button onclick="clans.leave()" class="text-[8px] text-red-500 font-bold uppercase hover:underline">Abandonar</button>
+                        <h3 class="text-[10px] font-black uppercase tracking-widest text-white/40 italic">Chat: <span id="current-clan-name" class="text-cyan-400">...</span></h3>
+                        <button onclick="clans.leave()" class="text-[8px] text-red-500 font-bold uppercase hover:underline">Salir</button>
                     </div>
-                    <div id="clan-chat-box" class="flex-1 overflow-y-auto pr-2 space-y-4 chat-container mb-4">
-                        <div class="h-full flex items-center justify-center opacity-20 italic">Únete a un clan</div>
-                    </div>
+                    <div id="clan-chat-box" class="flex-1 overflow-y-auto pr-2 space-y-4 chat-container mb-4"></div>
                     <div class="flex flex-wrap gap-2">
                         <button onclick="clans.sendChallenge()" class="flex-1 sm:flex-none px-4 py-3 bg-red-600 rounded-xl font-black text-[10px] uppercase italic">⚔️ Retar</button>
-                        <button onclick="clans.requestCardUI()" class="flex-1 sm:flex-none px-4 py-3 bg-purple-600 rounded-xl font-black text-[10px] uppercase italic">Pedir Carta</button>
                         <div class="w-full flex gap-2 mt-1">
                             <input id="clan-msg-input" type="text" placeholder="Chatear..." class="flex-1 bg-black/40 border border-white/10 p-3 rounded-xl outline-none focus:border-cyan-500 text-xs" />
                             <button onclick="clans.sendMsg()" class="w-12 h-12 bg-cyan-500 rounded-xl flex items-center justify-center"><i class="fas fa-paper-plane"></i></button>
@@ -192,7 +172,7 @@
                         <img id="rival-avatar" src="" class="w-12 h-12 rounded-full border-2 border-white/10 object-cover bg-gray-900" />
                         <div class="flex-1">
                             <div class="flex justify-between font-black uppercase text-[10px] mb-1">
-                                <span id="rival-full-name">...</span>
+                                <span id="rival-full-name" class="text-white">...</span>
                                 <span id="rival-hp-text" class="text-red-500">100 HP</span>
                             </div>
                             <div class="w-full bg-black h-2 rounded-full overflow-hidden">
@@ -213,7 +193,7 @@
                     <div class="flex items-center gap-4">
                         <div class="flex-1 text-right">
                             <div class="flex flex-row-reverse justify-between font-black uppercase text-[10px] mb-1">
-                                <span id="player-full-name">Tú</span>
+                                <span id="player-full-name" class="text-white">Tú</span>
                                 <span id="player-hp-text" class="text-cyan-400">100 HP</span>
                             </div>
                             <div class="w-full bg-black h-2 rounded-full overflow-hidden">
@@ -222,8 +202,8 @@
                         </div>
                         <img id="player-avatar-battle" src="" class="w-12 h-12 rounded-full border-2 border-white/10 object-cover bg-gray-900" />
                     </div>
-                    <!-- CONTENEDOR DE CARTAS JUGADOR -->
-                    <div id="player-battle-deck" class="grid grid-cols-3 gap-3 mt-4"></div>
+                    <!-- CONTENEDOR DE CARTAS JUGADOR - SIEMPRE VISIBLE -->
+                    <div id="player-battle-deck" class="grid grid-cols-3 gap-3 mt-4 min-h-[80px]"></div>
                 </div>
                 
                 <div class="text-center">
@@ -241,7 +221,7 @@
         <div class="glass-panel p-8 max-w-sm w-full mx-4 text-center border-2 border-cyan-500/40" onclick="event.stopPropagation()">
             <img id="p-avatar" src="" class="w-24 h-24 rounded-full border-4 border-white shadow-2xl mx-auto mb-4 object-cover bg-gray-900" />
             <div id="p-clan" class="clan-tag text-sm mb-1 uppercase font-black text-yellow-500"></div>
-            <h3 id="p-name" class="text-3xl font-black uppercase italic mb-6">NOMBRE</h3>
+            <h3 id="p-name" class="text-3xl font-black uppercase italic mb-6 text-white">NOMBRE</h3>
             <div class="grid grid-cols-2 gap-3 mb-8">
                 <div class="bg-black/40 p-4 rounded-2xl"><span class="text-[7px] text-white/40 block uppercase font-black">Trofeos</span><div id="p-trophies" class="text-yellow-400 font-black text-xl">0</div></div>
                 <div class="bg-black/40 p-4 rounded-2xl"><span class="text-[7px] text-white/40 block uppercase font-black">Copas</span><div id="p-cups" class="text-orange-400 font-black text-xl">0</div></div>
@@ -292,6 +272,7 @@
         const overrides = [
             { id: 0, name: "Ramírez", img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg" },
             { id: 1, name: "Fortaleza", img: "https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png" },
+            { id: 2, name: "Escudera", img: "https://s93.erome.com/5472/K3IRZbxx/9RweIpam.jpeg" },
             { id: 50, name: "Busting The Fuck Out", rarity: "animated", baseAtk: 5000, img: "https://cdn2.hentaigifz.com/115480/busting-the-fuck-out-scaled.webp" }
         ];
         overrides.forEach(o => { const c = ALL_CARDS.find(x => x.id === o.id); if(c) Object.assign(c, o); });
@@ -305,8 +286,8 @@
         const initSession = async () => {
             let storedName = localStorage.getItem('cards_master_name');
             if(!storedName) {
-                storedName = prompt("Ingresa tu Nombre de Batalla:").toUpperCase().replace(/\s/g,'_').substring(0,12);
-                if(!storedName) storedName = "PLAYER_" + Math.floor(Math.random()*999);
+                storedName = prompt("Ingresa tu Nombre:").toUpperCase().replace(/\s/g,'_').substring(0,12);
+                if(!storedName) storedName = "CADETE_" + Math.floor(Math.random()*999);
             }
             document.getElementById('loading-status').innerText = "Cargando perfil: " + storedName;
             const snap = await get(ref(db, `users_v11/${storedName}`));
@@ -362,7 +343,7 @@
                     document.getElementById('clans-list').innerHTML = Object.keys(list).map(name => `
                         <div class="glass-panel p-4 flex justify-between items-center border-white/5 hover:border-cyan-500 cursor-pointer" onclick="clans.join('${name}')">
                             <span class="clan-tag">[${name}]</span>
-                            <span class="text-[8px] opacity-40 uppercase font-black">${Object.keys(list[name].members || {}).length} M</span>
+                            <span class="text-[8px] opacity-40 uppercase font-black">${Object.keys(list[name].members || {}).length} miembros</span>
                         </div>
                     `).join('');
                 });
@@ -381,7 +362,7 @@
                 }
             },
             showCreate: () => {
-                const name = prompt("Siglas (3-5 letras):").toUpperCase().replace(/\s/g,'').substring(0,5);
+                const name = prompt("Siglas del Clan (3-5 letras):").toUpperCase().replace(/\s/g,'').substring(0,5);
                 if(name && name.length >= 3) clans.join(name);
             },
             listenChat: (name) => {
@@ -402,7 +383,7 @@
                         return `
                             <div class="flex flex-col ${m.user === window.state.name ? 'items-end' : 'items-start'} px-4">
                                 <span onclick="app.showProfile('${m.user}')" class="text-[8px] opacity-40 uppercase font-black cursor-pointer hover:text-cyan-400">${m.user}</span>
-                                <div class="p-3 ${m.user === window.state.name ? 'bg-cyan-600 rounded-l-2xl' : 'bg-white/5 rounded-r-2xl'} border border-white/5 text-xs">${m.text}</div>
+                                <div class="p-3 ${m.user === window.state.name ? 'bg-cyan-600 rounded-l-2xl' : 'bg-white/5 rounded-r-2xl'} border border-white/5 text-xs text-white">${m.text}</div>
                             </div>
                         `;
                     }).join('');
@@ -425,32 +406,20 @@
             acceptChallenge: (mid, roomId) => {
                 remove(ref(db, `clans_v11/${window.state.clan}/chat/${mid}`));
                 multiplayer.join(roomId, true);
-            },
-            requestCardUI: () => {
-                const id = prompt("ID de la carta a pedir:");
-                if(id && window.state.owned.includes(parseInt(id))) {
-                    push(ref(db, `clans_v11/${window.state.clan}/chat`), { user: window.state.name, type: 'request', cardId: parseInt(id), current: 0 });
-                }
             }
         };
 
-        // MULTIPLAYER (FIX DEFINITIVO CARTAS)
+        // MULTIPLAYER (FIX DE CARGA FORZADA)
         window.multiplayer = {
             room: '', role: '', ref: null, data: null, isFriendly: false,
             join: (directCode, friendly = false) => {
                 const code = directCode || document.getElementById('room-id-input').value.toUpperCase().trim();
                 if(!code || code.length < 3) return alert("Código inválido");
                 
-                // CARGA FORZADA Y MAZO DE EMERGENCIA
-                let currentDeck = [...(window.state.currentDeck || [])];
-                if(currentDeck.length < 3) {
-                   // Intentar completar con lo que tenga
-                   const owned = [...window.state.owned];
-                   currentDeck = owned.slice(0, 3);
-                   // Si sigue siendo menor a 3, usar emergencia real
-                   if(currentDeck.length < 3) currentDeck = [0, 1, 2];
-                   window.state.currentDeck = currentDeck;
-                   save();
+                // ASEGURAR MAZO LOCAL
+                if(!window.state.currentDeck || window.state.currentDeck.length === 0) {
+                    window.state.currentDeck = [0, 1, 2];
+                    save();
                 }
 
                 window.multiplayer.room = code;
@@ -458,7 +427,7 @@
                 window.multiplayer.ref = ref(db, `rooms_v11/${code}`);
                 
                 // MAPEADO COMPLETO DE ALL_CARDS + UPGRADES
-                const mappedDeck = currentDeck.map(id => {
+                const mappedDeck = window.state.currentDeck.map(id => {
                     const base = ALL_CARDS.find(x => x.id === id) || ALL_CARDS[0];
                     const lvl = (window.state.upgrades && window.state.upgrades[id]) || 1;
                     return {
@@ -475,13 +444,13 @@
                     const val = snap.val();
                     if(!val) {
                         set(window.multiplayer.ref, { 
-                            p1: { n: window.state.name, c: window.state.clan, h: 100, a: window.state.avatar, deck: mappedDeck },
+                            p1: { n: window.state.name, h: 100, a: window.state.avatar, deck: mappedDeck },
                             status: 'waiting', turn: 'p1', friendly: friendly
                         });
                         window.multiplayer.role = 'p1';
                     } else if(val.status === 'waiting' && !window.multiplayer.role) {
                         update(window.multiplayer.ref, { 
-                            p2: { n: window.state.name, c: window.state.clan, h: 100, a: window.state.avatar, deck: mappedDeck },
+                            p2: { n: window.state.name, h: 100, a: window.state.avatar, deck: mappedDeck },
                             status: 'playing'
                         });
                         window.multiplayer.role = 'p2';
@@ -521,29 +490,44 @@
                 status.innerText = isMyTurn ? '¡ATACA!' : 'ESPERA...';
                 if(data.status === 'finished') status.innerText = data.winner === window.multiplayer.role ? '¡VICTORIA!' : 'DERROTA';
 
-                // RENDERIZADO EN SYNC (Limpiar y dibujar)
+                // RENDERIZADO EN SYNC (FORZADO CON DATOS LOCALES SI FALLA EL SERVIDOR)
                 const deckContainer = document.getElementById('player-battle-deck');
-                deckContainer.innerHTML = '';
-                (me.deck || []).forEach(c => {
-                    const item = document.createElement('div');
-                    item.className = `battle-card-item glass-panel p-2 flex flex-col items-center ${!isMyTurn?'disabled':''} rarity-${c.rarity}`;
-                    item.onclick = () => multiplayer.attack(c.atk);
-                    item.innerHTML = `
-                        <img src="${c.img}" class="w-full h-16 object-cover rounded mb-1">
-                        <div class="text-[7px] font-black uppercase text-cyan-400">ATK ${c.atk}</div>
-                    `;
-                    deckContainer.appendChild(item);
-                });
+                if(deckContainer) {
+                    deckContainer.innerHTML = '';
+                    let deckToRender = me.deck || [];
+                    
+                    if(deckToRender.length === 0) {
+                        // BACKUP LOCAL SI FIREBASE TARDA O FALLA
+                        deckToRender = window.state.currentDeck.map(id => {
+                            const base = ALL_CARDS.find(x => x.id === id) || ALL_CARDS[0];
+                            const lvl = (window.state.upgrades && window.state.upgrades[id]) || 1;
+                            return { ...base, atk: base.baseAtk + (lvl * 10), level: lvl };
+                        });
+                    }
 
-                // Rival
+                    deckToRender.forEach(c => {
+                        const item = document.createElement('div');
+                        item.className = `battle-card-item glass-panel p-2 flex flex-col items-center ${!isMyTurn?'disabled':''} rarity-${c.rarity}`;
+                        item.onclick = () => multiplayer.attack(c.atk);
+                        item.innerHTML = `
+                            <img src="${c.img}" class="w-full h-16 object-cover rounded mb-1">
+                            <div class="text-[7px] font-black uppercase text-cyan-400">ATK ${c.atk}</div>
+                        `;
+                        deckContainer.appendChild(item);
+                    });
+                }
+
+                // Rival (Oculto)
                 const rivalDeckContainer = document.getElementById('rival-deck-display');
-                rivalDeckContainer.innerHTML = '';
-                (rival?.deck || [1,2,3]).forEach(() => {
-                    const box = document.createElement('div');
-                    box.className = 'h-16 glass-panel flex items-center justify-center font-black text-xs opacity-20';
-                    box.innerText = '?';
-                    rivalDeckContainer.appendChild(box);
-                });
+                if(rivalDeckContainer) {
+                    rivalDeckContainer.innerHTML = '';
+                    (rival?.deck || [1,2,3]).forEach(() => {
+                        const box = document.createElement('div');
+                        box.className = 'h-16 glass-panel flex items-center justify-center font-black text-xs opacity-20';
+                        box.innerText = '?';
+                        rivalDeckContainer.appendChild(box);
+                    });
+                }
             },
             attack: (atk) => {
                 if(window.multiplayer.data.status !== 'playing' || window.multiplayer.data.turn !== window.multiplayer.role) return;
@@ -587,7 +571,7 @@
                     window.state.diamonds -= cost;
                     window.state.upgrades[id] = (window.state.upgrades[id] || 1) + 1;
                     save(); renderDeck();
-                } else alert("Faltan gemas");
+                } else alert("Reclama gemas gratis en la Tienda");
             },
             toggleDeck: (id) => {
                 if(window.state.currentDeck.includes(id)) window.state.currentDeck = window.state.currentDeck.filter(x => x !== id);
@@ -609,7 +593,7 @@
                             <img src="${c.img}" class="w-full h-full object-cover">
                             <div class="absolute top-1 right-1 bg-black/80 px-2 py-0.5 rounded text-[8px] font-black">NV.${lvl}</div>
                         </div>
-                        <div class="text-[9px] font-black uppercase mb-3 truncate italic">${c.name}</div>
+                        <div class="text-[9px] font-black uppercase mb-3 truncate italic text-white">${c.name}</div>
                         <div class="grid grid-cols-2 gap-1">
                             <button onclick="app.toggleDeck(${id})" class="w-full py-2 ${inDeck?'bg-red-600':'bg-cyan-600'} text-[7px] font-black rounded uppercase">${inDeck?'Quitar':'Equipar'}</button>
                             <button onclick="app.upgrade(${id})" class="w-full py-2 bg-green-600 text-[7px] font-black rounded uppercase">Mejorar</button>
@@ -630,7 +614,7 @@
         const renderShop = () => {
             document.getElementById('shop-items').innerHTML = ALL_CARDS.filter(c => !window.state.owned.includes(c.id)).map(c => `
                 <div class="glass-panel p-3 rarity-${c.rarity}"><img src="${c.img}" class="h-32 w-full object-cover rounded-lg mb-2">
-                <button onclick="shop.buy(${c.id})" class="w-full py-2 bg-white text-black text-[9px] font-black rounded-lg">💎 ${c.price}</button></div>
+                <button onclick="shop.buy(${c.id})" class="w-full py-2 bg-white text-black text-[9px] font-black rounded-lg uppercase tracking-tighter italic font-black">💎 ${c.price}</button></div>
             `).join('');
         };
 
@@ -641,14 +625,14 @@
                     <div class="glass-panel p-4 flex items-center gap-4 cursor-pointer" onclick="app.showProfile('${u.name}')">
                         <div class="font-black text-xl opacity-20 w-6">${i+1}</div>
                         <img src="${u.avatar}" class="w-10 h-10 rounded-full object-cover">
-                        <div class="flex-1 font-bold text-[10px] uppercase">${u.clan?`[${u.clan}]`:''} ${u.name}</div>
+                        <div class="flex-1 font-bold text-[10px] uppercase text-white">${u.clan?`[${u.clan}]`:''} ${u.name}</div>
                         <div class="text-yellow-400 font-black italic">${u.trophies} 🏆</div>
                     </div>
                 `).join('');
             });
         };
 
-        // START
+        // INICIO
         initSession();
     </script>
 </body>
