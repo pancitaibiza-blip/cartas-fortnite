@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>🎄 Fortnite Cartas CLOUD - FIX Batalla</title>
+    <title>🎄 Fortnite Cartas CLOUD - Batalla Corregida</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
@@ -58,7 +58,7 @@
         .card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
         .revealed .card-inner { transform: rotateY(180deg); }
         .card-front, .card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 0.75rem; }
-        .card-back { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 900; color: rgba(255,255,255,0.1); }
+        .card-back { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 900; color: rgba(255,255,255,0.1); }
         .card-front { transform: rotateY(180deg); }
 
         .challenge-msg {
@@ -78,8 +78,8 @@
 <script type="importmap">
 {
   "imports": {
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3"
+    "react": "https://esm.sh/react@^19.2.3",
+    "react/": "https://esm.sh/react@^19.2.3/"
   }
 }
 </script>
@@ -89,17 +89,17 @@
     <!-- PANTALLA DE CARGA -->
     <div id="loading-screen">
         <div class="spinner mb-6"></div>
-        <h2 class="text-xl font-black uppercase italic tracking-widest animate-pulse">Cargando Datos...</h2>
+        <h2 class="text-xl font-black uppercase italic tracking-widest animate-pulse">Sincronizando...</h2>
         <p class="text-white/20 text-[10px] mt-2 uppercase font-bold" id="loading-status">Conectando a la red</p>
     </div>
 
     <!-- MARQUESINA -->
     <div class="fixed top-0 inset-x-0 h-10 bg-gradient-to-r from-red-900 to-indigo-900 z-[60] flex items-center overflow-hidden border-b border-white/20 shadow-lg">
         <div class="animate-scroll flex gap-12 font-black text-[10px] uppercase tracking-widest px-4 text-white">
-            <span>🛡️ MAZO SINCRONIZADO: TUS CARTAS SE CARGAN EN LA BATALLA</span>
-            <span>⚔️ RETOS AMISTOSOS ACTIVOS EN EL CLAN - ¡PRACTICA SIN PERDER TROFEOS!</span>
+            <span>🛡️ CARGA FORZADA ACTIVA: TUS CARTAS SE VERÁN SÍ O SÍ EN EL DUELO</span>
+            <span>⚔️ RETOS AMISTOSOS EN EL CLAN - ¡PRACTICA SIN PERDER TROFEOS!</span>
             <span>🎁 RECLAMA TU MILLÓN DE GEMAS EN LA TIENDA</span>
-            <span>🌐 PERSISTENCIA TOTAL: TU PROGRESO ESTÁ ASEGURADO EN LA NUBE</span>
+            <span>🌐 PERSISTENCIA TOTAL: TU PROGRESO ESTÁ EN LA NUBE</span>
         </div>
     </div>
 
@@ -127,7 +127,7 @@
             <div class="glass-panel p-10 text-center border-4 border-cyan-500/30 mb-8 relative overflow-hidden">
                 <div class="absolute top-0 right-0 p-4 opacity-10 text-9xl rotate-12">⚔️</div>
                 <h2 class="text-4xl font-black italic uppercase mb-2 text-cyan-400">MODO BATALLA</h2>
-                <p id="welcome-msg" class="text-white/60 mb-8 font-bold italic">¡Equipa tus mejores cartas y domina la arena!</p>
+                <p id="welcome-msg" class="text-white/60 mb-8 font-bold italic">¡Tus cartas se cargarán automáticamente al pelear!</p>
                 <div class="flex flex-col sm:flex-row justify-center gap-4">
                     <button onclick="router.navigate('clans')" class="px-8 py-4 bg-yellow-500 text-black font-black rounded-2xl uppercase italic shadow-xl">Sección Clan 🛡️</button>
                     <button onclick="router.navigate('battle')" class="px-8 py-4 bg-cyan-500 text-white font-black rounded-2xl uppercase italic shadow-xl">Duelo Ranked 🌐</button>
@@ -167,7 +167,6 @@
         <!-- MAZO -->
         <section id="view-deck" class="view">
             <h2 class="text-3xl font-black uppercase italic tracking-tighter mb-6">TU ESCUADRÓN <span class="text-cyan-400" id="deck-stats">0/101</span></h2>
-            <p class="text-[9px] text-white/40 mb-4 font-bold">DEBES EQUIPAR EXACTAMENTE 3 CARTAS PARA PELEAR.</p>
             <div id="deck-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
         </section>
 
@@ -223,7 +222,7 @@
                         </div>
                         <img id="player-avatar-battle" src="" class="w-12 h-12 rounded-full border-2 border-white/10 object-cover bg-gray-900" />
                     </div>
-                    <!-- CONTENEDOR CRÍTICO DE CARTAS -->
+                    <!-- CONTENEDOR DE CARTAS JUGADOR -->
                     <div id="player-battle-deck" class="grid grid-cols-3 gap-3 mt-4"></div>
                 </div>
                 
@@ -314,7 +313,6 @@
             if(snap.exists()) {
                 window.state = snap.val();
                 if(!window.state.upgrades) window.state.upgrades = {};
-                // Corrección: Si no tiene mazo equipado, poner uno por defecto
                 if(!window.state.currentDeck || window.state.currentDeck.length === 0) window.state.currentDeck = [0, 1, 2];
             } else {
                 window.state = {
@@ -436,42 +434,54 @@
             }
         };
 
-        // MULTIPLAYER (FIX CARTAS)
+        // MULTIPLAYER (FIX DEFINITIVO CARTAS)
         window.multiplayer = {
             room: '', role: '', ref: null, data: null, isFriendly: false,
             join: (directCode, friendly = false) => {
                 const code = directCode || document.getElementById('room-id-input').value.toUpperCase().trim();
                 if(!code || code.length < 3) return alert("Código inválido");
                 
-                // IMPORTANTE: Asegurar que el mazo tenga exactamente 3 cartas antes de entrar
-                if(window.state.currentDeck.length !== 3) {
-                   alert("Debes equipar EXACTAMENTE 3 cartas en la sección 'MAZO' para pelear.");
-                   router.navigate('deck');
-                   return;
+                // CARGA FORZADA Y MAZO DE EMERGENCIA
+                let currentDeck = [...(window.state.currentDeck || [])];
+                if(currentDeck.length < 3) {
+                   // Intentar completar con lo que tenga
+                   const owned = [...window.state.owned];
+                   currentDeck = owned.slice(0, 3);
+                   // Si sigue siendo menor a 3, usar emergencia real
+                   if(currentDeck.length < 3) currentDeck = [0, 1, 2];
+                   window.state.currentDeck = currentDeck;
+                   save();
                 }
 
                 window.multiplayer.room = code;
                 window.multiplayer.isFriendly = friendly;
                 window.multiplayer.ref = ref(db, `rooms_v11/${code}`);
                 
-                // MAPEO DE CARTAS CON UPGRADES PARA FIREBASE
-                const myDeckData = window.state.currentDeck.map(id => {
-                    const c = ALL_CARDS.find(x => x.id === id);
-                    const lvl = window.state.upgrades[id] || 1;
-                    return { ...c, atk: c.baseAtk + (lvl * 10), level: lvl };
+                // MAPEADO COMPLETO DE ALL_CARDS + UPGRADES
+                const mappedDeck = currentDeck.map(id => {
+                    const base = ALL_CARDS.find(x => x.id === id) || ALL_CARDS[0];
+                    const lvl = (window.state.upgrades && window.state.upgrades[id]) || 1;
+                    return {
+                        id: base.id,
+                        name: base.name,
+                        img: base.img,
+                        rarity: base.rarity,
+                        atk: base.baseAtk + (lvl * 10),
+                        level: lvl
+                    };
                 });
 
                 onValue(window.multiplayer.ref, (snap) => {
                     const val = snap.val();
                     if(!val) {
                         set(window.multiplayer.ref, { 
-                            p1: { n: window.state.name, c: window.state.clan, h: 100, a: window.state.avatar, deck: myDeckData },
+                            p1: { n: window.state.name, c: window.state.clan, h: 100, a: window.state.avatar, deck: mappedDeck },
                             status: 'waiting', turn: 'p1', friendly: friendly
                         });
                         window.multiplayer.role = 'p1';
                     } else if(val.status === 'waiting' && !window.multiplayer.role) {
                         update(window.multiplayer.ref, { 
-                            p2: { n: window.state.name, c: window.state.clan, h: 100, a: window.state.avatar, deck: myDeckData },
+                            p2: { n: window.state.name, c: window.state.clan, h: 100, a: window.state.avatar, deck: mappedDeck },
                             status: 'playing'
                         });
                         window.multiplayer.role = 'p2';
@@ -488,10 +498,12 @@
             sync: (data) => {
                 window.multiplayer.data = data;
                 const me = data[window.multiplayer.role];
+                if(!me) return;
+
                 const rivalRole = window.multiplayer.role === 'p1' ? 'p2' : 'p1';
                 const rival = data[rivalRole];
 
-                // Render UI HP
+                // HP y Avatares
                 document.getElementById('player-full-name').innerText = me.n;
                 document.getElementById('player-avatar-battle').src = me.a;
                 document.getElementById('player-hp-text').innerText = `${me.h} HP`;
@@ -509,18 +521,29 @@
                 status.innerText = isMyTurn ? '¡ATACA!' : 'ESPERA...';
                 if(data.status === 'finished') status.innerText = data.winner === window.multiplayer.role ? '¡VICTORIA!' : 'DERROTA';
 
-                // FIX: RENDERIZADO DINÁMICO DE CARTAS DEL JUGADOR
-                document.getElementById('player-battle-deck').innerHTML = (me.deck || []).map(c => `
-                    <div onclick="multiplayer.attack(${c.atk})" class="battle-card-item glass-panel p-2 flex flex-col items-center ${!isMyTurn?'disabled':''} rarity-${c.rarity}">
+                // RENDERIZADO EN SYNC (Limpiar y dibujar)
+                const deckContainer = document.getElementById('player-battle-deck');
+                deckContainer.innerHTML = '';
+                (me.deck || []).forEach(c => {
+                    const item = document.createElement('div');
+                    item.className = `battle-card-item glass-panel p-2 flex flex-col items-center ${!isMyTurn?'disabled':''} rarity-${c.rarity}`;
+                    item.onclick = () => multiplayer.attack(c.atk);
+                    item.innerHTML = `
                         <img src="${c.img}" class="w-full h-16 object-cover rounded mb-1">
                         <div class="text-[7px] font-black uppercase text-cyan-400">ATK ${c.atk}</div>
-                    </div>
-                `).join('');
+                    `;
+                    deckContainer.appendChild(item);
+                });
 
-                // Renderizado Rival (Cartas ocultas)
-                document.getElementById('rival-deck-display').innerHTML = (rival?.deck || [1,2,3]).map(c => `
-                    <div class="h-16 glass-panel flex items-center justify-center font-black text-xs opacity-20">?</div>
-                `).join('');
+                // Rival
+                const rivalDeckContainer = document.getElementById('rival-deck-display');
+                rivalDeckContainer.innerHTML = '';
+                (rival?.deck || [1,2,3]).forEach(() => {
+                    const box = document.createElement('div');
+                    box.className = 'h-16 glass-panel flex items-center justify-center font-black text-xs opacity-20';
+                    box.innerText = '?';
+                    rivalDeckContainer.appendChild(box);
+                });
             },
             attack: (atk) => {
                 if(window.multiplayer.data.status !== 'playing' || window.multiplayer.data.turn !== window.multiplayer.role) return;
@@ -532,37 +555,13 @@
                 updates[`turn`] = rivalRole;
                 if(newHp <= 0) { 
                     updates[`status`] = 'finished'; updates[`winner`] = window.multiplayer.role; 
-                    if(!window.multiplayer.isFriendly) { window.state.trophies += 50; window.state.diamonds += 100; save(); }
+                    if(!window.multiplayer.data.friendly) { window.state.trophies += 50; window.state.diamonds += 100; save(); }
                 }
                 update(window.multiplayer.ref, updates);
             }
         };
 
-        // MAZO
-        const renderDeck = () => {
-            const cont = document.getElementById('deck-grid');
-            document.getElementById('deck-stats').innerText = `${window.state.owned.length}/101`;
-            cont.innerHTML = window.state.owned.map(id => {
-                const c = ALL_CARDS.find(x => x.id === id);
-                const lvl = window.state.upgrades[id] || 1;
-                const inDeck = window.state.currentDeck.includes(id);
-                return `
-                    <div class="glass-panel p-3 rarity-${c.rarity} ${inDeck?'border-yellow-400':''}">
-                        <div class="relative h-32 rounded-xl overflow-hidden mb-2">
-                            <img src="${c.img}" class="w-full h-full object-cover">
-                            <div class="absolute top-1 right-1 bg-black/80 px-2 py-0.5 rounded text-[8px] font-black">NV.${lvl}</div>
-                        </div>
-                        <div class="text-[9px] font-black uppercase mb-3 truncate italic">${c.name}</div>
-                        <div class="grid grid-cols-2 gap-1">
-                            <button onclick="app.toggleDeck(${id})" class="w-full py-2 ${inDeck?'bg-red-600':'bg-cyan-600'} text-[7px] font-black rounded uppercase">${inDeck?'Quitar':'Equipar'}</button>
-                            <button onclick="app.upgrade(${id})" class="w-full py-2 bg-green-600 text-[7px] font-black rounded uppercase">Mejorar</button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        };
-
-        // PERFILES
+        // UI Y PERFILES
         window.app = {
             showProfile: async (name) => {
                 const snap = await get(ref(db, `users_v11/${name}`));
@@ -597,7 +596,29 @@
             }
         };
 
-        // SHOP
+        const renderDeck = () => {
+            const cont = document.getElementById('deck-grid');
+            document.getElementById('deck-stats').innerText = `${window.state.owned.length}/101`;
+            cont.innerHTML = window.state.owned.map(id => {
+                const c = ALL_CARDS.find(x => x.id === id);
+                const lvl = window.state.upgrades[id] || 1;
+                const inDeck = window.state.currentDeck.includes(id);
+                return `
+                    <div class="glass-panel p-3 rarity-${c.rarity} ${inDeck?'border-yellow-400':''}">
+                        <div class="relative h-32 rounded-xl overflow-hidden mb-2">
+                            <img src="${c.img}" class="w-full h-full object-cover">
+                            <div class="absolute top-1 right-1 bg-black/80 px-2 py-0.5 rounded text-[8px] font-black">NV.${lvl}</div>
+                        </div>
+                        <div class="text-[9px] font-black uppercase mb-3 truncate italic">${c.name}</div>
+                        <div class="grid grid-cols-2 gap-1">
+                            <button onclick="app.toggleDeck(${id})" class="w-full py-2 ${inDeck?'bg-red-600':'bg-cyan-600'} text-[7px] font-black rounded uppercase">${inDeck?'Quitar':'Equipar'}</button>
+                            <button onclick="app.upgrade(${id})" class="w-full py-2 bg-green-600 text-[7px] font-black rounded uppercase">Mejorar</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        };
+
         window.shop = {
             claimMegaGift: () => { window.state.diamonds += 1000000; save(); alert("¡Millonario! 💎"); renderShop(); },
             buy: (id) => {
