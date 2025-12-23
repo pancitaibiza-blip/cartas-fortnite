@@ -45,15 +45,24 @@
 
         .card-img-container { position: relative; overflow: hidden; border-radius: 1rem; background: #000; }
         .card-img-container img { transition: transform 0.5s; width: 100%; height: 100%; object-fit: cover; }
-        .card-img-container:hover img { transform: scale(1.1); }
+        
+        .attack-card-anim {
+            animation: attackHit 0.8s ease-in-out forwards;
+        }
+        @keyframes attackHit {
+            0% { transform: scale(0) translateY(100px); opacity: 0; }
+            50% { transform: scale(1.2) translateY(-20px); opacity: 1; }
+            100% { transform: scale(1) translateY(0); opacity: 0; }
+        }
 
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
 
-        .btn-hover { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .btn-hover:hover { transform: scale(1.05); filter: brightness(1.1); }
-        .btn-hover:active { transform: scale(0.95); }
+        .battle-card { cursor: pointer; transition: all 0.3s; }
+        .battle-card:hover { transform: translateY(-10px) scale(1.05); }
+        .battle-card:active { transform: scale(0.9); }
+        .battle-card.disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
     </style>
 <script type="importmap">
 {
@@ -66,13 +75,13 @@
 </head>
 <body>
 
-    <!-- MARQUESINA SUPERIOR -->
+    <!-- MARQUESINA -->
     <div class="fixed top-0 inset-x-0 h-10 bg-gradient-to-r from-red-600 to-green-600 z-[60] flex items-center overflow-hidden border-b border-white/20 shadow-lg">
         <div class="animate-scroll flex gap-12 font-black text-[10px] uppercase tracking-widest px-4 text-white">
-            <span>🎄 WINTERFEST MASTER ONLINE - DUELO ONLINE DISPONIBLE</span>
-            <span>🎁 RECLAMA TU MILLÓN DE GEMAS EN LA TIENDA AHORA MISMO</span>
-            <span>🔥 101 SKINS DISPONIBLES - COLECCIÓNALAS TODAS</span>
-            <span>🏆 LLEGA AL RANGO 10 EN LA ARENA PARA SER LEYENDA</span>
+            <span>🎄 WINTERFEST MASTER ONLINE - SISTEMA DE MAZO ACTIVO</span>
+            <span>🎁 RECLAMA TU MILLÓN DE GEMAS EN LA TIENDA</span>
+            <span>🔥 USA TUS MEJORES CARTAS PARA DERROTAR AL RIVAL</span>
+            <span>🏆 GANA TROFEOS POR CADA VICTORIA ONLINE</span>
         </div>
     </div>
 
@@ -80,7 +89,7 @@
         <!-- CABECERA -->
         <header class="flex flex-col items-center mb-8">
             <div class="relative group cursor-pointer" onclick="app.editProfile()">
-                <img id="u-avatar" src="https://rule34.xxx//samples/1888/sample_4387d777c732825ae6e377664c2ce885.jpg?15738037" class="w-24 h-24 rounded-full border-4 border-white shadow-2xl object-cover bg-black" />
+                <img id="u-avatar" src="" class="w-24 h-24 rounded-full border-4 border-white shadow-2xl object-cover bg-black" />
                 <div class="absolute bottom-0 right-0 bg-cyan-500 w-6 h-6 rounded-full flex items-center justify-center text-[10px] border-2 border-white"><i class="fas fa-pen"></i></div>
             </div>
             <h2 id="u-name" class="text-3xl font-black mt-4 italic uppercase tracking-tighter drop-shadow-lg">Jugador</h2>
@@ -88,173 +97,115 @@
             <div class="grid grid-cols-3 gap-2 w-full max-w-md mt-6">
                 <div class="glass-panel p-3 text-center"><span class="text-[7px] text-white/40 block">TROFEOS</span><div id="v-trophies" class="text-yellow-400 font-black text-lg">0</div></div>
                 <div class="glass-panel p-3 text-center"><span class="text-[7px] text-white/40 block">GEMAS</span><div id="v-diamonds" class="text-cyan-400 font-black text-lg">0</div></div>
-                <div class="glass-panel p-3 text-center"><span class="text-[7px] text-white/40 block">COPAS</span><div id="v-orange-400 font-black text-lg">0</div></div>
+                <div class="glass-panel p-3 text-center"><span class="text-[7px] text-white/40 block">COPAS</span><div id="v-cups" class="text-orange-400 font-black text-lg">0</div></div>
             </div>
         </header>
 
         <!-- VISTAS -->
-        <!-- HOME / NEWS -->
-        <section id="view-news" class="view">
+        <section id="view-news" class="view active">
             <div class="glass-panel p-10 text-center border-4 border-red-500/30 mb-8 relative overflow-hidden">
-                <div class="absolute top-0 right-0 p-4 opacity-10 text-9xl rotate-12">🎄</div>
-                <h3 class="text-4xl font-black italic uppercase mb-2 text-red-500 tracking-tighter">WINTERFEST ONLINE</h3>
-                <p class="text-white/60 mb-8 font-bold italic">¡El multijugador está listo! Usa el mismo código que tu amigo para pelear.</p>
+                <h3 class="text-4xl font-black italic uppercase mb-2 text-red-500">WINTERFEST ONLINE</h3>
+                <p class="text-white/60 mb-8 font-bold italic">¡Nuevo sistema de combate! Usa tus cartas del mazo para atacar.</p>
                 <div class="flex flex-col sm:flex-row justify-center gap-4">
-                    <button onclick="router.navigate('battle')" class="px-8 py-4 bg-cyan-500 text-white font-black rounded-2xl uppercase italic shadow-xl btn-hover">Jugar Online 🌐</button>
-                    <button onclick="router.navigate('shop')" class="px-8 py-4 bg-white text-black font-black rounded-2xl uppercase italic shadow-xl btn-hover">Tienda Regalo 🎁</button>
+                    <button onclick="router.navigate('battle')" class="px-8 py-4 bg-cyan-500 text-white font-black rounded-2xl uppercase italic shadow-xl transition-all hover:scale-105">Jugar Duelo Online 🌐</button>
+                    <button onclick="router.navigate('shop')" class="px-8 py-4 bg-white text-black font-black rounded-2xl uppercase italic shadow-xl transition-all hover:scale-105">Tienda Regalo 🎁</button>
                 </div>
             </div>
         </section>
 
-        <!-- MULTIPLAYER BATTLE -->
         <section id="view-battle" class="view">
             <div id="battle-lobby" class="glass-panel p-10 text-center max-w-lg mx-auto border-2 border-cyan-500/30">
-                <div class="text-6xl mb-6 animate-bounce">🌐</div>
-                <h2 class="text-3xl font-black italic mb-6 uppercase tracking-tighter">DUELO EN TIEMPO REAL</h2>
-                <p class="text-white/40 text-[10px] uppercase font-bold tracking-widest mb-6 italic">Ingresa un código (ej: BB123)</p>
-                <input id="room-id-input" type="text" placeholder="CÓDIGO" class="w-full bg-black/40 border-2 border-white/10 p-5 rounded-2xl mb-6 text-center font-black text-2xl uppercase outline-none focus:border-cyan-400 text-white" />
-                <button onclick="multiplayer.join()" class="w-full py-5 bg-cyan-500 rounded-2xl font-black text-xl shadow-xl uppercase italic btn-hover">Conectar ⚡</button>
+                <div class="text-6xl mb-6">🌐</div>
+                <h2 class="text-3xl font-black italic mb-6 uppercase tracking-tighter">DUELO CON TU MAZO</h2>
+                <input id="room-id-input" type="text" placeholder="CÓDIGO DE SALA" class="w-full bg-black/40 border-2 border-white/10 p-5 rounded-2xl mb-6 text-center font-black text-2xl uppercase outline-none focus:border-cyan-400 text-white" />
+                <button onclick="multiplayer.join()" class="w-full py-5 bg-cyan-500 rounded-2xl font-black text-xl shadow-xl uppercase italic hover:scale-105">Pelear ⚡</button>
             </div>
 
-            <div id="battle-arena" class="hidden space-y-6 max-w-2xl mx-auto">
-                <div class="flex justify-between items-center glass-panel p-4 border-white/10">
-                    <div id="display-room-id" class="text-xs font-black text-cyan-400 italic">SALA: --</div>
-                    <button onclick="multiplayer.leave()" class="text-[8px] font-black text-red-500 uppercase px-3 py-1 bg-red-500/10 rounded-lg italic">Abandonar</button>
-                </div>
-
+            <div id="battle-arena" class="hidden space-y-4 max-w-4xl mx-auto">
                 <!-- RIVAL -->
-                <div class="glass-panel p-6 border-2 border-red-500/10" id="rival-ui">
+                <div class="glass-panel p-4 border-2 border-red-500/20">
                     <div class="flex items-center gap-4">
-                        <img id="rival-avatar" src="" class="w-16 h-16 rounded-full border-2 border-white/10 bg-gray-900 object-cover" />
+                        <img id="rival-avatar" src="" class="w-12 h-12 rounded-full border-2 border-white/10 bg-gray-900 object-cover" />
                         <div class="flex-1">
                             <div class="flex justify-between font-black uppercase italic text-[10px] mb-1">
                                 <span id="rival-name">Buscando...</span>
-                                <span id="rival-hp-text" class="text-red-500">100/100</span>
+                                <span id="rival-hp-text" class="text-red-500">100/100 HP</span>
                             </div>
-                            <div class="w-full bg-black h-2.5 rounded-full overflow-hidden border border-white/5">
+                            <div class="w-full bg-black h-2.5 rounded-full overflow-hidden">
                                 <div id="rival-hp-bar" class="hp-bar-fill h-full bg-red-600" style="width: 100%"></div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- ACCIÓN CENTRAL -->
-                <div class="flex flex-col items-center py-8">
-                    <div id="battle-status" class="text-xl font-black animate-pulse uppercase italic text-cyan-400 mb-6">Esperando...</div>
-                    <button id="btn-attack" onclick="multiplayer.attack()" class="w-44 h-44 rounded-full font-black text-4xl shadow-2xl transition-all active:scale-90 border-[12px] bg-white text-black border-cyan-400 hidden btn-hover italic">¡PUM!</button>
+                <!-- CAMPO DE BATALLA / ANIMACIONES -->
+                <div class="relative h-64 flex items-center justify-center overflow-hidden rounded-3xl bg-black/20 border border-white/5">
+                    <div id="attack-animation-container" class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <!-- Aquí aparecerá la carta que ataca -->
+                    </div>
+                    <div id="battle-status" class="text-xl font-black italic uppercase text-cyan-400 animate-pulse text-center px-4">Esperando...</div>
                 </div>
 
                 <!-- TÚ -->
-                <div class="glass-panel p-6 border-2 border-cyan-500/10" id="player-ui">
+                <div class="glass-panel p-4 border-2 border-cyan-500/20">
                     <div class="flex items-center gap-4">
                         <div class="flex-1 text-right">
                             <div class="flex flex-row-reverse justify-between font-black uppercase italic text-[10px] mb-1">
                                 <span id="player-name-battle">Tú</span>
-                                <span id="player-hp-text" class="text-cyan-400">100/100</span>
+                                <span id="player-hp-text" class="text-cyan-400">100/100 HP</span>
                             </div>
-                            <div class="w-full bg-black h-2.5 rounded-full overflow-hidden border border-white/5">
+                            <div class="w-full bg-black h-2.5 rounded-full overflow-hidden">
                                 <div id="player-hp-bar" class="hp-bar-fill h-full bg-cyan-500" style="width: 100%"></div>
                             </div>
                         </div>
-                        <img id="player-avatar-battle" src="" class="w-16 h-16 rounded-full border-2 border-white/10 bg-gray-900 object-cover" />
+                        <img id="player-avatar-battle" src="" class="w-12 h-12 rounded-full border-2 border-white/10 bg-gray-900 object-cover" />
                     </div>
                 </div>
 
-                <div id="battle-logs" class="glass-panel p-4 bg-black/40 text-center text-[9px] font-bold text-white/20 uppercase tracking-widest space-y-1 max-h-24 overflow-y-auto"></div>
+                <!-- TUS CARTAS (EL MAZO) -->
+                <div id="player-battle-deck" class="grid grid-cols-3 gap-3 pt-4">
+                    <!-- Las cartas se inyectan aquí -->
+                </div>
+
+                <div id="battle-logs" class="p-3 text-center text-[8px] font-bold text-white/20 uppercase tracking-widest max-h-16 overflow-y-auto"></div>
             </div>
         </section>
 
-        <!-- ARENA -->
-        <section id="view-arena" class="view">
-            <div class="glass-panel p-8 mb-8 border-blue-500/30 text-center">
-                <h2 class="text-2xl font-black italic mb-4 uppercase">MODO ARENA 🏟️</h2>
-                <div class="flex justify-between items-center mb-4">
-                    <span id="a-rank-name" class="font-black text-blue-400 uppercase italic">Rango 1</span>
-                    <span id="a-rank-progress" class="text-xs font-bold text-white/40 italic">0/5 Victorias</span>
-                </div>
-                <div class="w-full bg-black h-3 rounded-full overflow-hidden mb-8">
-                    <div id="a-progress-bar" class="h-full bg-blue-500 hp-bar-fill" style="width: 0%"></div>
-                </div>
-                <button onclick="arena.start()" class="w-full py-4 bg-blue-600 rounded-xl font-black text-lg uppercase shadow-xl btn-hover italic">Desafiar ⚔️</button>
-            </div>
-            <div id="a-battle-ui" class="hidden glass-panel p-10 text-center border-red-500/20">
-                <h3 id="a-enemy-name" class="text-2xl font-black text-white uppercase italic mb-8">Guerrero Novato</h3>
-                <div class="flex justify-center py-10">
-                    <button onclick="arena.hit()" class="w-40 h-40 rounded-full bg-white text-black font-black text-5xl border-[12px] border-blue-400 shadow-2xl animate-pulse btn-hover">HIT</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- COLISEO -->
-        <section id="view-coliseum" class="view">
-            <div class="glass-panel p-12 text-center border-yellow-500/30">
-                <h2 class="text-4xl font-black italic uppercase mb-2">COLISEO DE ORO</h2>
-                <p class="text-white/40 mb-10 uppercase text-[10px] font-bold tracking-widest italic">5 RONDAS PARA SER LEYENDA</p>
-                <div id="col-game" class="hidden">
-                    <div id="col-round" class="text-4xl font-black text-yellow-400 mb-10 italic uppercase">RONDA 1/5</div>
-                    <button onclick="coliseum.fight()" class="px-20 py-6 bg-white text-black font-black text-2xl rounded-2xl uppercase italic shadow-2xl btn-hover">GOLPEAR ⚔️</button>
-                </div>
-                <button id="col-start-btn" onclick="coliseum.init()" class="px-16 py-5 bg-yellow-500 text-black font-black rounded-2xl uppercase italic shadow-2xl btn-hover">Entrar (100 Gemas) 💎</button>
-            </div>
-        </section>
-
-        <!-- SKINS DUEL (MEMORY) -->
-        <section id="view-skins" class="view">
-            <div class="glass-panel p-8 text-center border-purple-500/30">
-                <h2 class="text-3xl font-black italic uppercase mb-8">RETO DE MEMORIA ⚔️</h2>
-                <div class="flex justify-between gap-4 mb-8">
-                    <div class="flex-1">
-                        <span class="text-[8px] block opacity-40 uppercase mb-1 font-black">TU SALUD</span>
-                        <div class="h-2 bg-black rounded-full overflow-hidden"><div id="s-p-hp" class="h-full bg-cyan-500" style="width: 100%"></div></div>
-                    </div>
-                    <div class="flex-1">
-                        <span class="text-[8px] block opacity-40 uppercase mb-1 font-black">SALUD JEFE</span>
-                        <div class="h-2 bg-black rounded-full overflow-hidden"><div id="s-b-hp" class="h-full bg-red-600" style="width: 100%"></div></div>
-                    </div>
-                </div>
-                <div id="skins-board" class="grid grid-cols-4 gap-2"></div>
-                <button id="skins-start-btn" onclick="skinsDuel.init()" class="mt-8 w-full py-4 bg-purple-600 rounded-xl font-black uppercase italic shadow-xl btn-hover">Iniciar</button>
-            </div>
-        </section>
-
-        <!-- DECK -->
-        <section id="view-deck" class="view">
-            <div class="flex justify-between items-end mb-8">
-                <h2 class="text-3xl font-black italic uppercase tracking-tighter">MI MAZO</h2>
-                <span id="deck-stats" class="text-[10px] font-bold text-white/40 uppercase tracking-widest italic">0/101</span>
-            </div>
-            <div id="deck-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
-        </section>
-
-        <!-- SHOP -->
+        <!-- OTROS MODOS (RESUMIDOS PARA CONSOLIDAR) -->
         <section id="view-shop" class="view">
-            <div class="text-center mb-12 relative group">
-                <div class="absolute -inset-2 bg-yellow-400 rounded-[3rem] blur opacity-20 group-hover:opacity-40 transition-all"></div>
-                <button onclick="shop.claimMegaGift()" class="relative px-12 py-8 bg-yellow-400 text-black font-black rounded-3xl text-2xl uppercase italic shadow-2xl btn-hover">
-                    🎁 RECLAMAR 1,000,000 GEMAS
-                    <div class="absolute -top-3 -right-3 bg-red-600 text-white text-[8px] px-3 py-1 rounded-full animate-bounce font-black">XMAS GIFT</div>
-                </button>
+            <div class="text-center mb-8">
+                <button onclick="shop.claimMegaGift()" class="px-8 py-6 bg-yellow-400 text-black font-black rounded-3xl text-xl uppercase italic shadow-xl transition-all hover:scale-105">🎁 RECLAMAR 1,000,000 GEMAS</button>
             </div>
-            <div id="shop-items" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
+            <div id="shop-items" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
         </section>
 
-        <!-- RANKING -->
+        <section id="view-deck" class="view">
+            <h2 class="text-3xl font-black italic uppercase mb-8 text-center tracking-tighter">MI MAZO 🎴</h2>
+            <div id="deck-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+        </section>
+
         <section id="view-ranking" class="view">
             <h2 class="text-3xl font-black italic uppercase text-center mb-10 tracking-tighter">TOP GLOBAL 🏆</h2>
-            <div id="ranking-list" class="max-w-lg mx-auto space-y-3"></div>
+            <div id="ranking-list" class="max-w-lg mx-auto space-y-2"></div>
+        </section>
+
+        <section id="view-arena" class="view">
+             <div class="glass-panel p-10 text-center border-blue-500/30">
+                <h2 class="text-3xl font-black italic mb-6">MODO ARENA</h2>
+                <div id="a-rank-name" class="font-black text-blue-400 mb-4 uppercase">Rango 1</div>
+                <button onclick="arena.hit()" class="px-12 py-4 bg-blue-600 rounded-2xl font-black uppercase">Entrenar ⚔️</button>
+             </div>
         </section>
     </div>
 
-    <!-- NAVEGACIÓN -->
-    <nav class="fixed bottom-0 inset-x-0 h-24 bg-black/60 backdrop-blur-3xl border-t border-white/10 flex items-center justify-around px-2 z-50">
-        <button onclick="router.navigate('news')" id="nav-news" class="nav-btn flex flex-col items-center justify-center flex-1 h-full rounded-2xl"><i class="fas fa-home mb-1 text-sm"></i><span class="text-[7px] font-black uppercase tracking-tighter">Home</span></button>
-        <button onclick="router.navigate('battle')" id="nav-battle" class="nav-btn flex flex-col items-center justify-center flex-1 h-full rounded-2xl"><i class="fas fa-swords mb-1 text-sm"></i><span class="text-[7px] font-black uppercase tracking-tighter">Duelo</span></button>
-        <button onclick="router.navigate('arena')" id="nav-arena" class="nav-btn flex flex-col items-center justify-center flex-1 h-full rounded-2xl"><i class="fas fa-fire mb-1 text-sm"></i><span class="text-[7px] font-black uppercase tracking-tighter">Arena</span></button>
-        <button onclick="router.navigate('coliseum')" id="nav-coliseum" class="nav-btn flex flex-col items-center justify-center flex-1 h-full rounded-2xl"><i class="fas fa-chess-rook mb-1 text-sm"></i><span class="text-[7px] font-black uppercase tracking-tighter">Coliseo</span></button>
-        <button onclick="router.navigate('skins')" id="nav-skins" class="nav-btn flex flex-col items-center justify-center flex-1 h-full rounded-2xl"><i class="fas fa-gamepad mb-1 text-sm"></i><span class="text-[7px] font-black uppercase tracking-tighter">Skins</span></button>
-        <button onclick="router.navigate('deck')" id="nav-deck" class="nav-btn flex flex-col items-center justify-center flex-1 h-full rounded-2xl"><i class="fas fa-layer-group mb-1 text-sm"></i><span class="text-[7px] font-black uppercase tracking-tighter">Mazo</span></button>
-        <button onclick="router.navigate('shop')" id="nav-shop" class="nav-btn flex flex-col items-center justify-center flex-1 h-full rounded-2xl"><i class="fas fa-shopping-bag mb-1 text-sm"></i><span class="text-[7px] font-black uppercase tracking-tighter">Tienda</span></button>
-        <button onclick="router.navigate('ranking')" id="nav-ranking" class="nav-btn flex flex-col items-center justify-center flex-1 h-full rounded-2xl"><i class="fas fa-list-ol mb-1 text-sm"></i><span class="text-[7px] font-black uppercase tracking-tighter">Rank</span></button>
+    <!-- NAV -->
+    <nav class="fixed bottom-0 inset-x-0 h-24 bg-black/80 backdrop-blur-3xl border-t border-white/10 flex items-center justify-around px-2 z-50">
+        <button onclick="router.navigate('news')" id="nav-news" class="nav-btn active flex flex-col items-center justify-center flex-1 h-full"><i class="fas fa-home mb-1"></i><span class="text-[7px] font-black uppercase">Home</span></button>
+        <button onclick="router.navigate('battle')" id="nav-battle" class="nav-btn flex flex-col items-center justify-center flex-1 h-full"><i class="fas fa-swords mb-1"></i><span class="text-[7px] font-black uppercase">Duelo</span></button>
+        <button onclick="router.navigate('arena')" id="nav-arena" class="nav-btn flex flex-col items-center justify-center flex-1 h-full"><i class="fas fa-fire mb-1"></i><span class="text-[7px] font-black uppercase">Arena</span></button>
+        <button onclick="router.navigate('deck')" id="nav-deck" class="nav-btn flex flex-col items-center justify-center flex-1 h-full"><i class="fas fa-layer-group mb-1"></i><span class="text-[7px] font-black uppercase">Mazo</span></button>
+        <button onclick="router.navigate('shop')" id="nav-shop" class="nav-btn flex flex-col items-center justify-center flex-1 h-full"><i class="fas fa-shopping-bag mb-1"></i><span class="text-[7px] font-black uppercase">Tienda</span></button>
+        <button onclick="router.navigate('ranking')" id="nav-ranking" class="nav-btn flex flex-col items-center justify-center flex-1 h-full"><i class="fas fa-list-ol mb-1"></i><span class="text-[7px] font-black uppercase">Rank</span></button>
     </nav>
 
     <!-- SCRIPTS -->
@@ -262,22 +213,21 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, set, onValue, update, remove, onDisconnect } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // FIREBASE CONFIG
         const firebaseConfig = {
-            apiKey: "AIzaSyAgYrcmcSzz2umxAUp5UqCL3pgNKKR08lU",
-            authDomain: "juego-de-cartas-f7284.firebaseapp.com",
-            projectId: "juego-de-cartas-f7284",
-            storageBucket: "juego-de-cartas-f7284.firebasestorage.app",
-            messagingSenderId: "702565143174",
-            appId: "1:702565143174:web:48a7def7e76a1e9c907707",
-            measurementId: "G-9RST4H1M1P",
+            apiKey: 'AIzaSyAgYrcmcSzz2umxAUp5UqCL3pgNKKR08lU',
+            authDomain: 'juego-de-cartas-f7284.firebaseapp.com',
+            projectId: 'juego-de-cartas-f7284',
+            storageBucket: 'juego-de-cartas-f7284.firebasestorage.app',
+            messagingSenderId: '702565143174',
+            appId: '1:702565143174:web:48a7def7e76a1e9c907707',
+            measurementId: 'G-9RST4H1M1P',
             databaseURL: "https://juego-de-cartas-f7284-default-rtdb.firebaseio.com"
         };
 
         const appFb = initializeApp(firebaseConfig);
         const db = getDatabase(appFb);
 
-        // DATABASE DE 101 CARTAS
+        // DATA
         const ALL_CARDS = [
             { id: 0, name: "Ramírez", rarity: "common", atk: 60, def: 50, img: "https://s93.erome.com/5472/K3IRZbxx/Y8DPmT76.jpeg", price: 50 },
             { id: 1, name: "Fortaleza", rarity: "rare", atk: 60, def: 70, img: "https://s93.erome.com/5472/K3IRZbxx/1FvcJ5u7.png", price: 100 },
@@ -294,35 +244,18 @@
             { id: 61, name: "Samantha Bounce", rarity: "animated", atk: 10000, def: 5000, img: "https://cdn2.hentaigifz.com/113850/gif-samantha-1-scaled.webp", price: 4000 },
             { id: 101, name: "Milf Handjob Wet", rarity: "actricesporno", atk: 12000, def: 6000, img: "https://s2.pictoa.com/media/galleries/269/410/269410603155505d89c/393371260315552a7156.gif", price: 7000 }
         ];
+        for(let i=8; i<=100; i++) { if(!ALL_CARDS.find(c=>c.id===i)) ALL_CARDS.push({ id: i, name: `Skin #${i}`, rarity: i>80?"animated":i>50?"legendary":i>30?"epic":"common", atk: 100+i, def: 80+i, img: `https://picsum.photos/seed/${i+100}/200/300`, price: 100+(i*15) }); }
 
-        // Rellenar hasta 101 cartas
-        for(let i=0; i<=101; i++) {
-            if(!ALL_CARDS.find(c => c.id === i)) {
-                const rarities = ['common', 'rare', 'epic', 'legendary'];
-                const rarity = rarities[Math.floor(Math.random()*4)];
-                ALL_CARDS.push({
-                    id: i, name: `Skin #${i}`, rarity: rarity,
-                    atk: 100 + i, def: 80 + i, price: 100 + (i * 20),
-                    img: `https://picsum.photos/seed/${i+123}/200/300`
-                });
-            }
-        }
-
-        // MOTOR DE ESTADO
-        window.state = JSON.parse(localStorage.getItem('cards_master_v7')) || {
-            name: 'PANCITA_' + Math.floor(Math.random()*999),
+        // STATE
+        window.state = JSON.parse(localStorage.getItem('cards_master_v8')) || {
+            name: 'BB_' + Math.floor(Math.random()*999),
             diamonds: 100, trophies: 0, cups: 0,
-            owned: [0, 1, 2], arenaRank: 0, arenaProgress: 0,
-            avatar: 'https://rule34.xxx//samples/1888/sample_4387d777c732825ae6e377664c2ce885.jpg?15738037'
+            owned: [0, 1, 2], currentDeck: [0, 1, 2],
+            arenaRank: 0, avatar: 'https://rule34.xxx//samples/1888/sample_4387d777c732825ae6e377664c2ce885.jpg?15738037'
         };
 
-        const save = () => {
-            localStorage.setItem('cards_master_v7', JSON.stringify(window.state));
-            renderUI();
-            syncRank();
-        };
-
-        const renderUI = () => {
+        const save = () => { localStorage.setItem('cards_master_v8', JSON.stringify(window.state)); renderGlobalUI(); syncRank(); };
+        const renderGlobalUI = () => {
             document.getElementById('u-name').innerText = window.state.name;
             document.getElementById('u-avatar').src = window.state.avatar;
             document.getElementById('v-diamonds').innerText = window.state.diamonds.toLocaleString();
@@ -330,233 +263,204 @@
             document.getElementById('v-cups').innerText = window.state.cups;
         };
 
-        // ENRUTADOR
-        window.router = {
-            navigate: (view) => {
-                document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-                document.getElementById('view-' + view).classList.add('active');
-                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-                const btn = document.getElementById('nav-' + view);
-                if(btn) btn.classList.add('active');
-                if(view === 'deck') renderDeck();
-                if(view === 'shop') renderShop();
-                if(view === 'ranking') renderRanking();
-            }
-        };
-
-        // MULTIPLAYER (FIREBASE)
+        // MULTIPLAYER
         window.multiplayer = {
-            room: '', role: '', ref: null, data: null, rewarded: false,
+            room: '', role: '', ref: null, data: null, lastAttackSeen: null,
             join: () => {
                 const code = document.getElementById('room-id-input').value.toUpperCase().trim();
-                if(code.length < 3) return alert("Código debe tener +3 letras");
+                if(code.length < 3) return alert("Código corto");
                 window.multiplayer.room = code;
-                window.multiplayer.ref = ref(db, `rooms_v7/${code}`);
+                window.multiplayer.ref = ref(db, `rooms_v8/${code}`);
+                
+                const deckInfo = window.state.currentDeck.map(id => ALL_CARDS.find(c => c.id === id));
+
                 onValue(window.multiplayer.ref, (snap) => {
                     const val = snap.val();
                     if(!val) {
                         set(window.multiplayer.ref, { 
-                            p1: { n: window.state.name, h: 100, a: window.state.avatar },
+                            p1: { n: window.state.name, h: 100, a: window.state.avatar, deck: deckInfo },
                             status: 'waiting', turn: 'p1', logs: ['Esperando rival...']
                         });
                         window.multiplayer.role = 'p1';
                     } else if(val.status === 'waiting' && !window.multiplayer.role) {
                         update(window.multiplayer.ref, { 
-                            p2: { n: window.state.name, h: 100, a: window.state.avatar },
+                            p2: { n: window.state.name, h: 100, a: window.state.avatar, deck: deckInfo },
                             status: 'playing', logs: ['¡Duelo iniciado! Turno de ' + val.p1.n]
                         });
                         window.multiplayer.role = 'p2';
                     }
                     if(snap.val()) window.multiplayer.sync(snap.val());
                 });
+
                 document.getElementById('battle-lobby').classList.add('hidden');
                 document.getElementById('battle-arena').classList.remove('hidden');
-                document.getElementById('display-room-id').innerText = 'SALA: ' + code;
                 onDisconnect(window.multiplayer.ref).remove();
             },
             sync: (data) => {
                 window.multiplayer.data = data;
-                const me = data[window.multiplayer.role] || { n: '...', h: 0, a: '' };
+                const me = data[window.multiplayer.role] || { h: 0, n: '...' };
                 const rival = window.multiplayer.role === 'p1' ? data.p2 : data.p1;
-                document.getElementById('player-avatar-battle').src = window.state.avatar;
-                document.getElementById('player-hp-text').innerText = me.h + '% HP';
+                
+                document.getElementById('player-name-battle').innerText = me.n;
+                document.getElementById('player-avatar-battle').src = me.a;
+                document.getElementById('player-hp-text').innerText = `${me.h}/100 HP`;
                 document.getElementById('player-hp-bar').style.width = me.h + '%';
+
                 if(rival) {
                     document.getElementById('rival-name').innerText = rival.n;
                     document.getElementById('rival-avatar').src = rival.a;
-                    document.getElementById('rival-hp-text').innerText = rival.h + '% HP';
+                    document.getElementById('rival-hp-text').innerText = `${rival.h}/100 HP`;
                     document.getElementById('rival-hp-bar').style.width = rival.h + '%';
                 }
+
+                // Turno
                 const status = document.getElementById('battle-status');
-                const btn = document.getElementById('btn-attack');
+                const isMyTurn = data.turn === window.multiplayer.role && data.status === 'playing';
+                
                 if(data.status === 'playing') {
-                    const isMyTurn = data.turn === window.multiplayer.role;
-                    status.innerText = isMyTurn ? '¡ES TU TURNO! 🔥' : 'EL RIVAL ATACA...';
-                    if(isMyTurn) btn.classList.remove('hidden'); else btn.classList.add('hidden');
+                    status.innerText = isMyTurn ? '¡TU TURNO! ELIGE UNA CARTA' : 'EL RIVAL ESTÁ ELIGIENDO...';
                 } else if(data.status === 'finished') {
-                    const iWon = data.winner === window.multiplayer.role;
-                    status.innerText = iWon ? '¡VICTORIA! 🏆' : 'DERROTA... 💀';
-                    btn.classList.add('hidden');
-                    if(iWon && !window.multiplayer.rewarded) {
-                        window.state.trophies += 50; window.state.diamonds += 100;
-                        save(); window.multiplayer.rewarded = true;
-                    }
+                    status.innerText = data.winner === window.multiplayer.role ? '¡VICTORIA! 🏆' : 'HAS PERDIDO... 💀';
                 }
+
+                // Render Mazo de batalla
+                const deckContainer = document.getElementById('player-battle-deck');
+                deckContainer.innerHTML = (me.deck || []).map(c => `
+                    <div class="glass-panel p-2 battle-card rarity-${c.rarity} ${!isMyTurn ? 'disabled' : ''}" onclick="window.multiplayer.attack(${c.id}, ${c.atk}, '${c.img}')">
+                        <div class="h-24 rounded-lg overflow-hidden mb-1"><img src="${c.img}" class="w-full h-full object-cover"></div>
+                        <div class="text-[7px] font-black truncate uppercase text-center">${c.name}</div>
+                        <div class="text-[8px] font-black text-yellow-400 text-center italic">ATK: ${c.atk}</div>
+                    </div>
+                `).join('');
+
+                // Animación de ataque si hubo uno nuevo
+                if(data.lastAttack && data.lastAttack.id !== window.multiplayer.lastAttackSeen) {
+                    window.multiplayer.lastAttackSeen = data.lastAttack.id;
+                    const animCont = document.getElementById('attack-animation-container');
+                    animCont.innerHTML = `
+                        <div class="attack-card-anim w-32 h-44 glass-panel p-2 border-2 border-white shadow-2xl bg-white">
+                            <img src="${data.lastAttack.img}" class="w-full h-full object-cover rounded-lg">
+                            <div class="absolute -top-4 -right-4 bg-red-600 text-white font-black px-3 py-1 rounded-full italic text-xl">-${data.lastAttack.dmg}</div>
+                        </div>
+                    `;
+                    setTimeout(() => animCont.innerHTML = '', 1000);
+                }
+
                 document.getElementById('battle-logs').innerHTML = (data.logs || []).map(l => `<div>${l}</div>`).join('');
             },
-            attack: () => {
+            attack: (cardId, atk, img) => {
+                if(window.multiplayer.data.turn !== window.multiplayer.role || window.multiplayer.data.status !== 'playing') return;
+                
                 const opponent = window.multiplayer.role === 'p1' ? 'p2' : 'p1';
-                const dmg = 10 + Math.floor(Math.random()*15);
+                const dmg = Math.floor(atk / 5) + Math.floor(Math.random() * 5); // Escalado de daño
                 const newHp = Math.max(0, window.multiplayer.data[opponent].h - dmg);
+                
                 const updates = {};
                 updates[`${opponent}/h`] = newHp;
                 updates[`turn`] = opponent;
-                updates[`logs`] = [`${window.state.name} hizo ${dmg} de daño!`, ...(window.multiplayer.data.logs || [])].slice(0,5);
-                if(newHp <= 0) { updates[`status`] = 'finished'; updates[`winner`] = window.multiplayer.role; }
+                updates[`lastAttack`] = { id: Date.now(), img: img, dmg: dmg, role: window.multiplayer.role };
+                updates[`logs`] = [`${window.state.name} atacó con ${dmg}!`, ...(window.multiplayer.data.logs || [])].slice(0, 5);
+                
+                if(newHp <= 0) {
+                    updates[`status`] = 'finished';
+                    updates[`winner`] = window.multiplayer.role;
+                    window.state.trophies += 50; window.state.diamonds += 100; save();
+                }
                 update(window.multiplayer.ref, updates);
             },
             leave: () => { location.reload(); }
         };
 
-        // PVE ARENA
-        window.arena = {
-            start: () => { document.getElementById('a-battle-ui').classList.remove('hidden'); },
-            hit: () => {
-                window.state.arenaProgress++;
-                if(window.state.arenaProgress >= 5) { window.state.arenaRank++; window.state.arenaProgress = 0; alert("¡SUBISTE DE RANGO!"); }
-                window.state.diamonds += 50; window.state.trophies += 10;
-                save();
-                document.getElementById('a-battle-ui').classList.add('hidden');
-                document.getElementById('a-rank-name').innerText = 'Rango ' + (window.state.arenaRank + 1);
-                document.getElementById('a-progress-bar').style.width = (window.state.arenaProgress * 20) + '%';
-            }
-        };
-
-        // COLISEO
-        window.coliseum = {
-            r: 1,
-            init: () => {
-                if(window.state.diamonds < 100) return alert("Faltan 100 gemas");
-                window.state.diamonds -= 100; window.coliseum.r = 1; save();
-                document.getElementById('col-start-btn').classList.add('hidden');
-                document.getElementById('col-game').classList.remove('hidden');
-            },
-            fight: () => {
-                if(Math.random() > 0.4) {
-                    window.coliseum.r++;
-                    if(window.coliseum.r > 5) { alert("¡CAMPEÓN!"); window.state.diamonds += 5000; save(); router.navigate('news'); }
-                    else document.getElementById('col-round').innerText = `RONDA ${window.coliseum.r}/5`;
-                } else { alert("Caíste..."); router.navigate('news'); }
-            }
-        };
-
-        // SKINS DUEL (MEMORY)
-        window.skinsDuel = {
-            p: 100, b: 100, flipped: [],
-            init: () => {
-                document.getElementById('skins-start-btn').classList.add('hidden');
-                const board = document.getElementById('skins-board'); board.innerHTML = '';
-                const ids = [0,1,2,3,0,1,2,3].sort(() => 0.5 - Math.random());
-                ids.forEach(id => {
-                    const c = document.createElement('div');
-                    c.className = 'h-20 bg-white/5 rounded-xl flex items-center justify-center cursor-pointer font-black text-2xl border border-white/10';
-                    c.innerText = '?';
-                    c.onclick = () => window.skinsDuel.flip(c, id);
-                    board.appendChild(c);
-                });
-            },
-            flip: (el, id) => {
-                if(window.skinsDuel.flipped.length >= 2 || el.innerText !== '?') return;
-                const card = ALL_CARDS.find(x => x.id === id);
-                el.innerHTML = `<img src="${card.img}" class="w-full h-full object-cover rounded-xl">`;
-                window.skinsDuel.flipped.push({el, id});
-                if(window.skinsDuel.flipped.length === 2) {
-                    setTimeout(() => {
-                        if(window.skinsDuel.flipped[0].id === window.skinsDuel.flipped[1].id) { window.skinsDuel.b -= 25; }
-                        else { window.skinsDuel.p -= 20; window.skinsDuel.flipped.forEach(f => f.el.innerText = '?'); }
-                        window.skinsDuel.flipped = [];
-                        document.getElementById('s-p-hp').style.width = window.skinsDuel.p + '%';
-                        document.getElementById('s-b-hp').style.width = window.skinsDuel.b + '%';
-                        if(window.skinsDuel.b <= 0) { alert("Victoria!"); window.state.diamonds += 500; save(); router.navigate('news'); }
-                        if(window.skinsDuel.p <= 0) { alert("Perdiste!"); router.navigate('news'); }
-                    }, 500);
-                }
-            }
-        };
-
         // TIENDA
         window.shop = {
-            claimMegaGift: () => { window.state.diamonds += 1000000; save(); renderShop(); alert("¡Millonario bb! 💎"); },
-            openChest: (type) => {
-                const cost = { rare: 150, epic: 400, legendary: 800 }[type];
-                if(window.state.diamonds < cost) return alert("Pobre!");
-                window.state.diamonds -= cost;
-                for(let i=0; i<3; i++) {
-                    const c = ALL_CARDS[Math.floor(Math.random()*ALL_CARDS.length)];
-                    if(!window.state.owned.includes(c.id)) window.state.owned.push(c.id);
-                }
-                save(); renderShop();
-            },
+            claimMegaGift: () => { window.state.diamonds += 1000000; save(); renderShop(); alert("¡Millonario! 💎"); },
             buy: (id) => {
                 const c = ALL_CARDS.find(x => x.id === id);
                 if(window.state.diamonds >= c.price) { window.state.diamonds -= c.price; window.state.owned.push(id); save(); renderShop(); }
                 else alert("Faltan gemas");
             }
         };
-
         const renderShop = () => {
-            const cont = document.getElementById('shop-items');
-            cont.innerHTML = ALL_CARDS.filter(c => !window.state.owned.includes(c.id)).map(c => `
-                <div class="glass-panel p-4 rarity-${c.rarity} flex flex-col">
-                    <div class="card-img-container mb-3 h-32"><img src="${c.img}"></div>
-                    <div class="text-[9px] font-black uppercase truncate mb-3 italic">${c.name}</div>
-                    <button onclick="shop.buy(${c.id})" class="mt-auto w-full py-2 bg-white text-black text-[10px] font-black rounded-lg uppercase italic btn-hover">💎 ${c.price}</button>
+            document.getElementById('shop-items').innerHTML = ALL_CARDS.filter(c => !window.state.owned.includes(c.id)).map(c => `
+                <div class="glass-panel p-3 rarity-${c.rarity}">
+                    <div class="h-32 rounded-lg overflow-hidden mb-2"><img src="${c.img}" class="w-full h-full object-cover"></div>
+                    <div class="text-[9px] font-black uppercase truncate mb-2">${c.name}</div>
+                    <button onclick="shop.buy(${c.id})" class="w-full py-2 bg-white text-black text-[9px] font-black rounded-lg">💎 ${c.price}</button>
                 </div>
             `).join('');
         };
 
         // DECK
         const renderDeck = () => {
-            const cont = document.getElementById('deck-grid');
-            document.getElementById('deck-stats').innerText = `${window.state.owned.length}/101 CARTAS`;
-            cont.innerHTML = window.state.owned.map(id => {
+            document.getElementById('deck-grid').innerHTML = window.state.owned.map(id => {
                 const c = ALL_CARDS.find(x => x.id === id);
-                return `<div class="glass-panel p-4 rarity-${c.rarity}"><div class="card-img-container mb-3 h-32"><img src="${c.img}"></div><div class="text-[9px] font-black uppercase truncate italic mb-1">${c.name}</div><div class="flex justify-between text-[7px] font-bold text-white/30"><span>ATK ${c.atk}</span><span>DEF ${c.def}</span></div></div>`;
+                const inDeck = window.state.currentDeck.includes(id);
+                return `
+                    <div class="glass-panel p-3 rarity-${c.rarity} border-2 ${inDeck?'border-yellow-400':''}">
+                        <div class="h-32 rounded-lg overflow-hidden mb-2"><img src="${c.img}" class="w-full h-full object-cover"></div>
+                        <div class="text-[9px] font-black uppercase mb-2 truncate">${c.name}</div>
+                        <button onclick="app.toggleDeck(${id})" class="w-full py-1 ${inDeck?'bg-red-500':'bg-cyan-500'} text-white text-[7px] font-black rounded uppercase">${inDeck?'Quitar':'Poner'}</button>
+                    </div>
+                `;
             }).join('');
         };
 
-        // RANKING (LOCAL)
+        // RANKING
         const syncRank = () => {
-            let ranks = JSON.parse(localStorage.getItem('ranks_v7') || '[]');
-            const idx = ranks.findIndex(r => r.name === window.state.name);
-            const data = { name: window.state.name, trophies: window.state.trophies, avatar: window.state.avatar };
-            if(idx !== -1) ranks[idx] = data; else ranks.push(data);
-            ranks.sort((a,b) => b.trophies - a.trophies);
-            localStorage.setItem('ranks_v7', JSON.stringify(ranks.slice(0,10)));
+            let rs = JSON.parse(localStorage.getItem('rank_v8') || '[]');
+            const idx = rs.findIndex(x => x.name === window.state.name);
+            const d = { name: window.state.name, trophies: window.state.trophies, avatar: window.state.avatar };
+            if(idx !== -1) rs[idx] = d; else rs.push(d);
+            rs.sort((a,b) => b.trophies - a.trophies);
+            localStorage.setItem('rank_v8', JSON.stringify(rs.slice(0, 10)));
         };
         const renderRanking = () => {
-            const list = JSON.parse(localStorage.getItem('ranks_v7') || '[]');
-            document.getElementById('ranking-list').innerHTML = list.map((r, i) => `
-                <div class="glass-panel p-5 flex items-center gap-5 ${r.name === window.state.name ? 'border-cyan-500 bg-cyan-500/10' : ''}">
-                    <div class="font-black text-2xl opacity-20 w-8">${i+1}</div>
-                    <img src="${r.avatar}" class="w-12 h-12 rounded-full object-cover border border-white/20">
-                    <div class="flex-1 font-black uppercase italic text-sm">${r.name}</div>
-                    <div class="text-yellow-400 font-black italic">${r.trophies} 🏆</div>
+            const ranks = JSON.parse(localStorage.getItem('rank_v8') || '[]');
+            document.getElementById('ranking-list').innerHTML = ranks.map((r,i) => `
+                <div class="glass-panel p-4 flex items-center gap-4 ${r.name === window.state.name ? 'border-cyan-500' : ''}">
+                    <div class="font-black text-xl opacity-20 w-6">${i+1}</div>
+                    <img src="${r.avatar}" class="w-10 h-10 rounded-full object-cover border border-white/20">
+                    <div class="flex-1 font-bold text-xs uppercase">${r.name}</div>
+                    <div class="text-yellow-400 font-black">${r.trophies} 🏆</div>
                 </div>
             `).join('');
         };
 
-        // PROFILE
+        // UTILS
         window.app = {
             editProfile: () => {
-                const n = prompt("Nuevo nombre:", window.state.name);
-                if(n) { window.state.name = n.toUpperCase().substring(0,15); save(); }
+                const n = prompt("Nombre:", window.state.name);
+                if(n) { window.state.name = n.toUpperCase().substring(0,12); save(); }
+            },
+            toggleDeck: (id) => {
+                if(window.state.currentDeck.includes(id)) {
+                    window.state.currentDeck = window.state.currentDeck.filter(x => x !== id);
+                } else {
+                    if(window.state.currentDeck.length >= 3) return alert("Máximo 3 cartas");
+                    window.state.currentDeck.push(id);
+                }
+                save(); renderDeck();
             }
         };
 
-        // START
-        renderUI();
-        window.router.navigate('news');
+        window.router = {
+            navigate: (view) => {
+                document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+                document.getElementById('view-' + view).classList.add('active');
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                document.getElementById('nav-' + view).classList.add('active');
+                if(view === 'deck') renderDeck();
+                if(view === 'shop') renderShop();
+                if(view === 'ranking') renderRanking();
+            }
+        };
+
+        window.arena = {
+            hit: () => { window.state.trophies += 5; window.state.diamonds += 10; save(); alert("+10 Gemas"); }
+        };
+
+        // INIT
+        renderGlobalUI();
     </script>
 </body>
 </html>
